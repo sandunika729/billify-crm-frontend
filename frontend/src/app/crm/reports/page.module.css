@@ -1,0 +1,336 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.backBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.backBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+}
+
+.pageHeader h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.pageHeader p {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.rolesLayout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    min-height: 600px;
+}
+
+.rolesPanel {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.panelHeader {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.panelHeader h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.roleSearch {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+}
+
+.roleSearch input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 0.7rem;
+    color: var(--color-text-primary);
+}
+
+.rolesList {
+    display: flex;
+    flex-direction: column;
+}
+
+.roleItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: transparent;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    text-align: left;
+}
+
+.roleItem:last-child {
+    border-bottom: none;
+}
+
+.roleItem:hover {
+    background: var(--color-bg-hover);
+}
+
+.roleItem.active {
+    background: #f0f7ff;
+    border-left: 3px solid var(--color-primary);
+    padding-left: calc(1.5rem - 3px);
+}
+
+.roleInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.roleIcon {
+    color: var(--color-primary);
+    background: #e8f0fe;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.roleName {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    font-size: 0.9rem;
+    margin-bottom: 0.15rem;
+}
+
+.reportsList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reportCard {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  transition: all var(--transition-fast);
+}
+
+.reportCard:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.reportIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: rgba(59, 130, 246, 0.05);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reportInfo {
+  flex: 1;
+}
+
+.reportInfo h3 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.reportInfo p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.filtersBar {
+  display: flex;
+  background: #ffffff;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filterLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.filterSelect {
+  padding: 0.55rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  font-size: 0.7rem;
+  color: var(--color-text-primary);
+  outline: none;
+  cursor: pointer;
+  min-width: 130px;
+}
+
+.filterSelect:focus {
+  border-color: #8b5cf6;
+  box-shadow: none;
+}
+
+.tableCard {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dataTable th {
+  text-align: left;
+  padding: 1rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dataTable td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.dataTable tr:last-child td {
+  border-bottom: none;
+}
+
+.dataTable tr:hover td {
+  background-color: rgba(248, 250, 252, 0.5);
+}
+
+.textRight { text-align: right !important; }
+.textCenter { text-align: center !important; }
+
+.primaryText {
+  color: var(--color-text-primary) !important;
+  font-weight: 500;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem !important;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .pageHeader { flex-direction: column; gap: 1rem; align-items: flex-start !important; }
+  .header { flex-direction: column; gap: 1rem; align-items: flex-start !important; }
+  .filtersBar { flex-direction: column; align-items: stretch !important; gap: 1rem; }
+  .filtersLeft { flex-direction: column; align-items: stretch !important; }
+  .formRow { flex-direction: column !important; }
+  .detailGrid { grid-template-columns: 1fr !important; }
+  .mainGrid { grid-template-columns: 1fr !important; }
+  .statCards { grid-template-columns: 1fr !important; }
+  .chartsGrid { grid-template-columns: 1fr !important; }
+  .kpiGrid { grid-template-columns: 1fr !important; }
+  .headerActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  .tableWrapper { overflow-x: auto; }
+}

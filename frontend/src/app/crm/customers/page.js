@@ -1,0 +1,619 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../context/AuthContext';
+import customerService from '../../../services/customerService';
+import styles from './page.module.css';
+import Link from 'next/link';
+import FormField from '../../../components/forms/FormField';
+import formStyles from '../../../components/forms/FormField.module.css';
+import Badge from '../../../components/ui/Badge';
+import SearchBar from '../../../components/ui/SearchBar';
+import FilterSelect from '../../../components/ui/FilterSelect';
+import { Search, Plus, Building2, User, Phone, Mail, X, Upload, Download, Eye, Edit2, Trash2 } from 'lucide-react';
+import Button from '../../../components/ui/Button';
+import Modal from '../../../components/modals/Modal';
+import customFieldService from '../../../services/customFieldService';
+
+export default function CustomersPage() {
+  const { user } = useAuth();
+  const [customers, setCustomers] = useState([]);
+  const [posCustomers, setPosCustomers] = useState([]);
+  const [customFields, setCustomFields] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    company_name: '',
+    email: '',
+    phone: '',
+    secondary_phone: '',
+    website: '',
+    source: '',
+    notes: '',
+    type: 'retail',
+    billify_customer_id: '',
+    custom_fields: {}
+  });
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+
+  useEffect(() => {
+    fetchCustomers();
+    fetchPosCustomers();
+    fetchCustomFields();
+  }, []);
+
+  const fetchCustomFields = async () => {
+    try {
+      const res = await customFieldService.getFields('customer');
+      if (res.success) {
+        setCustomFields(res.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch custom fields:', error);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    setLoading(true);
+    try {
+      
+      const res = await customerService.getAllCustomers();
+      if (res.success) {
+        setCustomers(res.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch customers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPosCustomers = async () => {
+    try {
+      const res = await customerService.getPosCustomers();
+      if (res.success) {
+        setPosCustomers(res.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch POS customers:', error);
+    }
+  };
+
+  const filteredCustomers = customers.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (c.email && c.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (c.company_name && c.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesType = !filterType || c.type === filterType;
+    const matchesStatus = !filterStatus || c.status === filterStatus;
+    
+    return matchesSearch && matchesType && matchesStatus;
+  });
+
+  const getTypeVariant = (type) => {
+    switch (type) {
+      case 'individual': return 'new';
+      case 'retail': return 'contacted';
+      case 'company': return 'qualified';
+      case 'wholesale': return 'attempted_contact';
+      case 'supplier': return 'disqualified';
+      case 'lead_only': return 'sent'; 
+      default: return 'default';
+    }
+  };
+
+  const statusVariant = (s) => {
+    if (s === 'active') return 'active';
+    if (s === 'inactive') return 'inactive';
+    return 'default';
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveCustomer = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const payload = { ...formData };
+      if (!payload.billify_customer_id) payload.billify_customer_id = null;
+
+      if (selectedCustomerId) {
+        const res = await customerService.updateCustomer(selectedCustomerId, payload);
+        if (res.success) {
+          setCustomers(customers.map(c => c.id === selectedCustomerId ? res.data : c));
+          closeModal();
+        }
+      } else {
+        const res = await customerService.createCustomer(payload);
+        if (res.success) {
+          setCustomers([res.data, ...customers]);
+          closeModal();
+        }
+      }
+    } catch (error) {
+      console.error('Failed to save customer:', error);
+      alert('Error saving customer. Please check your input.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const openNewCustomerModal = () => {
+    setFormData({ 
+      name: '', company_name: '', email: '', phone: '', secondary_phone: '', 
+      website: '', source: '', notes: '', type: 'retail', billify_customer_id: '', custom_fields: {}
+    });
+    setSelectedCustomerId(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditCustomerModal = (customer) => {
+    setFormData({ 
+      name: customer.name || '', 
+      company_name: customer.company_name || '', 
+      email: customer.email || '', 
+      phone: customer.phone || '', 
+      secondary_phone: customer.secondary_phone || '', 
+      website: customer.website || '', 
+      source: customer.source || '', 
+      notes: customer.notes || '', 
+      type: customer.type || 'retail', 
+      billify_customer_id: customer.billify_customer_id || '',
+      custom_fields: customer.custom_fields || {}
+    });
+    setSelectedCustomerId(customer.id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setFormData({ 
+      name: '', company_name: '', email: '', phone: '', secondary_phone: '', 
+      website: '', source: '', notes: '', type: 'retail', billify_customer_id: '', custom_fields: {}
+    });
+    setSelectedCustomerId(null);
+  };
+
+  const handleDeleteCustomer = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this customer?')) return;
+    try {
+      const res = await customerService.deleteCustomer(id);
+      if (res.success) {
+        setCustomers(customers.filter(c => c.id !== id));
+      }
+    } catch (error) {
+      console.error('Failed to delete customer:', error);
+      alert('Error deleting customer.');
+    }
+  };
+
+  const handleImportCustomers = async (e) => {
+    e.preventDefault();
+    if (!importFile) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await customerService.importCustomers(importFile);
+      if (res.success) {
+        alert(res.message || 'Import successful!');
+        setIsImportModalOpen(false);
+        setImportFile(null);
+        fetchCustomers();
+      }
+    } catch (error) {
+      console.error('Failed to import customers:', error);
+      alert(error.response?.data?.message || 'Error importing customers.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const rows = filteredCustomers.map(c => [
+        c.name, c.company_name || '', c.email || '', c.phone || '', c.type || 'retail', c.status || 'active'
+      ]);
+      const csvContent = [
+            ["Name", "Company", "Email", "Phone", "Type", "Status"],
+            ...rows
+          ].map(e => e.map(v => `"${(v || '').toString().replace(/"/g, '""')}"`).join(",")).join("\n");
+      
+      const { downloadAndSaveExport } = await import('../../../utils/exportHelper');
+      await downloadAndSaveExport(csvContent, `customers_export_${new Date().toISOString().split('T')[0]}.csv`);
+    } catch (error) {
+      console.error('Failed to export customers:', error);
+      alert('Error exporting customers.');
+    }
+  };
+
+  return (
+    <div className={styles.pageContainer}>
+      <div className={styles.pageHeader}>
+        <div>
+          <h1>Customers</h1>
+        </div>
+        <div className={styles.headerActions}>
+          <Button variant="outline" icon={Download} iconSize={14} onClick={handleExport}>
+            Export
+          </Button>
+          <Button variant="outline" icon={Upload} iconSize={14} onClick={() => setIsImportModalOpen(true)}>
+            Import
+          </Button>
+          <Button variant="primary" onClick={openNewCustomerModal}>
+            New Customer
+          </Button>
+        </div>
+      </div>
+
+      <div className={styles.filtersBar}>
+        <div style={{ flex: 1, minWidth: '300px' }}>
+          <SearchBar 
+            id="customer-search"
+            value={searchTerm} 
+            onChange={setSearchTerm} 
+            placeholder="Search by name, email..." 
+            label=""
+          />
+        </div>
+        
+        <FilterSelect
+          id="filter-type"
+          value={filterType}
+          onChange={setFilterType}
+          options={[
+            { value: 'individual', label: 'Individual' },
+            { value: 'retail', label: 'Retail' },
+            { value: 'company', label: 'Company' },
+            { value: 'wholesale', label: 'Wholesale' },
+            { value: 'supplier', label: 'Supplier' },
+            { value: 'lead_only', label: 'Lead Only' }
+          ]}
+          placeholder="All Types"
+          label=""
+        />
+
+        <FilterSelect
+          id="filter-status"
+          value={filterStatus}
+          onChange={setFilterStatus}
+          options={[
+            { value: 'active', label: 'Active' },
+            { value: 'inactive', label: 'Inactive' },
+            { value: 'archived', label: 'Archived' }
+          ]}
+          placeholder="All Statuses"
+          label=""
+        />
+      </div>
+
+      <div className={styles.tableCard}>
+
+        <div className={styles.tableWrapper}>
+          <table className={styles.customerTable}>
+            <thead>
+              <tr>
+                <th>Name / Company</th>
+                <th>Contact Info</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Added On</th>
+                <th className={styles.actionsCol}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className={styles.emptyState}>Loading customers...</td>
+                </tr>
+              ) : filteredCustomers.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className={styles.emptyState}>
+                    No customers found. Click "New Customer" to add one.
+                  </td>
+                </tr>
+              ) : (
+                filteredCustomers.map(customer => (
+                  <tr key={customer.id}>
+                    <td>
+                      <div className={styles.viewToggleContainer}>
+                        <div className={styles.avatar}>
+                          {customer.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <span className={styles.primaryTextLink}>
+                            {customer.name}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      {customer.phone || '-'}
+                    </td>
+                    <td>
+                      <Badge variant={getTypeVariant(customer.type || 'retail')} style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
+                        {customer.type || 'retail'}
+                      </Badge>
+                    </td>
+                    <td>
+                      <Badge variant={statusVariant(customer.status || 'active')} style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
+                        {customer.status || 'active'}
+                      </Badge>
+                    </td>
+                    <td>
+                      {customer.created_at ? new Date(customer.created_at).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td className={styles.actionsCol}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <Link href={`/crm/customers/${customer.id}`} className={styles.actionBtnPrimary} title="View Details">
+                          <Eye size={14} />
+                        </Link>
+                        <button className={styles.actionBtn} onClick={() => openEditCustomerModal(customer)} title="Edit">
+                          <Edit2 size={14} />
+                        </button>
+                        <button className={styles.actionBtnDelete} onClick={() => handleDeleteCustomer(customer.id)} title="Delete">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+        maxWidth="400px"
+        title={selectedCustomerId ? "Edit Customer" : "Add New Customer"}
+        footer={
+          <>
+            <Button variant="primary" onClick={handleSaveCustomer} isLoading={isSubmitting}>Save Customer</Button>
+          </>
+        }
+      >
+        <form id="create-customer-form" onSubmit={handleSaveCustomer} className={styles.modalForm}>
+          <FormField 
+            label="Customer Type" 
+            type="select"
+            name="type" 
+            value={formData.type} 
+            onChange={handleInputChange}
+            options={[
+              { value: "individual", label: "Individual" },
+              { value: "retail", label: "Retail Customer" },
+              { value: "wholesale", label: "Wholesale Customer" },
+              { value: "company", label: "Company" },
+              { value: "supplier", label: "Supplier" },
+              { value: "lead_only", label: "Lead Only" }
+            ]}
+          />
+
+          <FormField 
+            label="Full Name" 
+            name="name" 
+            value={formData.name} 
+            onChange={handleInputChange} 
+            required 
+            placeholder="e.g. John Doe"
+          />
+
+          {formData.type === 'company' && (
+            <>
+              <FormField 
+                label="Company Name" 
+                name="company_name" 
+                value={formData.company_name} 
+                onChange={handleInputChange} 
+                required
+                placeholder="e.g. Acme Corp"
+              />
+              <FormField 
+                label="Website" 
+                name="website" 
+                value={formData.website} 
+                onChange={handleInputChange} 
+                placeholder="https://example.com"
+              />
+            </>
+          )}
+
+          <div className={styles.formRow}>
+            <FormField label="Email Address" type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="john@example.com" />
+            <FormField label="Primary Phone" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+94 77 123 4567" />
+          </div>
+
+          <div className={styles.formRow}>
+            <FormField label="Secondary Phone" name="secondary_phone" value={formData.secondary_phone} onChange={handleInputChange} placeholder="+94 77 987 6543" />
+            <FormField 
+              label="Source" 
+              type="select"
+              name="source" 
+              value={formData.source} 
+              onChange={handleInputChange}
+              options={[
+                { value: "", label: "-- Select Source --" },
+                { value: "website", label: "Website" },
+                { value: "referral", label: "Referral" },
+                { value: "social_media", label: "Social Media" },
+                { value: "walk_in", label: "Walk-in" },
+                { value: "other", label: "Other" }
+              ]}
+            />
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, marginBottom: '6px' }}>Notes</label>
+            <textarea 
+              name="notes"
+              className={formStyles.input}
+              value={formData.notes}
+              onChange={handleInputChange}
+              placeholder="Any additional information..."
+              style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }}
+            />
+          </div>
+
+          <FormField 
+            label="Link POS Customer (Optional)" 
+            type="select"
+            name="billify_customer_id" 
+            value={formData.billify_customer_id} 
+            onChange={handleInputChange}
+            options={[
+              { value: "", label: "-- Do not link --" },
+              ...posCustomers.map(pc => ({ value: pc.id, label: `${pc.name} ${pc.phone ? `(${pc.phone})` : ''}` }))
+            ]}
+          />
+
+          {customFields.length > 0 && (
+            <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid var(--color-border)' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: 'var(--color-text-primary)' }}>Custom Fields</h4>
+              {customFields.map(field => {
+                const value = formData.custom_fields?.[field.field_name] ?? '';
+                return (
+                  <div key={field.id} style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, marginBottom: '6px' }}>
+                      {field.field_label} {field.is_required && '*'}
+                    </label>
+                    
+                    {field.field_type === 'text' && (
+                      <input 
+                        type="text" 
+                        className={formStyles.input}
+                        value={value} 
+                        required={field.is_required}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
+                        })}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit' }}
+                      />
+                    )}
+
+                    {field.field_type === 'number' && (
+                      <input 
+                        type="number" 
+                        className={formStyles.input}
+                        value={value} 
+                        required={field.is_required}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
+                        })}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit' }}
+                      />
+                    )}
+
+                    {field.field_type === 'date' && (
+                      <input 
+                        type="date" 
+                        className={formStyles.input}
+                        value={value} 
+                        required={field.is_required}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
+                        })}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit' }}
+                      />
+                    )}
+
+                    {field.field_type === 'select' && (
+                      <select 
+                        value={value} 
+                        className={formStyles.input}
+                        required={field.is_required}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
+                        })}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit', backgroundColor: 'var(--color-background)' }}
+                      >
+                        <option value="">-- Select --</option>
+                        {field.options && field.options.map((opt, i) => (
+                          <option key={i} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    )}
+
+                    {field.field_type === 'checkbox' && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={!!value} 
+                          required={field.is_required}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.checked }
+                          })}
+                          style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '14px', cursor: 'pointer' }} onClick={() => {
+                          setFormData({
+                            ...formData,
+                            custom_fields: { ...formData.custom_fields, [field.field_name]: !value }
+                          })
+                        }}>
+                          {field.field_label}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </form>
+      </Modal>
+
+      
+      <Modal 
+        isOpen={isImportModalOpen} 
+        onClose={() => { setIsImportModalOpen(false); setImportFile(null); }} 
+        title="Import Customers"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => { setIsImportModalOpen(false); setImportFile(null); }}>Cancel</Button>
+            <Button variant="primary" onClick={handleImportCustomers} disabled={!importFile} isLoading={isSubmitting}>Import CSV</Button>
+          </>
+        }
+      >
+        <form id="import-customer-form" onSubmit={handleImportCustomers}>
+          <div style={{ marginBottom: '15px', fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: '1.5' }}>
+            <p>Upload a CSV file to bulk import customers. The file must include a header row.</p>
+            <p style={{ marginTop: '10px' }}><strong>Supported Columns:</strong> <code>name</code> (required), <code>email</code>, <code>phone</code>, <code>company_name</code>, <code>type</code> (individual, retail, company), <code>tags</code> (comma separated).</p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '15px' }}>
+            <label style={{ fontSize: '14px', fontWeight: 500 }}>Select CSV File</label>
+            <input 
+              type="file" 
+              className={styles.fileInput}
+              accept=".csv"
+              onChange={(e) => setImportFile(e.target.files[0])}
+              required
+            />
+            {importFile && (
+              <p style={{ marginTop: '5px', fontSize: '13px' }}>Selected: {importFile.name}</p>
+            )}
+          </div>
+        </form>
+      </Modal>
+    </div>
+  );
+}

@@ -1,0 +1,341 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pageHeader h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.filtersBar {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filterGroup:first-child {
+  flex: 1;
+}
+
+.filterLabel {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.searchWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+}
+
+.searchWrapper input {
+  width: 100%;
+  padding: 0.55rem 0.85rem 0.55rem 2.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #ffffff;
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.searchWrapper input:focus {
+  outline: none;
+  border-color: #30bced;
+}
+
+.filterSelect {
+  padding: 0.55rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  font-size: 0.7rem;
+  color: var(--color-text-primary);
+  outline: none;
+  cursor: pointer;
+  min-width: 130px;
+}
+
+.filterSelect:focus {
+  border-color: #8b5cf6;
+  box-shadow: none;
+}
+
+.tableCard {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.customerTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.customerTable th {
+  text-align: left;
+  padding: 0.65rem 1rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--color-bg-hover, #f8fafc);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.customerTable td {
+  padding: 0.58rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  font-size: 0.78rem;
+  color: var(--color-text-primary);
+}
+
+.customerTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.customerTable tbody tr:hover td {
+  background-color: rgba(99, 102, 241, 0.02);
+}
+
+.customerNameCell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.viewToggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary-light, #e8f0fe);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.primaryText {
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.15rem;
+}
+
+.primaryTextLink {
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  display: block;
+}
+
+.primaryTextLink:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.secondaryText {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.contactCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.825rem;
+  color: var(--color-text-secondary);
+}
+
+.typeTag {
+  padding: 0.25rem 0.75rem;
+  background: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sourceTag {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-hover);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.dateCell {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.statusBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.statusBadge.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.statusBadge.inactive {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--color-text-muted);
+}
+
+.actionsCol {
+  width: 120px;
+  text-align: right;
+}
+
+.actionBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.actionBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.actionBtnPrimary {
+  background: transparent;
+  border: none;
+  color: #3b82f6;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionBtnPrimary:hover {
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+}
+
+.actionBtnDelete {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.actionBtnDelete:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem !important;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.modalForm {
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.formRow > div {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filtersBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .formRow {
+    flex-direction: column;
+  }
+}

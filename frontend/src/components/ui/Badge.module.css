@@ -1,0 +1,49 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.new { background: rgba(59, 130, 246, 0.08); color: #0ea5e9; }
+
+.attempted_contact { background: rgba(245, 158, 11, 0.08); color: #f59e0b; }
+
+.contacted { background: rgba(16, 185, 129, 0.08); color: #10b981; }
+
+.qualified { background: rgba(139, 92, 246, 0.08); color: #8b5cf6; }
+
+.disqualified { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
+
+.hot { background: #fee2e2; color: #991b1b; }
+
+.warm { background: #fef3c7; color: #92400e; }
+
+.cold { background: #e0f2fe; color: #075985; }
+
+.default { background: #f1f5f9; color: #64748b; }
+
+.draft { background: rgba(59, 130, 246, 0.08); color: #3b82f6; }
+
+.sent { background: rgba(59, 130, 246, 0.08); color: #3b82f6; }
+
+.viewed { background: rgba(139, 92, 246, 0.08); color: #8b5cf6; }
+
+.accepted { background: rgba(16, 185, 129, 0.08); color: #10b981; }
+
+.rejected { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
+
+.expired { background: rgba(245, 158, 11, 0.08); color: #f59e0b; }
+
+.converted { background: rgba(52, 211, 153, 0.08); color: #059669; }
+
+.active { background: rgba(16, 185, 129, 0.08); color: #059669; border: 1px solid rgba(16,185,129,0.18); }
+
+.inactive { background: rgba(107, 114, 128, 0.08); color: #6b7280; border: 1px solid rgba(107,114,128,0.18); }
+
+.outOfStock { background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239,68,68,0.18); }
