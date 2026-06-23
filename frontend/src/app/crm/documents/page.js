@@ -20,7 +20,7 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadCategory, setUploadCategory] = useState('internal');
   const [uploadVisibility, setUploadVisibility] = useState('internal');
@@ -67,13 +67,13 @@ export default function DocumentsPage() {
   const filteredDocs = documents.filter(d => {
     const matchesSearch = d.file_name?.toLowerCase().includes(searchTerm.toLowerCase()) || d.original_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === 'all' || d.category === activeCategory;
-    
+
     let matchesDate = true;
     if (activeDateFilter !== 'all') {
       const docDate = new Date(d.createdAt || d.created_at || Date.now());
       const now = new Date();
       const diffDays = Math.floor((now - docDate) / (1000 * 60 * 60 * 24));
-      
+
       if (activeDateFilter === 'today') matchesDate = diffDays <= 1;
       else if (activeDateFilter === 'week') matchesDate = diffDays <= 7;
       else if (activeDateFilter === 'month') matchesDate = diffDays <= 30;
@@ -100,28 +100,28 @@ export default function DocumentsPage() {
   const handleDownload = (id) => {
     const url = documentService.getDownloadUrl(id);
     const token = typeof window !== 'undefined' ? getAccessToken() : null;
-    
-    
+
+
     fetch(url, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-    .then(response => {
-      if (!response.ok) throw new Error('Download failed');
-      const filename = response.headers.get('content-disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'document';
-      return response.blob().then(blob => ({ blob, filename }));
-    })
-    .then(({ blob, filename }) => {
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-    })
-    .catch(error => {
-      console.error('Download error:', error);
-      alert('Failed to download document');
-    });
+      .then(response => {
+        if (!response.ok) throw new Error('Download failed');
+        const filename = response.headers.get('content-disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'document';
+        return response.blob().then(blob => ({ blob, filename }));
+      })
+      .then(({ blob, filename }) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      })
+      .catch(error => {
+        console.error('Download error:', error);
+        alert('Failed to download document');
+      });
   };
 
   const handleFileChange = (e) => {
@@ -171,7 +171,7 @@ export default function DocumentsPage() {
         </Button>
       </div>
 
-      
+
       <div className={styles.filtersBar} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem' }}>
         <SearchBar
           value={searchTerm}
@@ -182,9 +182,9 @@ export default function DocumentsPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div className={styles.filterGroup} style={{ flex: 'none' }}>
-            <select 
+            <select
               className={styles.filterSelect}
-              value={activeCategory} 
+              value={activeCategory}
               onChange={(e) => setActiveCategory(e.target.value)}
             >
               {categories.map(cat => (
@@ -192,11 +192,11 @@ export default function DocumentsPage() {
               ))}
             </select>
           </div>
-          
+
           <div className={styles.filterGroup} style={{ flex: 'none' }}>
-            <select 
+            <select
               className={styles.filterSelect}
-              value={activeDateFilter} 
+              value={activeDateFilter}
               onChange={(e) => setActiveDateFilter(e.target.value)}
             >
               <option value="all">Any Date</option>
@@ -273,28 +273,27 @@ export default function DocumentsPage() {
         </div>
       </div>
 
-      
+
       <Modal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         title="Upload Document"
         footer={
           <>
-            <Button variant="secondary" onClick={() => setIsUploadModalOpen(false)}>Cancel</Button>
-            <Button variant="primary" icon={Upload} onClick={handleUploadSubmit} disabled={!selectedFile} isLoading={isUploading}>Upload</Button>
+            <Button variant="primary" onClick={handleUploadSubmit} disabled={!selectedFile} isLoading={isUploading}>Upload</Button>
           </>
         }
       >
         <div className={styles.modalForm}>
           <div className={styles.dropZone}>
-            <Upload size={36} />
+            <Upload size={26} />
             <p>{selectedFile ? selectedFile.name : "Drag & drop files here, or click to browse"}</p>
             <span>Supports PDF, DOCX, PNG, JPG up to 10 MB</span>
             <input type="file" className={styles.fileInput} onChange={handleFileChange} />
           </div>
 
           <div className={styles.formRow}>
-            <FormField 
+            <FormField
               label="Category" type="select" value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)}
               options={[
                 { value: 'internal', label: 'Internal Document' },
@@ -303,7 +302,7 @@ export default function DocumentsPage() {
                 { value: 'ticket', label: 'Ticket Attachment' }
               ]}
             />
-            <FormField 
+            <FormField
               label="Visibility" type="select" value={uploadVisibility} onChange={(e) => setUploadVisibility(e.target.value)}
               options={[
                 { value: 'internal', label: 'Internal Only' },
