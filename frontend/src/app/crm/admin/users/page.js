@@ -774,7 +774,7 @@ export default function TeamMembersPage() {
         isOpen={isViewOpen}
         onClose={() => setIsViewOpen(false)}
         title="View Team Member Details"
-        footer={<Button variant="secondary" onClick={() => setIsViewOpen(false)}>Close</Button>}
+        maxWidth="400px"
       >
         {viewUser && (
           <div className={styles.modalForm}>
