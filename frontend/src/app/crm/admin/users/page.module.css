@@ -495,6 +495,47 @@
   text-overflow: ellipsis;
 }
 
+.roleGridRadio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.roleGridRadio::-webkit-scrollbar {
+  display: none;
+}
+
+.roleRadioOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.roleRadioText {
+  display: flex;
+  flex-direction: column;
+}
+
+.roleRadioName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.roleRadioDesc {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
 .passwordSection {
   background: #f8fafc;
   border: 1px solid var(--color-border);

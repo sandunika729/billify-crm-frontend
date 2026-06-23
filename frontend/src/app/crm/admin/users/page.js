@@ -647,9 +647,9 @@ export default function TeamMembersPage() {
           isOpen={isEditOpen}
           onClose={() => { setIsEditOpen(false); setEditFormError(''); }}
           title="Edit Team Member"
+          maxWidth="400px"
           footer={
             <>
-              <Button variant="secondary" onClick={() => setIsEditOpen(false)}>Cancel</Button>
               <Button variant="primary" onClick={handleEditUser} isLoading={isSubmitting}>
                 Save Changes
               </Button>
@@ -663,11 +663,10 @@ export default function TeamMembersPage() {
 
             <div className={styles.formRow}>
               <FormField
-                label="First Name *"
+                label="First Name"
                 name="first_name"
                 value={editForm.first_name}
                 onChange={e => setEditForm({ ...editForm, first_name: e.target.value })}
-                required
               />
               <FormField
                 label="Last Name"
@@ -687,25 +686,22 @@ export default function TeamMembersPage() {
             />
 
             <div className={styles.roleSelector}>
-              <label className={styles.fieldLabel}>Role *</label>
-              <div className={styles.roleGrid}>
+              <label className={styles.fieldLabel}>Role</label>
+              <div className={styles.roleGridRadio}>
                 {CRM_ROLES.map(r => (
-                  <button
-                    key={r.value}
-                    type="button"
-                    className={`${styles.roleOption} ${editForm.role === r.value ? styles.roleOptionActive : ''}`}
-                    style={editForm.role === r.value ? { borderColor: r.color, background: `${r.color}10` } : {}}
-                    onClick={() => setEditForm({ ...editForm, role: r.value })}
-                  >
-                    <span className={styles.roleOptionDot} style={{ background: r.color }} />
-                    <div className={styles.roleOptionText}>
-                      <span className={styles.roleOptionName}>{r.label}</span>
-                      <span className={styles.roleOptionDesc}>{r.desc}</span>
+                  <label key={r.value} className={styles.roleRadioOption}>
+                    <input
+                      type="radio"
+                      name="edit_role"
+                      value={r.value}
+                      checked={editForm.role === r.value}
+                      onChange={() => setEditForm({ ...editForm, role: r.value })}
+                      style={{ accentColor: '#a855f7', width: '15px', height: '15px', marginTop: '2px', cursor: 'pointer' }}
+                    />
+                    <div className={styles.roleRadioText}>
+                      <span className={styles.roleRadioName}>{r.label}</span>
                     </div>
-                    {editForm.role === r.value && (
-                      <Check size={14} style={{ color: r.color, flexShrink: 0 }} />
-                    )}
-                  </button>
+                  </label>
                 ))}
               </div>
             </div>
