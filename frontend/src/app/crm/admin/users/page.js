@@ -65,14 +65,14 @@ export default function TeamMembersPage() {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  
+
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  
+
   const [addForm, setAddForm] = useState(EMPTY_FORM);
   const [editForm, setEditForm] = useState(null);
   const [resetForm, setResetForm] = useState({ id: '', name: '', new_password: '', confirm_password: '' });
@@ -83,7 +83,7 @@ export default function TeamMembersPage() {
   const [editFormError, setEditFormError] = useState('');
   const [resetFormError, setResetFormError] = useState('');
 
-  
+
   const [openMenuId, setOpenMenuId] = useState(null);
 
   const fetchUsers = useCallback(async () => {
@@ -101,7 +101,7 @@ export default function TeamMembersPage() {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  
+
   useEffect(() => {
     const handler = (e) => {
       if (!e.target.closest(`.${styles.actionsMenu}`)) {
@@ -123,7 +123,7 @@ export default function TeamMembersPage() {
     setTimeout(() => setSuccessMsg(''), 3500);
   };
 
-  
+
   const filteredUsers = users.filter(u => {
     const s = searchTerm.toLowerCase();
     const matchSearch = !s ||
@@ -167,7 +167,7 @@ export default function TeamMembersPage() {
     return null;
   };
 
-  
+
   const handleAddUser = async (e) => {
     e.preventDefault();
     setAddFormError('');
@@ -201,7 +201,7 @@ export default function TeamMembersPage() {
     }
   };
 
-  
+
   const openEditModal = (u) => {
     setEditForm({
       id: u.id, first_name: u.first_name, last_name: u.last_name,
@@ -237,7 +237,7 @@ export default function TeamMembersPage() {
     }
   };
 
-  
+
   const handleToggleStatus = async (u) => {
     setOpenMenuId(null);
     const action = u.is_active ? 'deactivate' : 'reactivate';
@@ -259,7 +259,7 @@ export default function TeamMembersPage() {
     }
   };
 
-  
+
   const openResetModal = (u) => {
     setResetForm({ id: u.id, name: u.name || u.email, new_password: '', confirm_password: '' });
     setResetFormError('');
@@ -289,14 +289,14 @@ export default function TeamMembersPage() {
     }
   };
 
-  
+
   const totalUsers = users.length;
   const activeUsers = users.filter(u => u.is_active).length;
   const inactiveUsers = users.filter(u => !u.is_active).length;
 
   return (
     <div className={styles.pageContainer}>
-      {}
+      { }
       <div className={styles.pageHeader}>
         <div className={styles.headerLeft}>
           <h1 className={styles.pageTitle}>Team Members</h1>
@@ -308,7 +308,7 @@ export default function TeamMembersPage() {
         )}
       </div>
 
-      {}
+      { }
       {successMsg && (
         <div className={styles.toastSuccess}>
           <CheckCircle size={16} /> {successMsg}
@@ -320,7 +320,7 @@ export default function TeamMembersPage() {
         </div>
       )}
 
-      {}
+      { }
       <div className={styles.filtersBar}>
         <div style={{ flex: 1, minWidth: '220px' }}>
           <SearchBar
@@ -341,7 +341,7 @@ export default function TeamMembersPage() {
         </select>
       </div>
 
-      {}
+      { }
       <div className={styles.mainRow}>
         <div className={styles.tableCard}>
           <div className={styles.tableWrapper}>
@@ -374,7 +374,7 @@ export default function TeamMembersPage() {
                     const isCurrentUser = u.id === currentUser?.id;
                     return (
                       <tr key={u.id} className={`${styles.userRow} ${!u.is_active ? styles.inactiveRow : ''}`}>
-                        {}
+                        { }
                         <td>
                           <div className={styles.memberCell}>
                             <div className={styles.memberInfo}>
@@ -386,7 +386,7 @@ export default function TeamMembersPage() {
                           </div>
                         </td>
 
-                        {}
+                        { }
                         <td>
                           <span
                             className={styles.roleBadge}
@@ -400,7 +400,7 @@ export default function TeamMembersPage() {
                           </span>
                         </td>
 
-                        {}
+                        { }
                         <td>
                           <div className={styles.contactCell}>
                             {u.phone ? (
@@ -413,21 +413,21 @@ export default function TeamMembersPage() {
                           </div>
                         </td>
 
-                        {}
+                        { }
                         <td>
                           <Badge variant={u.is_active ? 'active' : 'inactive'} style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
                             {u.is_active ? 'Active' : 'Inactive'}
                           </Badge>
                         </td>
 
-                        {}
+                        { }
                         <td className={styles.dateCell}>
                           {u.created_at
                             ? new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
                             : '—'}
                         </td>
 
-                        {}
+                        { }
                         <td className={styles.actionsCol}>
                           <div className={styles.actionGroup}>
                             <button
@@ -500,12 +500,12 @@ export default function TeamMembersPage() {
                       })}
                     </Pie>
                     <RechartsTooltip content={<CustomTooltip />} />
-                    <Legend 
-                      verticalAlign="bottom" 
-                      height={36} 
-                      iconType="circle" 
+                    <Legend
+                      verticalAlign="bottom"
+                      height={36}
+                      iconType="circle"
                       iconSize={8}
-                      wrapperStyle={{ fontSize: '0.65rem', fontWeight: 500 }} 
+                      wrapperStyle={{ fontSize: '0.65rem', fontWeight: 500 }}
                       formatter={(value) => <span style={{ color: 'var(--color-text-secondary)' }}>{value}</span>}
                     />
                   </PieChart>
@@ -519,7 +519,7 @@ export default function TeamMembersPage() {
 
       </div>
 
-      {}
+      { }
       <Modal
         isOpen={isAddOpen}
         onClose={() => { setIsAddOpen(false); setAddFormError(''); }}
@@ -575,7 +575,7 @@ export default function TeamMembersPage() {
             placeholder="+94 77 123 4567"
           />
 
-          {}
+          { }
           <div className={styles.roleSelector}>
             <label className={styles.fieldLabel}>Role *</label>
             <div className={styles.roleGrid}>
@@ -641,7 +641,7 @@ export default function TeamMembersPage() {
         </form>
       </Modal>
 
-      {}
+      { }
       {editForm && (
         <Modal
           isOpen={isEditOpen}
@@ -713,14 +713,14 @@ export default function TeamMembersPage() {
         </Modal>
       )}
 
-      {}
+      { }
       <Modal
         isOpen={isResetOpen}
         onClose={() => { setIsResetOpen(false); setResetFormError(''); }}
         title="Reset Password"
+        maxWidth="380px"
         footer={
           <>
-            <Button variant="secondary" onClick={() => setIsResetOpen(false)}>Cancel</Button>
             <Button variant="danger" onClick={handleResetPassword} isLoading={isSubmitting}>
               Reset Password
             </Button>
@@ -729,7 +729,7 @@ export default function TeamMembersPage() {
       >
         <form onSubmit={handleResetPassword} className={styles.modalForm}>
           <div className={styles.resetInfo}>
-            <Lock size={20} style={{ color: '#f59e0b' }} />
+            <Lock size={20} style={{ color: '#a855f7' }} />
             <div>
               <div className={styles.resetInfoTitle}>Resetting password for:</div>
               <div className={styles.resetInfoName}>{resetForm.name}</div>
@@ -742,13 +742,12 @@ export default function TeamMembersPage() {
 
           <div className={styles.passwordField}>
             <FormField
-              label="New Password *"
+              label="New Password"
               name="new_password"
               type={showResetPassword ? 'text' : 'password'}
               value={resetForm.new_password}
               onChange={e => setResetForm({ ...resetForm, new_password: e.target.value })}
               placeholder="Min. 6 characters"
-              required
             />
             <button
               type="button"
@@ -760,22 +759,17 @@ export default function TeamMembersPage() {
           </div>
 
           <FormField
-            label="Confirm New Password *"
+            label="Confirm New Password"
             name="confirm_password"
             type={showResetPassword ? 'text' : 'password'}
             value={resetForm.confirm_password}
             onChange={e => setResetForm({ ...resetForm, confirm_password: e.target.value })}
             placeholder="Re-enter new password"
-            required
           />
-
-          <p className={styles.passwordHint} style={{ marginTop: '0.5rem' }}>
-            The user will need to use this new password on their next login.
-          </p>
         </form>
       </Modal>
 
-      {}
+      { }
       <Modal
         isOpen={isViewOpen}
         onClose={() => setIsViewOpen(false)}
