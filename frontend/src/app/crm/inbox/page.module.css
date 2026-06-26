@@ -313,9 +313,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
+  padding: 3rem;
   color: var(--color-text-muted);
   text-align: center;
+  font-size: 0.8rem;
 }
 
 .emptyState svg {

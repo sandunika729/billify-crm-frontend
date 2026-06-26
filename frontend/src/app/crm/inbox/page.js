@@ -337,7 +337,11 @@ export default function InboxPage() {
                           </div>
                         </div>
 
-                        <h4 className={styles.itemTitle}>{item.title}</h4>
+                        <h4 className={styles.itemTitle}>
+                          {item.title.startsWith('SLA Breach')
+                            ? item.title.replace('SLA Breach: Ticket undefined', 'Action Required: Ticket Overdue').replace('SLA Breach:', 'Action Required:')
+                            : item.title}
+                        </h4>
                         {item.channel === 'email' && item.attachment_url ? (
                           <p className={styles.itemSnippet}>Click attachment to view full email details.</p>
                         ) : (
