@@ -37,6 +37,11 @@ const activityService = {
     return response.data;
   },
 
+  deleteInteraction: async (id) => {
+    const response = await api.delete(`/crm/activities/interactions/${id}`);
+    return response.data;
+  },
+
   sendEmail: async (data) => {
     const response = await api.post('/crm/activities/send-email', data);
     return response.data;

@@ -196,7 +196,7 @@ export default function InboxPage() {
     if (!window.confirm('Are you sure you want to delete this message?')) return;
     
     try {
-      const res = await activityService.deleteActivity(id);
+      const res = await activityService.deleteInteraction(id);
       if (res.success) {
         setFeed(prev => prev.filter(item => item.id !== id));
         fetchStats();
