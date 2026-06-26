@@ -198,7 +198,7 @@ export default function InboxPage() {
     try {
       const res = await activityService.deleteInteraction(id);
       if (res.success) {
-        setFeed(prev => prev.filter(item => item.id !== id));
+        setFeed(prev => prev.filter(item => item.id !== id && item.originalId !== id));
         fetchStats();
       }
     } catch (error) {
@@ -331,7 +331,7 @@ export default function InboxPage() {
                             <span>{new Date(item.timestamp).toLocaleString()}</span>
                             <button 
                               className={styles.deleteLogBtn} 
-                              onClick={(e) => handleDeleteLog(item.id, e)}
+                              onClick={(e) => handleDeleteLog(item.originalId || item.id.replace('interaction_', '').replace('notification_', ''), e)}
                               title="Delete Message"
                             >
                               <Trash2 size={14} />
