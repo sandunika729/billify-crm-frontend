@@ -8,9 +8,9 @@ import Modal from '../../../components/modals/Modal';
 import Button from '../../../components/ui/Button';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
-import { 
-  Inbox, Mail, MessageSquare, PhoneCall, Bell, Search, 
-  User, Building2, FileText, CheckCircle2, Plus, Upload, Paperclip, X as XIcon, Download, Clock 
+import {
+  Inbox, Mail, MessageSquare, PhoneCall, Bell, Search,
+  User, Building2, FileText, CheckCircle2, Plus, Upload, Paperclip, X as XIcon, Download, Clock
 } from 'lucide-react';
 import styles from './page.module.css';
 
@@ -19,14 +19,14 @@ export default function InboxPage() {
   const [stats, setStats] = useState({ total: 0, email: 0, whatsapp: 0, call: 0, notifications: 0 });
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  
+
   const [activeChannel, setActiveChannel] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDate, setFilterDate] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  
+
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customers, setCustomers] = useState([]);
@@ -37,14 +37,14 @@ export default function InboxPage() {
     summary: ''
   });
 
-  
+
   const [uploadedFile, setUploadedFile] = useState(null);
   const [uploadResult, setUploadResult] = useState(null);
   const [isParsing, setIsParsing] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = React.useRef(null);
 
-  
+
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -173,7 +173,7 @@ export default function InboxPage() {
         page: currentPage,
         limit: 20
       });
-      
+
       if (res.success) {
         if (reset) {
           setFeed(res.data);
@@ -232,18 +232,18 @@ export default function InboxPage() {
 
       <div className={styles.filtersBar}>
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <SearchBar 
+          <SearchBar
             id="inbox-search"
-            value={searchQuery} 
-            onChange={setSearchQuery} 
-            placeholder="Search messages..." 
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search messages..."
             label=""
           />
         </div>
-        
+
         <div className={styles.dateFilterContainer}>
-          <input 
-            type="date" 
+          <input
+            type="date"
             className={styles.dateInput}
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
@@ -252,13 +252,13 @@ export default function InboxPage() {
       </div>
 
       <div className={styles.layout}>
-        
+
         <div className={styles.sidebar}>
           {channels.map(ch => {
             const Icon = ch.icon;
             const count = stats[ch.countKey] || 0;
             return (
-              <button 
+              <button
                 key={ch.id}
                 className={`${styles.navItem} ${activeChannel === ch.id ? styles.navItemActive : ''}`}
                 onClick={() => setActiveChannel(ch.id)}
@@ -273,7 +273,7 @@ export default function InboxPage() {
           })}
         </div>
 
-        
+
         <div className={styles.feedContainer}>
           <div className={styles.feedScroll}>
             {loading ? (
@@ -288,7 +288,7 @@ export default function InboxPage() {
                 {feed.map(item => {
                   const ChannelIcon = getChannelConfig(item.channel).icon;
                   const channelClass = getChannelConfig(item.channel).className;
-                  
+
                   return (
                     <div key={item.id} className={styles.feedItem}>
                       <div className={styles.avatarWrapper}>
@@ -297,14 +297,14 @@ export default function InboxPage() {
                           <ChannelIcon />
                         </div>
                       </div>
-                      
+
                       <div className={styles.itemContent}>
                         <div className={styles.itemHeader}>
                           <div className={styles.itemName}>
-                            {item.type === 'notification' 
+                            {item.type === 'notification'
                               ? 'System Notification'
                               : item.customer?.name || 'Unknown Contact'}
-                            
+
                             {item.customer?.company_name && (
                               <span style={{ fontWeight: 400, color: 'var(--color-text-secondary)', marginLeft: '6px' }}>
                                 ({item.customer.company_name})
@@ -315,11 +315,11 @@ export default function InboxPage() {
                             {new Date(item.timestamp).toLocaleString()}
                           </div>
                         </div>
-                        
+
                         <h4 className={styles.itemTitle}>{item.title}</h4>
                         <p className={styles.itemSnippet}>{item.body || item.title}</p>
                         {item.attachment_url && (
-                          <button 
+                          <button
                             className={styles.attachmentBadge}
                             onClick={e => { e.stopPropagation(); handlePreviewEmail(item); }}
                           >
@@ -331,10 +331,10 @@ export default function InboxPage() {
                     </div>
                   );
                 })}
-                
+
                 {hasMore && feed.length > 0 && (
-                  <button 
-                    className={styles.loadMoreBtn} 
+                  <button
+                    className={styles.loadMoreBtn}
                     onClick={() => fetchFeed()}
                     disabled={loadingMore}
                   >
@@ -347,7 +347,7 @@ export default function InboxPage() {
         </div>
       </div>
 
-      {}
+      { }
       <Modal
         isOpen={isLogModalOpen}
         onClose={() => setIsLogModalOpen(false)}
@@ -395,7 +395,7 @@ export default function InboxPage() {
           <div>
             <label style={{ display: 'block', fontWeight: 500, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Attach Email File (.eml / .msg)</label>
             {!uploadedFile ? (
-              <div 
+              <div
                 className={`${styles.uploadZone} ${isDragOver ? styles.uploadZoneDragOver : ''}`}
                 onDragOver={e => { e.preventDefault(); setIsDragOver(true); }}
                 onDragLeave={() => setIsDragOver(false)}
@@ -407,10 +407,10 @@ export default function InboxPage() {
                   <p>Drag & drop an email file here, or click to browse</p>
                   <span>Supports .eml and .msg files</span>
                 </div>
-                <input 
+                <input
                   ref={fileInputRef}
-                  type="file" 
-                  accept=".eml,.msg" 
+                  type="file"
+                  accept=".eml,.msg"
                   style={{ display: 'none' }}
                   onChange={e => handleEmailFileSelect(e.target.files?.[0])}
                 />
@@ -440,7 +440,7 @@ export default function InboxPage() {
         </form>
       </Modal>
 
-      {}
+      { }
       <Modal
         isOpen={isPreviewOpen}
         onClose={() => { setIsPreviewOpen(false); setPreviewData(null); }}

@@ -1,7 +1,7 @@
 import api from './api';
 
 const activityService = {
-  
+
   getActivities: async (params = {}) => {
     const response = await api.get('/crm/activities', { params });
     return response.data;

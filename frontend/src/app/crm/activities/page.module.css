@@ -296,35 +296,51 @@
   gap: 1rem;
 }
 
-.typeGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.typeRadioGrid {
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
 }
 
-.typeBtn {
+.typeRadioList {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.6rem 0.75rem;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-height: 200px;
+  overflow-y: auto;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: #fff;
+  padding: 0.75rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.typeRadioList::-webkit-scrollbar {
+  display: none;
+}
+
+.typeRadioOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.typeRadioText {
+  display: flex;
+  align-items: center;
+}
+
+.typeRadioName {
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all 0.15s ease;
+  color: var(--color-text-primary);
 }
 
-.typeBtn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.typeBtnActive {
+.fieldLabel {
+  font-size: 0.83rem;
   font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 @media (max-width: 768px) {

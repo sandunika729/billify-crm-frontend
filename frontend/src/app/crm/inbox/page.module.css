@@ -1,7 +1,7 @@
 .pageContainer {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 4rem - 2rem); 
+  height: calc(100vh - 4rem - 2rem);
   overflow: hidden;
 }
 
@@ -145,13 +145,13 @@
   background: white;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .feedItem:hover {
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transform: translateY(-1px);
   border-color: var(--color-primary-light);
 }
@@ -180,7 +180,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .channelIconBadge svg {
@@ -188,11 +188,25 @@
   height: 12px;
 }
 
-.channelEmail { color: #3b82f6; }
-.channelWhatsapp { color: #22c55e; }
-.channelCall { color: #a855f7; }
-.channelNotification { color: #f59e0b; }
-.channelNote { color: #64748b; }
+.channelEmail {
+  color: #3b82f6;
+}
+
+.channelWhatsapp {
+  color: #22c55e;
+}
+
+.channelCall {
+  color: #a855f7;
+}
+
+.channelNotification {
+  color: #f59e0b;
+}
+
+.channelNote {
+  color: #64748b;
+}
 
 .itemContent {
   flex: 1;
@@ -378,7 +392,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spinner {
@@ -541,16 +557,60 @@
 }
 
 @media (max-width: 768px) {
-  .pageHeader { flex-direction: column; gap: 1rem; align-items: flex-start !important; }
-  .header { flex-direction: column; gap: 1rem; align-items: flex-start !important; }
-  .filtersBar { flex-direction: column; align-items: stretch !important; gap: 1rem; }
-  .filtersLeft { flex-direction: column; align-items: stretch !important; }
-  .formRow { flex-direction: column !important; }
-  .detailGrid { grid-template-columns: 1fr !important; }
-  .mainGrid { grid-template-columns: 1fr !important; }
-  .statCards { grid-template-columns: 1fr !important; }
-  .chartsGrid { grid-template-columns: 1fr !important; }
-  .kpiGrid { grid-template-columns: 1fr !important; }
-  .headerActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
-  .tableWrapper { overflow-x: auto; }
+  .pageHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start !important;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start !important;
+  }
+
+  .filtersBar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem;
+  }
+
+  .filtersLeft {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .formRow {
+    flex-direction: column !important;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .statCards {
+    grid-template-columns: 1fr !important;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .kpiGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .tableWrapper {
+    overflow-x: auto;
+  }
 }

@@ -46,7 +46,8 @@ export default function ActivitiesPage() {
     activity_type: 'call',
     title: '',
     description: '',
-    due_at: '',
+    due_date: '',
+    due_time: '',
     related_type: 'deal',
     related_id: '',
   });
@@ -70,18 +71,26 @@ export default function ActivitiesPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.title || !formData.due_at) return alert('Title and due date are required.');
+    if (!formData.title || !formData.due_date) return alert('Title and due date are required.');
     setIsSubmitting(true);
+    
+    const formDataToSave = { ...formData };
+    if (formData.due_date) {
+      formDataToSave.due_at = formData.due_time ? `${formData.due_date}T${formData.due_time}` : `${formData.due_date}T00:00`;
+    }
+    delete formDataToSave.due_date;
+    delete formDataToSave.due_time;
+
     try {
       if (editingId) {
-        const res = await activityService.updateActivity(editingId, formData);
+        const res = await activityService.updateActivity(editingId, formDataToSave);
         if (res.success) {
-          setActivities(prev => prev.map(a => a.id === editingId ? { ...a, ...formData } : a));
+          setActivities(prev => prev.map(a => a.id === editingId ? { ...a, ...formDataToSave } : a));
           setIsModalOpen(false);
           resetForm();
         }
       } else {
-        const res = await activityService.createActivity(formData);
+        const res = await activityService.createActivity(formDataToSave);
         if (res.success) {
           setActivities(prev => [res.data, ...prev]);
           setIsModalOpen(false);
@@ -121,16 +130,25 @@ export default function ActivitiesPage() {
 
   const resetForm = () => {
     setEditingId(null);
-    setFormData({ activity_type: 'call', title: '', description: '', due_at: '', related_type: 'deal', related_id: '' });
+    setFormData({ activity_type: 'call', title: '', description: '', due_date: '', due_time: '', related_type: 'deal', related_id: '' });
   };
 
   const handleEdit = (activity) => {
     setEditingId(activity.id);
+    const dateObj = activity.due_at ? new Date(activity.due_at) : null;
+    let due_date = '';
+    let due_time = '';
+    if (dateObj) {
+      const isoParts = dateObj.toISOString().split('T');
+      due_date = isoParts[0];
+      due_time = isoParts[1].slice(0, 5);
+    }
     setFormData({
       activity_type: activity.activity_type,
       title: activity.title,
       description: activity.description || '',
-      due_at: activity.due_at ? new Date(activity.due_at).toISOString().slice(0, 16) : '',
+      due_date,
+      due_time,
       related_type: activity.related_type || '',
       related_id: activity.related_id || ''
     });
@@ -317,24 +335,6 @@ export default function ActivitiesPage() {
         }
       >
         <div className={styles.modalForm}>
-          <div className={styles.typeGrid}>
-            {ACTIVITY_TYPES.map(t => {
-              const Icon = t.icon;
-              return (
-                <button
-                  key={t.value}
-                  type="button"
-                  className={`${styles.typeBtn} ${formData.activity_type === t.value ? styles.typeBtnActive : ''}`}
-                  style={formData.activity_type === t.value ? { borderColor: t.color, background: `${t.color}12`, color: t.color } : {}}
-                  onClick={() => setFormData(prev => ({ ...prev, activity_type: t.value }))}
-                >
-                  <Icon size={16} />
-                  <span>{t.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
           <FormField
             label="Title"
             name="title"
@@ -352,14 +352,23 @@ export default function ActivitiesPage() {
             rows={3}
             placeholder="Add any notes here..."
           />
-          <FormField
-            label="Due Date & Time"
-            type="datetime-local"
-            name="due_at"
-            value={formData.due_at}
-            onChange={e => setFormData(prev => ({ ...prev, due_at: e.target.value }))}
-            required
-          />
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <FormField
+              label="Due Date"
+              type="date"
+              name="due_date"
+              value={formData.due_date}
+              onChange={e => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+              required
+            />
+            <FormField
+              label="Time"
+              type="time"
+              name="due_time"
+              value={formData.due_time}
+              onChange={e => setFormData(prev => ({ ...prev, due_time: e.target.value }))}
+            />
+          </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <FormField
               label="Related To"
@@ -381,6 +390,31 @@ export default function ActivitiesPage() {
               onChange={e => setFormData(prev => ({ ...prev, related_id: e.target.value }))}
               placeholder="Paste the ID (optional)"
             />
+          </div>
+          
+          <div className={styles.typeRadioGrid}>
+            <label className={styles.fieldLabel}>Activity Type</label>
+            <div className={styles.typeRadioList}>
+              {ACTIVITY_TYPES.map(t => {
+                const Icon = t.icon;
+                return (
+                  <label key={t.value} className={styles.typeRadioOption}>
+                    <input
+                      type="radio"
+                      name="activity_type"
+                      value={t.value}
+                      checked={formData.activity_type === t.value}
+                      onChange={() => setFormData(prev => ({ ...prev, activity_type: t.value }))}
+                      style={{ accentColor: '#a855f7', width: '15px', height: '15px', marginTop: '2px', cursor: 'pointer' }}
+                    />
+                    <div className={styles.typeRadioText}>
+                      <Icon size={14} style={{ color: t.color, marginRight: '0.4rem' }} />
+                      <span className={styles.typeRadioName}>{t.label}</span>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
           </div>
         </div>
       </Modal>
