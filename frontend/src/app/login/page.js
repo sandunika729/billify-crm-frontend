@@ -87,10 +87,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className={styles.footerLinks}>
-          <a href="#">Forgot password?</a>
-          <a href="#">Contact Support</a>
-        </div>
+
       </div>
     </div>
   );
