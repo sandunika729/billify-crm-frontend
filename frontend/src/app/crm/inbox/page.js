@@ -304,7 +304,7 @@ export default function InboxPage() {
                   const channelClass = getChannelConfig(item.channel).className;
 
                   return (
-                    <div key={item.id} className={styles.feedItem}>
+                    <div key={item.id} className={styles.feedItem} title={item.body || item.title}>
                       <div className={styles.avatarWrapper}>
                         {item.type === 'notification' ? <Bell size={24} /> : <User size={24} />}
                         <div className={`${styles.channelIconBadge} ${channelClass}`}>
@@ -342,10 +342,8 @@ export default function InboxPage() {
                             ? item.title.replace('SLA Breach: Ticket undefined', 'Action Required: Ticket Overdue').replace('SLA Breach:', 'Action Required:')
                             : item.title}
                         </h4>
-                        {item.channel === 'email' && item.attachment_url ? (
+                        {item.channel === 'email' && item.attachment_url && (
                           <p className={styles.itemSnippet}>Click attachment to view full email details.</p>
-                        ) : (
-                          <p className={styles.itemSnippet}>{item.body || item.title}</p>
                         )}
                         {item.attachment_url && (
                           <button
