@@ -280,7 +280,6 @@ export default function InboxPage() {
                 onClick={() => setActiveChannel(ch.id)}
               >
                 <div className={styles.navItemLeft}>
-                  <Icon size={18} />
                   <span>{ch.label}</span>
                 </div>
                 {count > 0 && <span className={styles.badge}>{count > 99 ? '99+' : count}</span>}
@@ -296,8 +295,7 @@ export default function InboxPage() {
               <div className={styles.emptyState}>Loading messages...</div>
             ) : feed.length === 0 ? (
               <div className={styles.emptyState}>
-                <Inbox size={48} />
-                <p>No messages found.</p>
+                No messages found. Click "Log Communication" to add one.
               </div>
             ) : (
               <>
@@ -340,7 +338,11 @@ export default function InboxPage() {
                         </div>
 
                         <h4 className={styles.itemTitle}>{item.title}</h4>
-                        <p className={styles.itemSnippet}>{item.body || item.title}</p>
+                        {item.channel === 'email' && item.attachment_url ? (
+                          <p className={styles.itemSnippet}>Click attachment to view full email details.</p>
+                        ) : (
+                          <p className={styles.itemSnippet}>{item.body || item.title}</p>
+                        )}
                         {item.attachment_url && (
                           <button
                             className={styles.attachmentBadge}
