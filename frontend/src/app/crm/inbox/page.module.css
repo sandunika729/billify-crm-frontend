@@ -234,6 +234,27 @@
   color: var(--color-text-muted);
   white-space: nowrap;
   margin-left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deleteLogBtn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.deleteLogBtn:hover {
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .itemTitle {

@@ -10,7 +10,7 @@ import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
 import {
   Inbox, Mail, MessageSquare, PhoneCall, Bell, Search,
-  User, Building2, FileText, CheckCircle2, Plus, Upload, Paperclip, X as XIcon, Download, Clock
+  User, Building2, FileText, CheckCircle2, Plus, Upload, Paperclip, X as XIcon, Download, Clock, Trash2
 } from 'lucide-react';
 import styles from './page.module.css';
 
@@ -191,6 +191,22 @@ export default function InboxPage() {
     }
   };
 
+  const handleDeleteLog = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this message?')) return;
+    
+    try {
+      const res = await activityService.deleteActivity(id);
+      if (res.success) {
+        setFeed(prev => prev.filter(item => item.id !== id));
+        fetchStats();
+      }
+    } catch (error) {
+      console.error('Failed to delete message', error);
+      alert('Error deleting message.');
+    }
+  };
+
   const getChannelConfig = (channel) => {
     switch (channel) {
       case 'email': return { icon: Mail, className: styles.channelEmail };
@@ -312,7 +328,14 @@ export default function InboxPage() {
                             )}
                           </div>
                           <div className={styles.itemTime}>
-                            {new Date(item.timestamp).toLocaleString()}
+                            <span>{new Date(item.timestamp).toLocaleString()}</span>
+                            <button 
+                              className={styles.deleteLogBtn} 
+                              onClick={(e) => handleDeleteLog(item.id, e)}
+                              title="Delete Message"
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           </div>
                         </div>
 
