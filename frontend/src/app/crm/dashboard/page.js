@@ -61,7 +61,7 @@ export default function CRMDashboard() {
   const formatDealStageData = (data) => {
     if (!data) return [];
     return data.map(d => ({
-      name: `Stage ${d.stage_id}`,
+      name: d.stage_name || d.stage_id,
       count: parseInt(d.count, 10),
       value: parseFloat(d.totalValue) || 0
     }));
