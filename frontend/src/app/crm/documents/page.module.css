@@ -176,3 +176,66 @@
   .headerActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
   .tableWrapper { overflow-x: auto; }
 }
+
+/* ── Group By control ── */
+.groupByWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.groupByIcon {
+  position: absolute;
+  left: 0.55rem;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Group header row ── */
+.groupHeaderRow {
+  cursor: pointer;
+  user-select: none;
+}
+
+.groupHeaderRow:hover .groupHeaderCell {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.groupHeaderCell {
+  padding: 0.5rem 1rem !important;
+  background: var(--color-bg-hover, #f8fafc);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.groupChevron {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  color: var(--color-text-muted);
+  vertical-align: middle;
+  transition: transform 0.15s ease;
+}
+
+.groupLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.groupCount {
+  display: inline-block;
+  margin-left: 0.6rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  vertical-align: middle;
+}
+

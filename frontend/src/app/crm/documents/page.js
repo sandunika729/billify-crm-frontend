@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import styles from './page.module.css';
-import { Search, Plus, Upload, Folder, FileText, Image, File, Download, Trash2, Eye, X, Calendar, User } from 'lucide-react';
+import { Search, Plus, Upload, Folder, FileText, Image, File, Download, Trash2, Eye, X, Calendar, User, ChevronDown, ChevronRight, Layers } from 'lucide-react';
 import documentService from '../../../services/documentService';
 import { getAccessToken } from '../../../services/api';
 import Button from '../../../components/ui/Button';
@@ -16,6 +16,8 @@ export default function DocumentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeDateFilter, setActiveDateFilter] = useState('all');
+  const [groupBy, setGroupBy] = useState('none');
+  const [collapsedGroups, setCollapsedGroups] = useState({});
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,6 +66,35 @@ export default function DocumentsPage() {
     return (bytes / 1048576).toFixed(1) + ' MB';
   };
 
+  const toggleGroup = (key) => {
+    setCollapsedGroups(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const getGroupKey = (doc) => {
+    if (groupBy === 'category') {
+      const labels = { customer: 'Customer Files', quote: 'Quote Attachments', ticket: 'Ticket Files', internal: 'Internal Documents' };
+      return labels[doc.category] || doc.category || 'Uncategorised';
+    }
+    if (groupBy === 'type') {
+      const m = doc.mime_type || doc.mimetype || '';
+      if (m.includes('pdf')) return 'PDF Documents';
+      if (m.includes('image')) return 'Images';
+      if (m.includes('word') || m.includes('document')) return 'Word Documents';
+      if (m.includes('sheet') || m.includes('excel')) return 'Spreadsheets';
+      return 'Other Files';
+    }
+    if (groupBy === 'uploader') {
+      return doc.uploader
+        ? `${doc.uploader.first_name || ''} ${doc.uploader.last_name || ''}`.trim() || 'Unknown'
+        : 'Unknown';
+    }
+    if (groupBy === 'date') {
+      const d = new Date(doc.createdAt || doc.created_at);
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    }
+    return null;
+  };
+
   const filteredDocs = documents.filter(d => {
     const matchesSearch = d.file_name?.toLowerCase().includes(searchTerm.toLowerCase()) || d.original_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === 'all' || d.category === activeCategory;
@@ -82,6 +113,17 @@ export default function DocumentsPage() {
 
     return matchesSearch && matchesCategory && matchesDate;
   });
+
+  const groupedDocs = (() => {
+    if (groupBy === 'none') return null;
+    const map = {};
+    filteredDocs.forEach(doc => {
+      const key = getGroupKey(doc);
+      if (!map[key]) map[key] = [];
+      map[key].push(doc);
+    });
+    return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
+  })();
 
   const handleDeleteDoc = async (id) => {
     if (confirm('Are you sure you want to delete this document?')) {
@@ -180,7 +222,7 @@ export default function DocumentsPage() {
           label=""
         />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div className={styles.filterGroup} style={{ flex: 'none' }}>
             <select
               className={styles.filterSelect}
@@ -206,6 +248,25 @@ export default function DocumentsPage() {
               <option value="year">Past Year</option>
             </select>
           </div>
+
+          {/* ── Group By ── */}
+          <div className={styles.filterGroup} style={{ flex: 'none' }}>
+            <div className={styles.groupByWrapper}>
+              <Layers size={13} className={styles.groupByIcon} />
+              <select
+                className={styles.filterSelect}
+                value={groupBy}
+                onChange={(e) => { setGroupBy(e.target.value); setCollapsedGroups({}); }}
+                style={{ paddingLeft: '1.6rem' }}
+              >
+                <option value="none">No Grouping</option>
+                <option value="category">Group by Category</option>
+                <option value="type">Group by File Type</option>
+                <option value="uploader">Group by Uploader</option>
+                <option value="date">Group by Month</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -224,16 +285,64 @@ export default function DocumentsPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan="6" className={styles.emptyState}>Loading documents...</td>
-                </tr>
+                <tr><td colSpan="6" className={styles.emptyState}>Loading documents...</td></tr>
               ) : filteredDocs.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className={styles.emptyState}>
-                    No documents found. Click "Upload Document" to add files.
-                  </td>
-                </tr>
+                <tr><td colSpan="6" className={styles.emptyState}>No documents found. Click "Upload Document" to add files.</td></tr>
+              ) : groupedDocs ? (
+                // ── Grouped rendering ──
+                groupedDocs.map(([groupLabel, docs]) => (
+                  <React.Fragment key={groupLabel}>
+                    {/* Group header row */}
+                    <tr
+                      className={styles.groupHeaderRow}
+                      onClick={() => toggleGroup(groupLabel)}
+                    >
+                      <td colSpan="6" className={styles.groupHeaderCell}>
+                        <span className={styles.groupChevron}>
+                          {collapsedGroups[groupLabel]
+                            ? <ChevronRight size={14} />
+                            : <ChevronDown size={14} />}
+                        </span>
+                        <span className={styles.groupLabel}>{groupLabel}</span>
+                        <span className={styles.groupCount}>{docs.length} file{docs.length !== 1 ? 's' : ''}</span>
+                      </td>
+                    </tr>
+                    {/* Group rows */}
+                    {!collapsedGroups[groupLabel] && docs.map(doc => (
+                      <tr key={doc.id}>
+                        <td>
+                          <div className={styles.fileNameCell}>
+                            <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={styles.linkedBadge}>
+                            {doc.related_type === 'general' ? 'General' : doc.linked_name || doc.related_id || 'Internal'}
+                          </span>
+                        </td>
+                        <td><span className={styles.sizeText}>{formatFileSize(doc.size)}</span></td>
+                        <td>
+                          <div className={styles.uploaderCell}>
+                            <span>{doc.uploader ? `${doc.uploader.first_name || ''} ${doc.uploader.last_name || ''}`.trim() || 'Unknown' : doc.uploaded_by}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className={styles.dateCell}>
+                            <span>{new Date(doc.createdAt || doc.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </td>
+                        <td className={styles.actionsCol}>
+                          <div className={styles.rowActions}>
+                            <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id)}><Download size={14} /></button>
+                            <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={14} /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))
               ) : (
+                // ── Flat rendering (no grouping) ──
                 filteredDocs.map(doc => (
                   <tr key={doc.id}>
                     <td>
@@ -246,9 +355,7 @@ export default function DocumentsPage() {
                         {doc.related_type === 'general' ? 'General' : doc.linked_name || doc.related_id || 'Internal'}
                       </span>
                     </td>
-                    <td>
-                      <span className={styles.sizeText}>{formatFileSize(doc.size)}</span>
-                    </td>
+                    <td><span className={styles.sizeText}>{formatFileSize(doc.size)}</span></td>
                     <td>
                       <div className={styles.uploaderCell}>
                         <span>{doc.uploader ? `${doc.uploader.first_name || ''} ${doc.uploader.last_name || ''}`.trim() || 'Unknown' : doc.uploaded_by}</span>
