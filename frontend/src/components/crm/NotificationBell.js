@@ -79,13 +79,24 @@ export default function NotificationBell() {
     }
   };
 
+  // Map backend link paths → actual frontend routes
+  // (backend may send /crm/tickets, /crm/contacts, etc. which don't exist here)
+  const resolveLink = (link) => {
+    if (!link) return null;
+    return link
+      .replace(/^\/crm\/tickets/, '/crm/support')
+      .replace(/^\/crm\/contacts/, '/crm/customers')
+      .replace(/^\/crm\/pipelines/, '/crm/deals');
+  };
+
   const handleNotificationClick = (notification) => {
     if (!notification.read_at) {
       markAsRead({ stopPropagation: () => {} }, notification.id);
     }
     setIsOpen(false);
-    if (notification.link) {
-      router.push(notification.link);
+    const link = resolveLink(notification.link);
+    if (link) {
+      router.push(link);
     }
   };
 
