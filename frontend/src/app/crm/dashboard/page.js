@@ -18,6 +18,7 @@ export default function CRMDashboard() {
   const [charts, setCharts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState('month');
+  const [stageMap, setStageMap] = useState({});
 
   useEffect(() => {
     fetchDashboardData();
@@ -26,11 +27,20 @@ export default function CRMDashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const summaryRes = await api.get('/crm/dashboard/summary');
-      const chartsRes = await api.get('/crm/dashboard/charts');
-      
+      const [summaryRes, chartsRes, stagesRes] = await Promise.all([
+        api.get('/crm/dashboard/summary'),
+        api.get('/crm/dashboard/charts'),
+        api.get('/crm/deals/stages'),
+      ]);
+
       setSummary(summaryRes.data.data);
       setCharts(chartsRes.data.data);
+
+      // Build id → name map so the chart shows stage names instead of UUIDs
+      const stages = stagesRes.data.data || stagesRes.data || [];
+      const map = {};
+      stages.forEach(s => { map[s.id] = s.name; });
+      setStageMap(map);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -61,7 +71,7 @@ export default function CRMDashboard() {
   const formatDealStageData = (data) => {
     if (!data) return [];
     return data.map(d => ({
-      name: d.stage_name || d.stage_id,
+      name: d.stage_name || stageMap[d.stage_id] || d.stage_id,
       count: parseInt(d.count, 10),
       value: parseFloat(d.totalValue) || 0
     }));
