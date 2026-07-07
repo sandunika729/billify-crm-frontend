@@ -2,16 +2,28 @@ import api from './api';
 
 const activityService = {
 
+  /**
+   * Fetch all activities.
+   * Pass { visibility: 'public' | 'private' } in params to filter by visibility.
+   */
   getActivities: async (params = {}) => {
     const response = await api.get('/crm/activities', { params });
     return response.data;
   },
 
+  /**
+   * Create a new activity.
+   * Payload should include `visibility: 'public' | 'private'` (defaults to 'public' on backend).
+   */
   createActivity: async (data) => {
     const response = await api.post('/crm/activities', data);
     return response.data;
   },
 
+  /**
+   * Update an activity.
+   * Payload can include `visibility: 'public' | 'private'` to change visibility.
+   */
   updateActivity: async (id, data) => {
     const response = await api.put(`/crm/activities/${id}`, data);
     return response.data;
@@ -19,6 +31,17 @@ const activityService = {
 
   deleteActivity: async (id) => {
     const response = await api.delete(`/crm/activities/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Fetch only task-type activities (todos), respecting visibility rules.
+   * @param {object} params - Optional: { visibility: 'public'|'private' }
+   */
+  getTodos: async (params = {}) => {
+    const response = await api.get('/crm/activities', {
+      params: { ...params, activity_type: 'task' },
+    });
     return response.data;
   },
 

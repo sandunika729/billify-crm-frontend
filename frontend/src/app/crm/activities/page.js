@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import activityService from '../../../services/activityService';
 import styles from './page.module.css';
-import { Plus, Phone, Mail, Users, FileText, CheckSquare, Bell, Trash2, CheckCircle, Clock, Calendar, Edit2 } from 'lucide-react';
+import { Plus, Phone, Mail, Users, FileText, CheckSquare, Bell, Trash2, CheckCircle, Clock, Calendar, Edit2, Globe, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
@@ -12,6 +12,7 @@ import OverdueBell from '../../../components/crm/OverdueBell';
 import SearchBar from '../../../components/ui/SearchBar';
 import FilterSelect from '../../../components/ui/FilterSelect';
 import CalendarPage from '../calendar/page';
+import { useAuth } from '../../../context/AuthContext';
 
 const ACTIVITY_TYPES = [
   { value: 'call', label: 'Call', icon: Phone, color: '#3b82f6' },
@@ -31,6 +32,8 @@ const ENTITY_TYPES = [
 
 export default function ActivitiesPage() {
   const router = useRouter();
+  const { user } = useAuth();
+
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,6 +43,7 @@ export default function ActivitiesPage() {
   const [filterType, setFilterType] = useState('');
   const [filterEntity, setFilterEntity] = useState('');
   const [filterDone, setFilterDone] = useState('pending');
+  const [filterVisibility, setFilterVisibility] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   const [formData, setFormData] = useState({
@@ -50,6 +54,7 @@ export default function ActivitiesPage() {
     due_time: '',
     related_type: 'deal',
     related_id: '',
+    visibility: 'public',
   });
 
   useEffect(() => {
@@ -73,10 +78,12 @@ export default function ActivitiesPage() {
   const handleSave = async () => {
     if (!formData.title || !formData.due_date) return alert('Title and due date are required.');
     setIsSubmitting(true);
-    
+
     const formDataToSave = { ...formData };
     if (formData.due_date) {
-      formDataToSave.due_at = formData.due_time ? `${formData.due_date}T${formData.due_time}` : `${formData.due_date}T00:00`;
+      formDataToSave.due_at = formData.due_time
+        ? `${formData.due_date}T${formData.due_time}`
+        : `${formData.due_date}T00:00`;
     }
     delete formDataToSave.due_date;
     delete formDataToSave.due_time;
@@ -85,7 +92,9 @@ export default function ActivitiesPage() {
       if (editingId) {
         const res = await activityService.updateActivity(editingId, formDataToSave);
         if (res.success) {
-          setActivities(prev => prev.map(a => a.id === editingId ? { ...a, ...formDataToSave } : a));
+          setActivities(prev =>
+            prev.map(a => a.id === editingId ? { ...a, ...formDataToSave } : a)
+          );
           setIsModalOpen(false);
           resetForm();
         }
@@ -110,7 +119,9 @@ export default function ActivitiesPage() {
       const completed_at = activity.completed_at ? null : new Date().toISOString();
       const res = await activityService.updateActivity(activity.id, { completed_at });
       if (res.success) {
-        setActivities(prev => prev.map(a => a.id === activity.id ? { ...a, completed_at } : a));
+        setActivities(prev =>
+          prev.map(a => a.id === activity.id ? { ...a, completed_at } : a)
+        );
       }
     } catch (err) {
       console.error('Failed to update activity:', err);
@@ -130,7 +141,16 @@ export default function ActivitiesPage() {
 
   const resetForm = () => {
     setEditingId(null);
-    setFormData({ activity_type: 'call', title: '', description: '', due_date: '', due_time: '', related_type: 'deal', related_id: '' });
+    setFormData({
+      activity_type: 'call',
+      title: '',
+      description: '',
+      due_date: '',
+      due_time: '',
+      related_type: 'deal',
+      related_id: '',
+      visibility: 'public',
+    });
   };
 
   const handleEdit = (activity) => {
@@ -150,16 +170,34 @@ export default function ActivitiesPage() {
       due_date,
       due_time,
       related_type: activity.related_type || '',
-      related_id: activity.related_id || ''
+      related_id: activity.related_id || '',
+      visibility: activity.visibility || 'public',
     });
     setIsModalOpen(true);
   };
 
+  // Client-side filter: hide private activities that don't belong to the current user
+  const isVisible = (activity) => {
+    const vis = activity.visibility || 'public';
+    if (vis === 'private') {
+      const ownerId = activity.created_by ?? activity.owner_id ?? activity.user_id;
+      if (user && ownerId && String(ownerId) !== String(user.id)) return false;
+    }
+    return true;
+  };
+
   const filteredActivities = activities.filter(a => {
+    if (!isVisible(a)) return false;
     if (filterType && a.activity_type !== filterType) return false;
     if (filterDone === 'pending' && a.completed_at) return false;
     if (filterDone === 'done' && !a.completed_at) return false;
-    if (searchTerm && !a.title?.toLowerCase().includes(searchTerm.toLowerCase()) && !a.description?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (filterVisibility === 'public' && (a.visibility || 'public') !== 'public') return false;
+    if (filterVisibility === 'private' && (a.visibility || 'public') !== 'private') return false;
+    if (
+      searchTerm &&
+      !a.title?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !a.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) return false;
     return true;
   });
 
@@ -168,6 +206,11 @@ export default function ActivitiesPage() {
   const isOverdue = (activity) => {
     if (activity.completed_at) return false;
     return activity.due_at && new Date(activity.due_at) < new Date();
+  };
+
+  const isOwner = (activity) => {
+    const ownerId = activity.created_by ?? activity.owner_id ?? activity.user_id;
+    return !ownerId || !user || String(ownerId) === String(user.id);
   };
 
   return (
@@ -187,7 +230,7 @@ export default function ActivitiesPage() {
         </div>
       </div>
 
-      {}
+      {/* Filters */}
       <div className={styles.filtersBar}>
         <SearchBar
           value={searchTerm}
@@ -212,7 +255,7 @@ export default function ActivitiesPage() {
             onChange={setFilterType}
             options={[
               { value: '', label: 'All Types' },
-              ...ACTIVITY_TYPES
+              ...ACTIVITY_TYPES,
             ]}
             label=""
           />
@@ -222,16 +265,27 @@ export default function ActivitiesPage() {
             options={ENTITY_TYPES}
             label=""
           />
+          {/* Visibility filter */}
+          <FilterSelect
+            value={filterVisibility}
+            onChange={setFilterVisibility}
+            options={[
+              { value: 'all', label: 'All Visibility' },
+              { value: 'public', label: '🌐 Public' },
+              { value: 'private', label: '🔒 Private' },
+            ]}
+            label=""
+          />
         </div>
       </div>
 
-      {}
+      {/* Activity Cards Grid */}
       <div className={styles.timeline}>
         {loading ? (
           <div className={styles.emptyState}>Loading activities...</div>
         ) : filteredActivities.length === 0 ? (
           <div className={styles.emptyState}>
-            No activities found. Click "Log Activity" to get started.
+            No activities found. Click &quot;Log Activity&quot; to get started.
           </div>
         ) : (
           filteredActivities.map(activity => {
@@ -239,6 +293,8 @@ export default function ActivitiesPage() {
             const Icon = typeConfig.icon;
             const overdue = isOverdue(activity);
             const done = !!activity.completed_at;
+            const isPrivate = (activity.visibility || 'public') === 'private';
+            const canEdit = isOwner(activity);
 
             return (
               <div
@@ -257,9 +313,18 @@ export default function ActivitiesPage() {
                       {typeConfig.label}
                     </div>
                   </div>
-                  {overdue && !done && (
-                    <div className={styles.overdueStatusBadge}>Overdue</div>
-                  )}
+                  <div className={styles.cardBadges}>
+                    {/* Visibility badge */}
+                    <span className={isPrivate ? styles.privateBadge : styles.publicBadge}>
+                      {isPrivate
+                        ? <><Lock size={9} style={{ marginRight: '3px' }} />Private</>
+                        : <><Globe size={9} style={{ marginRight: '3px' }} />Public</>
+                      }
+                    </span>
+                    {overdue && !done && (
+                      <div className={styles.overdueStatusBadge}>Overdue</div>
+                    )}
+                  </div>
                 </div>
 
                 <div className={styles.cardBody}>
@@ -272,14 +337,22 @@ export default function ActivitiesPage() {
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Due Date:</span>
                     <span className={`${styles.detailValue} ${overdue ? styles.overdueBadge : ''}`}>
-                      {activity.due_at ? new Date(activity.due_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'No due date'}
+                      {activity.due_at
+                        ? new Date(activity.due_at).toLocaleString('en-GB', {
+                            day: '2-digit', month: 'short', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit',
+                          })
+                        : 'No due date'}
                     </span>
                   </div>
                   {activity.related_type && (
                     <div className={styles.detailRow}>
                       <span className={styles.detailLabel}>Related To:</span>
                       <span className={styles.detailValue}>
-                        {activity.related_type.charAt(0).toUpperCase() + activity.related_type.slice(1)} {activity.related_name ? `- ${activity.related_name}` : (activity.related_id ? `(#${activity.related_id})` : '')}
+                        {activity.related_type.charAt(0).toUpperCase() + activity.related_type.slice(1)}{' '}
+                        {activity.related_name
+                          ? `- ${activity.related_name}`
+                          : activity.related_id ? `(#${activity.related_id})` : ''}
                       </span>
                     </div>
                   )}
@@ -293,13 +366,15 @@ export default function ActivitiesPage() {
 
                 <div className={styles.cardFooter}>
                   <div className={styles.activityActions}>
-                    <button
-                      className={`${styles.iconBtn} ${styles.editBtn}`}
-                      title="Edit"
-                      onClick={() => handleEdit(activity)}
-                    >
-                      <Edit2 size={12} />
-                    </button>
+                    {canEdit && (
+                      <button
+                        className={`${styles.iconBtn} ${styles.editBtn}`}
+                        title="Edit"
+                        onClick={() => handleEdit(activity)}
+                      >
+                        <Edit2 size={12} />
+                      </button>
+                    )}
                     <button
                       className={`${styles.iconBtn} ${done ? styles.undoBtn : styles.completeBtn}`}
                       title={done ? 'Mark as Pending' : 'Mark as Complete'}
@@ -307,13 +382,15 @@ export default function ActivitiesPage() {
                     >
                       <CheckCircle size={12} />
                     </button>
-                    <button
-                      className={`${styles.iconBtn} ${styles.deleteBtn}`}
-                      title="Delete"
-                      onClick={() => handleDelete(activity.id)}
-                    >
-                      <Trash2 size={12} />
-                    </button>
+                    {canEdit && (
+                      <button
+                        className={`${styles.iconBtn} ${styles.deleteBtn}`}
+                        title="Delete"
+                        onClick={() => handleDelete(activity.id)}
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -322,11 +399,11 @@ export default function ActivitiesPage() {
         )}
       </div>
 
-      {}
+      {/* Log / Edit Activity Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); resetForm(); }}
-        title={editingId ? "Edit Activity" : "Log New Activity"}
+        title={editingId ? 'Edit Activity' : 'Log New Activity'}
         footer={
           <>
             <Button variant="secondary" onClick={() => { setIsModalOpen(false); resetForm(); }}>Cancel</Button>
@@ -391,7 +468,33 @@ export default function ActivitiesPage() {
               placeholder="Paste the ID (optional)"
             />
           </div>
-          
+
+          {/* ── Visibility Toggle ── */}
+          <div className={styles.visibilitySection}>
+            <label className={styles.fieldLabel}>Visibility</label>
+            <div className={styles.visibilityToggle}>
+              <button
+                type="button"
+                className={`${styles.visibilityBtn} ${formData.visibility === 'public' ? styles.visibilityBtnActive : ''}`}
+                onClick={() => setFormData(prev => ({ ...prev, visibility: 'public' }))}
+              >
+                <Globe size={14} />
+                <span>Public</span>
+                <span className={styles.visibilityHint}>Everyone in the team can see this</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.visibilityBtn} ${styles.visibilityBtnPrivate} ${formData.visibility === 'private' ? styles.visibilityBtnPrivateActive : ''}`}
+                onClick={() => setFormData(prev => ({ ...prev, visibility: 'private' }))}
+              >
+                <Lock size={14} />
+                <span>Private</span>
+                <span className={styles.visibilityHint}>Only you can see this</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ── Activity Type ── */}
           <div className={styles.typeRadioGrid}>
             <label className={styles.fieldLabel}>Activity Type</label>
             <div className={styles.typeRadioList}>
@@ -419,7 +522,7 @@ export default function ActivitiesPage() {
         </div>
       </Modal>
 
-      {}
+      {/* Calendar Modal */}
       <Modal
         isOpen={isCalendarModalOpen}
         onClose={() => setIsCalendarModalOpen(false)}
