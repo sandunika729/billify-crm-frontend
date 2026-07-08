@@ -1,0 +1,291 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pageHeader h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* ── Quick-add form ── */
+.addForm {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.addInput {
+  flex: 1;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.addInput:focus {
+  border-color: #8b5cf6;
+}
+
+.visibilityToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.visibilityToggle:hover {
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+}
+
+.visibilityToggle.public {
+  border-color: #10b981;
+  color: #10b981;
+  background: #10b98110;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 0;
+}
+
+.tab {
+  padding: 0.6rem 1.25rem;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.15s;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.tab:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+}
+
+.tabActive {
+  color: #8b5cf6;
+  border-bottom-color: #8b5cf6;
+  font-weight: 600;
+}
+
+.tabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: #8b5cf620;
+  color: #8b5cf6;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 50%;
+  margin-left: 0.4rem;
+}
+
+/* ── Todo list ── */
+.todoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.82rem;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-border);
+}
+
+/* ── Todo card ── */
+.todoCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.875rem 1rem;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.todoCard:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.todoCard.done {
+  opacity: 0.6;
+  background: #f8fafc;
+}
+
+.checkBtn {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  margin-top: 1px;
+  color: transparent;
+}
+
+.checkBtn:hover {
+  border-color: #10b981;
+  background: #10b98115;
+  color: #10b981;
+}
+
+.checkBtn.checked {
+  border-color: #10b981;
+  background: #10b981;
+  color: #fff;
+}
+
+.todoBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.todoTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.todoTitle.done {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.todoMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.3rem;
+}
+
+.metaItem {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.publicBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: #10b98115;
+  color: #10b981;
+  border: 1px solid #10b98130;
+}
+
+.privateBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: #6366f115;
+  color: #6366f1;
+  border: 1px solid #6366f130;
+}
+
+.todoActions {
+  display: flex;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  padding: 0.3rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  color: #94a3b8;
+}
+
+.iconBtn:hover {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.deleteIconBtn:hover {
+  background: #ef444415;
+  color: #ef4444;
+}
+
+.ownerName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+  .addForm { flex-direction: column; }
+  .pageHeader { flex-direction: column; gap: 1rem; align-items: flex-start; }
+}

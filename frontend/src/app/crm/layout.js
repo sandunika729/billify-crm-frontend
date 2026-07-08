@@ -28,7 +28,8 @@ import {
   Sliders,
   Inbox,
   Activity,
-  UserCog
+  UserCog,
+  CheckSquare
 } from 'lucide-react';
 import OverdueBell from '../../components/crm/OverdueBell';
 import NotificationBell from '../../components/crm/NotificationBell';
@@ -46,6 +47,7 @@ export default function CrmLayout({ children }) {
     { label: 'Deals', path: '/crm/deals', icon: Briefcase, permission: 'deals:view' },
     { label: 'Quotes', path: '/crm/quotes', icon: FileText, permission: 'quotes:view' },
     { label: 'Activities', path: '/crm/activities', icon: Activity, permission: 'activities:view' },
+    { label: 'To-Dos', path: '/crm/todos', icon: CheckSquare, permission: 'dashboard:view' },
     { label: 'Support', path: '/crm/support', icon: LifeBuoy, permission: 'tickets:view' },
     { label: 'Reports', path: '/crm/reports', icon: BarChart3, permission: 'dashboard:view' },
     { label: 'Documents', path: '/crm/documents', icon: Folder, permission: 'documents:view' },
