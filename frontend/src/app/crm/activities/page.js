@@ -13,7 +13,6 @@ import OverdueBell from '../../../components/crm/OverdueBell';
 import SearchBar from '../../../components/ui/SearchBar';
 import FilterSelect from '../../../components/ui/FilterSelect';
 import CalendarPage from '../calendar/page';
-import { useAuth } from '../../../context/AuthContext';
 
 const ACTIVITY_TYPES = [
   { value: 'call', label: 'Call', icon: Phone, color: '#3b82f6' },
@@ -33,7 +32,6 @@ const ENTITY_TYPES = [
 
 export default function ActivitiesPage() {
   const router = useRouter();
-  const { user } = useAuth();
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -308,16 +306,9 @@ export default function ActivitiesPage() {
                       {typeConfig.label}
                     </div>
                   </div>
-                  <div className={styles.badgeContainer}>
-                    {activity.owner_id && (
-                      <div className={styles.assignedStatusBadge}>
-                        {activity.owner_id === user?.id ? 'Assigned to me' : `Assigned to ${activity.owner_name}`}
-                      </div>
-                    )}
-                    {overdue && !done && (
-                      <div className={styles.overdueStatusBadge}>Overdue</div>
-                    )}
-                  </div>
+                  {overdue && !done && (
+                    <div className={styles.overdueStatusBadge}>Overdue</div>
+                  )}
                 </div>
 
                 <div className={styles.cardBody}>
