@@ -47,7 +47,6 @@ export default function CrmLayout({ children }) {
     { label: 'Quotes', path: '/crm/quotes', icon: FileText, permission: 'quotes:view' },
     { label: 'Activities', path: '/crm/activities', icon: Activity, permission: 'activities:view' },
     { label: 'Support', path: '/crm/support', icon: LifeBuoy, permission: 'tickets:view' },
-
     { label: 'Reports', path: '/crm/reports', icon: BarChart3, permission: 'dashboard:view' },
     { label: 'Documents', path: '/crm/documents', icon: Folder, permission: 'documents:view' },
     { label: 'Team Members', path: '/crm/admin/users', icon: UserCog, permission: 'roles:manage' },
