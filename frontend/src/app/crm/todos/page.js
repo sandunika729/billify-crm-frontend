@@ -17,7 +17,7 @@ export default function TodosPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  const [filterStatus, setFilterStatus] = useState('pending');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [filterVisibility, setFilterVisibility] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
