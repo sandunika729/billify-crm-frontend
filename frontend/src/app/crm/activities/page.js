@@ -50,7 +50,6 @@ export default function ActivitiesPage() {
     due_time: '',
     related_type: 'deal',
     related_id: '',
-    visibility: 'public',
   });
 
   useEffect(() => {
@@ -131,7 +130,7 @@ export default function ActivitiesPage() {
 
   const resetForm = () => {
     setEditingId(null);
-    setFormData({ activity_type: 'call', title: '', description: '', due_date: '', due_time: '', related_type: 'deal', related_id: '', visibility: 'public' });
+    setFormData({ activity_type: 'call', title: '', description: '', due_date: '', due_time: '', related_type: 'deal', related_id: '' });
   };
 
   const handleEdit = (activity) => {
@@ -151,8 +150,7 @@ export default function ActivitiesPage() {
       due_date,
       due_time,
       related_type: activity.related_type || '',
-      related_id: activity.related_id || '',
-      visibility: activity.visibility || 'public'
+      related_id: activity.related_id || ''
     });
     setIsModalOpen(true);
   };
@@ -254,8 +252,6 @@ export default function ActivitiesPage() {
                   <div className={styles.cardHeaderInfo}>
                     <div className={styles.cardName} style={{ textDecoration: done ? 'line-through' : 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       {activity.title}
-                      {activity.visibility === 'private' && <span style={{fontSize: '10px', padding: '2px 6px', background: '#f1f5f9', borderRadius: '4px', color: '#64748b'}}>Private</span>}
-                      {activity.visibility === 'public' && <span style={{fontSize: '10px', padding: '2px 6px', background: '#f0fdf4', borderRadius: '4px', color: '#166534'}}>Public</span>}
                     </div>
                     <div className={styles.cardTime}>
                       {typeConfig.label}
@@ -396,19 +392,6 @@ export default function ActivitiesPage() {
             />
           </div>
           
-          <div style={{ marginBottom: '1rem' }}>
-            <FormField
-              label="Visibility"
-              type="select"
-              name="visibility"
-              value={formData.visibility}
-              onChange={e => setFormData(prev => ({ ...prev, visibility: e.target.value }))}
-              options={[
-                { value: 'public', label: 'Public (Visible to all)' },
-                { value: 'private', label: 'Private (Only me)' },
-              ]}
-            />
-          </div>
           
           <div className={styles.typeRadioGrid}>
             <label className={styles.fieldLabel}>Activity Type</label>
