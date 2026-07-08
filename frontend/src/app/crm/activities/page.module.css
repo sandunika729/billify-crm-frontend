@@ -165,47 +165,18 @@
   display: flex;
   align-items: flex-start;
   margin-bottom: 0.5rem;
-  gap: 0rem;
-}
-
-.cardBadges {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-.publicBadge,
-.privateBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.12rem 0.45rem;
-  border-radius: var(--radius-full);
-  font-size: 0.62rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.publicBadge {
-  background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
-}
-
-.privateBadge {
-  background: #fffbeb;
-  color: #d97706;
-  border: 1px solid #fde68a;
+  position: relative;
 }
 
 .overdueStatusBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
   background: #fef2f2;
   color: #ef4444;
-  padding: 0.12rem 0.45rem;
+  padding: 0.15rem 0.5rem;
   border-radius: var(--radius-full);
-  font-size: 0.62rem;
+  font-size: 0.65rem;
   font-weight: 600;
   border: 1px solid #fee2e2;
 }
@@ -370,69 +341,6 @@
   font-size: 0.83rem;
   font-weight: 600;
   color: var(--color-text-primary);
-}
-
-/* ── Visibility Toggle ─────────────────────────── */
-.visibilitySection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.visibilityToggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
-}
-
-.visibilityBtn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.65rem 0.75rem;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--color-border);
-  background: var(--color-bg-card);
-  cursor: pointer;
-  transition: all 0.18s ease;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  line-height: 1.3;
-}
-
-.visibilityBtn:hover {
-  border-color: #16a34a;
-  color: #16a34a;
-  background: #f0fdf4;
-}
-
-.visibilityBtnActive {
-  border-color: #16a34a !important;
-  background: #f0fdf4 !important;
-  color: #16a34a !important;
-  box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
-}
-
-.visibilityBtnPrivate:hover {
-  border-color: #d97706;
-  color: #d97706;
-  background: #fffbeb;
-}
-
-.visibilityBtnPrivateActive {
-  border-color: #d97706 !important;
-  background: #fffbeb !important;
-  color: #d97706 !important;
-  box-shadow: 0 0 0 3px rgba(217,119,6,0.12);
-}
-
-.visibilityHint {
-  font-size: 0.68rem;
-  font-weight: 400;
-  color: var(--color-text-muted);
-  text-align: center;
 }
 
 @media (max-width: 768px) {
