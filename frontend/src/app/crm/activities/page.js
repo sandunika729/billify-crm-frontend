@@ -335,7 +335,7 @@ export default function ActivitiesPage() {
                   {activity.owner_name && (
                     <div className={styles.detailRow}>
                       <span className={styles.detailLabel}>Owner:</span>
-                      <span className={styles.detailValue}>{activity.owner_name}</span>
+                      <span className={styles.detailValue} style={{ fontWeight: 'bold' }}>{activity.owner_name}</span>
                     </div>
                   )}
                 </div>
