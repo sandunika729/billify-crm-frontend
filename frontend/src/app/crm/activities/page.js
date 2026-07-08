@@ -174,7 +174,7 @@ export default function ActivitiesPage() {
     <div className={styles.pageContainer}>
       <div className={styles.pageHeader}>
         <div>
-          <h1>Tasks</h1>
+          <h1>Activities</h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Button variant="secondary" onClick={() => setIsCalendarModalOpen(true)}>
@@ -182,7 +182,7 @@ export default function ActivitiesPage() {
           </Button>
           <OverdueBell />
           <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-            Log Task
+            Log Activity
           </Button>
         </div>
       </div>
@@ -228,10 +228,10 @@ export default function ActivitiesPage() {
       {}
       <div className={styles.timeline}>
         {loading ? (
-          <div className={styles.emptyState}>Loading tasks...</div>
+          <div className={styles.emptyState}>Loading activities...</div>
         ) : filteredActivities.length === 0 ? (
           <div className={styles.emptyState}>
-            No tasks found. Click "Log Task" to get started.
+            No activities found. Click "Log Activity" to get started.
           </div>
         ) : (
           filteredActivities.map(activity => {
@@ -326,11 +326,11 @@ export default function ActivitiesPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); resetForm(); }}
-        title={editingId ? "Edit Task" : "Log New Task"}
+        title={editingId ? "Edit Activity" : "Log New Activity"}
         footer={
           <>
             <Button variant="secondary" onClick={() => { setIsModalOpen(false); resetForm(); }}>Cancel</Button>
-            <Button variant="primary" onClick={handleSave} isLoading={isSubmitting}>Save Task</Button>
+            <Button variant="primary" onClick={handleSave} isLoading={isSubmitting}>Save Activity</Button>
           </>
         }
       >
