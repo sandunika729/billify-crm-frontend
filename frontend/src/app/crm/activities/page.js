@@ -308,16 +308,9 @@ export default function ActivitiesPage() {
                       {typeConfig.label}
                     </div>
                   </div>
-                  <div className={styles.badgeContainer}>
-                    {activity.owner_id && (
-                      <div className={styles.assignedStatusBadge}>
-                        {activity.owner_id === user?.id ? 'Assigned to me' : `Assigned to ${activity.owner_name}`}
-                      </div>
-                    )}
-                    {overdue && !done && (
-                      <div className={styles.overdueStatusBadge}>Overdue</div>
-                    )}
-                  </div>
+                  {overdue && !done && (
+                    <div className={styles.overdueStatusBadge}>Overdue</div>
+                  )}
                 </div>
 
                 <div className={styles.cardBody}>
@@ -344,7 +337,9 @@ export default function ActivitiesPage() {
                   {activity.owner_name && (
                     <div className={styles.detailRow}>
                       <span className={styles.detailLabel}>Owner:</span>
-                      <span className={styles.detailValue}>{activity.owner_name}</span>
+                      <span className={styles.detailValue} style={{ fontWeight: 'bold' }}>
+                        {activity.owner_id === user?.id ? 'Me' : activity.owner_name}
+                      </span>
                     </div>
                   )}
                 </div>
