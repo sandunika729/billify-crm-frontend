@@ -166,10 +166,17 @@
   align-items: flex-start;
   margin-bottom: 0.5rem;
   position: relative;
-.overdueStatusBadge {
+}
+
+.badgeContainer {
   position: absolute;
   top: 0;
   right: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.overdueStatusBadge {
   background: #fef2f2;
   color: #ef4444;
   padding: 0.15rem 0.5rem;
@@ -177,6 +184,16 @@
   font-size: 0.65rem;
   font-weight: 600;
   border: 1px solid #fee2e2;
+}
+
+.assignedStatusBadge {
+  background: #eff6ff;
+  color: #3b82f6;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 600;
+  border: 1px solid #bfdbfe;
 }
 
 .cardAvatar {
