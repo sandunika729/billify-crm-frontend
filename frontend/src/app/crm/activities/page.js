@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import activityService from '../../../services/activityService';
+import userService from '../../../services/userService';
 import styles from './page.module.css';
-import { Plus, Phone, Mail, Users, FileText, CheckSquare, Bell, Trash2, CheckCircle, Clock, Calendar, Edit2 } from 'lucide-react';
+import { Plus, Phone, Mail, Users, FileText, CheckSquare, Bell, Trash2, CheckCircle, Clock, Calendar, Edit2, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
@@ -42,6 +43,12 @@ export default function ActivitiesPage() {
   const [filterDone, setFilterDone] = useState('pending');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [members, setMembers] = useState([]);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [assigningActivity, setAssigningActivity] = useState(null);
+  const [selectedMemberId, setSelectedMemberId] = useState('');
+  const [isAssigning, setIsAssigning] = useState(false);
+
   const [formData, setFormData] = useState({
     activity_type: 'call',
     title: '',
@@ -55,6 +62,48 @@ export default function ActivitiesPage() {
   useEffect(() => {
     fetchActivities();
   }, [filterEntity]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
+  const fetchMembers = async () => {
+    try {
+      const res = await userService.getAllUsers();
+      if (res && res.success) {
+        setMembers(Array.isArray(res.data) ? res.data : []);
+      } else if (Array.isArray(res)) {
+        setMembers(res);
+      }
+    } catch (err) {
+      console.error('Failed to fetch members:', err);
+    }
+  };
+
+  const handleOpenAssign = (activity) => {
+    setAssigningActivity(activity);
+    setSelectedMemberId(activity.owner_id || '');
+    setIsAssignModalOpen(true);
+  };
+
+  const handleAssignSubmit = async () => {
+    if (!selectedMemberId) return alert('Please select a member.');
+    setIsAssigning(true);
+    try {
+      const res = await activityService.updateActivity(assigningActivity.id, { owner_id: selectedMemberId });
+      if (res.success || res) {
+        const member = members.find(m => m.id === selectedMemberId);
+        const owner_name = member ? `${member.first_name || ''} ${member.last_name || ''}`.trim() || member.name || member.email : 'Unknown';
+        setActivities(prev => prev.map(a => a.id === assigningActivity.id ? { ...a, owner_id: selectedMemberId, owner_name } : a));
+        setIsAssignModalOpen(false);
+      }
+    } catch (err) {
+      console.error('Failed to assign activity:', err);
+      alert('Error assigning activity.');
+    } finally {
+      setIsAssigning(false);
+    }
+  };
 
   const fetchActivities = async () => {
     setLoading(true);
@@ -301,6 +350,13 @@ export default function ActivitiesPage() {
                       <Edit2 size={12} />
                     </button>
                     <button
+                      className={`${styles.iconBtn} ${styles.assignBtn}`}
+                      title="Assign"
+                      onClick={() => handleOpenAssign(activity)}
+                    >
+                      <UserPlus size={12} />
+                    </button>
+                    <button
                       className={`${styles.iconBtn} ${done ? styles.undoBtn : styles.completeBtn}`}
                       title={done ? 'Mark as Pending' : 'Mark as Complete'}
                       onClick={() => handleComplete(activity)}
@@ -417,6 +473,32 @@ export default function ActivitiesPage() {
               })}
             </div>
           </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        title="Assign Activity"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setIsAssignModalOpen(false)}>Cancel</Button>
+            <Button variant="primary" onClick={handleAssignSubmit} isLoading={isAssigning}>Assign</Button>
+          </>
+        }
+      >
+        <div className={styles.modalForm}>
+          <FormField
+            label="Select Team Member"
+            type="select"
+            name="member"
+            value={selectedMemberId}
+            onChange={e => setSelectedMemberId(e.target.value)}
+            options={[
+              { value: '', label: 'Select a member...' },
+              ...members.map(m => ({ value: m.id, label: `${m.first_name || ''} ${m.last_name || ''}`.trim() || m.name || m.email }))
+            ]}
+          />
         </div>
       </Modal>
 

@@ -290,6 +290,14 @@
   background: #ef444415;
 }
 
+.assignBtn {
+  color: #3b82f6;
+}
+
+.assignBtn:hover {
+  background: #3b82f615;
+}
+
 .modalForm {
   display: flex;
   flex-direction: column;
