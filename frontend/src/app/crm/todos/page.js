@@ -2,35 +2,51 @@
 
 import React, { useState, useEffect } from 'react';
 import todoService from '../../../services/todoService';
-import styles from './page.module.css';
-import {
-  Plus, Trash2, CheckCircle, Globe, Lock, User, Clock
-} from 'lucide-react';
+import styles from '../activities/page.module.css';
+import { CheckSquare, Globe, Lock, Trash2, CheckCircle, Edit2, Plus } from 'lucide-react';
 import Button from '../../../components/ui/Button';
+import Modal from '../../../components/modals/Modal';
+import FormField from '../../../components/forms/FormField';
+import SearchBar from '../../../components/ui/SearchBar';
+import FilterSelect from '../../../components/ui/FilterSelect';
 
 export default function TodosPage() {
   const [todos, setTodos] = useState([]);
-  const [publicTodos, setPublicTodos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('mine');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
-  const [newTitle, setNewTitle] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('pending');
+  const [filterVisibility, setFilterVisibility] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    is_public: false,
+  });
 
   useEffect(() => {
-    fetchAll();
+    fetchTodos();
   }, []);
 
-  const fetchAll = async () => {
+  const fetchTodos = async () => {
     setLoading(true);
     try {
+      // Fetch both own + all public todos
       const [myRes, pubRes] = await Promise.all([
         todoService.getTodos(),
-        todoService.getTodos({ filter: 'public' })
+        todoService.getTodos({ filter: 'public' }),
       ]);
-      if (myRes.success) setTodos(Array.isArray(myRes.data) ? myRes.data : []);
-      if (pubRes.success) setPublicTodos(Array.isArray(pubRes.data) ? pubRes.data : []);
+      const myTodos = myRes.success ? (Array.isArray(myRes.data) ? myRes.data : []) : [];
+      const pubTodos = pubRes.success ? (Array.isArray(pubRes.data) ? pubRes.data : []) : [];
+      // Merge, avoiding duplicates (my public todos appear in both)
+      const merged = [...myTodos];
+      pubTodos.forEach(pt => {
+        if (!merged.find(t => t.id === pt.id)) merged.push(pt);
+      });
+      setTodos(merged);
     } catch (err) {
       console.error('Failed to fetch todos:', err);
     } finally {
@@ -38,48 +54,70 @@ export default function TodosPage() {
     }
   };
 
-  const handleAdd = async (e) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-    setIsAdding(true);
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData({ title: '', description: '', is_public: false });
+  };
+
+  const handleSave = async () => {
+    if (!formData.title.trim()) return alert('Title is required.');
+    setIsSubmitting(true);
     try {
-      const res = await todoService.createTodo({ title: newTitle.trim(), is_public: isPublic });
-      if (res.success) {
-        const created = res.data;
-        setTodos(prev => [created, ...prev]);
-        if (isPublic) setPublicTodos(prev => [created, ...prev]);
-        setNewTitle('');
-        setIsPublic(false);
+      if (editingId) {
+        const res = await todoService.updateTodo(editingId, {
+          title: formData.title,
+          description: formData.description,
+          is_public: formData.is_public,
+        });
+        if (res.success || res.data) {
+          setTodos(prev => prev.map(t => t.id === editingId ? { ...t, ...formData } : t));
+          setIsModalOpen(false);
+          resetForm();
+        }
+      } else {
+        const res = await todoService.createTodo(formData);
+        if (res.success) {
+          setTodos(prev => [res.data, ...prev]);
+          setIsModalOpen(false);
+          resetForm();
+        }
       }
     } catch (err) {
-      console.error('Failed to create todo:', err);
-      alert('Error creating todo.');
+      console.error('Failed to save todo:', err);
+      alert('Error saving todo.');
     } finally {
-      setIsAdding(false);
+      setIsSubmitting(false);
     }
   };
 
-  const handleToggleComplete = async (todo) => {
-    const completed_at = todo.completed_at ? null : new Date().toISOString();
+  const handleEdit = (todo) => {
+    setEditingId(todo.id);
+    setFormData({
+      title: todo.title,
+      description: todo.description || '',
+      is_public: !!todo.is_public,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleComplete = async (todo) => {
     try {
+      const completed_at = todo.completed_at ? null : new Date().toISOString();
       const res = await todoService.updateTodo(todo.id, { completed_at });
-      if (res.success || res) {
-        const updated = { ...todo, completed_at };
-        setTodos(prev => prev.map(t => t.id === todo.id ? updated : t));
-        setPublicTodos(prev => prev.map(t => t.id === todo.id ? updated : t));
+      if (res.success || res.data) {
+        setTodos(prev => prev.map(t => t.id === todo.id ? { ...t, completed_at } : t));
       }
     } catch (err) {
       console.error('Failed to toggle todo:', err);
     }
   };
 
-  const handleDelete = async (todo) => {
-    if (!window.confirm('Delete this todo?')) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this to-do?')) return;
     try {
-      const res = await todoService.deleteTodo(todo.id);
-      if (res.success || res) {
-        setTodos(prev => prev.filter(t => t.id !== todo.id));
-        setPublicTodos(prev => prev.filter(t => t.id !== todo.id));
+      const res = await todoService.deleteTodo(id);
+      if (res.success || res.data || res.message) {
+        setTodos(prev => prev.filter(t => t.id !== id));
       }
     } catch (err) {
       console.error('Failed to delete todo:', err);
@@ -87,138 +125,230 @@ export default function TodosPage() {
     }
   };
 
-  const displayList = activeTab === 'mine' ? todos : publicTodos;
-  const pendingCount = (activeTab === 'mine' ? todos : publicTodos).filter(t => !t.completed_at).length;
-
-  const TodoCard = ({ todo, isOwner }) => {
-    const done = !!todo.completed_at;
-    return (
-      <div className={`${styles.todoCard} ${done ? styles.done : ''}`}>
-        {isOwner && (
-          <button
-            className={`${styles.checkBtn} ${done ? styles.checked : ''}`}
-            onClick={() => handleToggleComplete(todo)}
-            title={done ? 'Mark as pending' : 'Mark as complete'}
-          >
-            {done && <CheckCircle size={12} />}
-          </button>
-        )}
-        {!isOwner && (
-          <div className={`${styles.checkBtn} ${done ? styles.checked : ''}`} style={{ cursor: 'default' }}>
-            {done && <CheckCircle size={12} />}
-          </div>
-        )}
-
-        <div className={styles.todoBody}>
-          <div className={`${styles.todoTitle} ${done ? styles.done : ''}`}>{todo.title}</div>
-          <div className={styles.todoMeta}>
-            {todo.is_public ? (
-              <span className={styles.publicBadge}><Globe size={9} /> Public</span>
-            ) : (
-              <span className={styles.privateBadge}><Lock size={9} /> Private</span>
-            )}
-            {todo.owner_name && (
-              <span className={styles.metaItem}>
-                <User size={10} />
-                <span className={styles.ownerName}>{todo.owner_name}</span>
-              </span>
-            )}
-            {todo.createdAt && (
-              <span className={styles.metaItem}>
-                <Clock size={10} />
-                {new Date(todo.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {isOwner && (
-          <div className={styles.todoActions}>
-            <button
-              className={`${styles.iconBtn} ${styles.deleteIconBtn}`}
-              onClick={() => handleDelete(todo)}
-              title="Delete"
-            >
-              <Trash2 size={13} />
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
+  const filteredTodos = todos.filter(t => {
+    if (filterStatus === 'pending' && t.completed_at) return false;
+    if (filterStatus === 'done' && !t.completed_at) return false;
+    if (filterVisibility === 'public' && !t.is_public) return false;
+    if (filterVisibility === 'private' && t.is_public) return false;
+    if (searchTerm && !t.title?.toLowerCase().includes(searchTerm.toLowerCase()) && !t.description?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
 
   return (
     <div className={styles.pageContainer}>
+      {/* Header */}
       <div className={styles.pageHeader}>
-        <h1>To-Do List</h1>
+        <div>
+          <h1>To-Do List</h1>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Button variant="primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
+            <Plus size={15} style={{ marginRight: '0.4rem' }} /> Add To-Do
+          </Button>
+        </div>
       </div>
 
-      {/* Quick Add Form */}
-      <form className={styles.addForm} onSubmit={handleAdd}>
-        <input
-          className={styles.addInput}
-          type="text"
-          placeholder="Add a new to-do..."
-          value={newTitle}
-          onChange={e => setNewTitle(e.target.value)}
-          disabled={isAdding}
+      {/* Filters bar */}
+      <div className={styles.filtersBar}>
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search to-dos..."
+          className={styles.searchBarWrapper}
+          label=""
         />
-        <button
-          type="button"
-          className={`${styles.visibilityToggle} ${isPublic ? styles.public : ''}`}
-          onClick={() => setIsPublic(p => !p)}
-          title={isPublic ? 'Visible to everyone (click to make private)' : 'Only you can see this (click to make public)'}
-        >
-          {isPublic ? <Globe size={13} /> : <Lock size={13} />}
-          {isPublic ? 'Public' : 'Private'}
-        </button>
-        <Button type="submit" variant="primary" isLoading={isAdding} disabled={!newTitle.trim()}>
-          <Plus size={14} style={{ marginRight: '0.3rem' }} /> Add
-        </Button>
-      </form>
-
-      {/* Tabs */}
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === 'mine' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('mine')}
-        >
-          My To-Dos
-          {todos.filter(t => !t.completed_at).length > 0 && (
-            <span className={styles.tabBadge}>{todos.filter(t => !t.completed_at).length}</span>
-          )}
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'public' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('public')}
-        >
-          Public To-Dos
-          {publicTodos.filter(t => !t.completed_at).length > 0 && (
-            <span className={styles.tabBadge}>{publicTodos.filter(t => !t.completed_at).length}</span>
-          )}
-        </button>
+        <div className={styles.filtersRight}>
+          <FilterSelect
+            value={filterStatus}
+            onChange={setFilterStatus}
+            options={[
+              { value: 'all', label: 'All Statuses' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'done', label: 'Completed' },
+            ]}
+            label=""
+          />
+          <FilterSelect
+            value={filterVisibility}
+            onChange={setFilterVisibility}
+            options={[
+              { value: '', label: 'All Visibility' },
+              { value: 'public', label: 'Public' },
+              { value: 'private', label: 'Private' },
+            ]}
+            label=""
+          />
+        </div>
       </div>
 
-      {/* Todo List */}
-      <div className={styles.todoList}>
+      {/* Todo cards grid */}
+      <div className={styles.timeline}>
         {loading ? (
           <div className={styles.emptyState}>Loading to-dos...</div>
-        ) : displayList.length === 0 ? (
+        ) : filteredTodos.length === 0 ? (
           <div className={styles.emptyState}>
-            {activeTab === 'mine'
-              ? 'No to-dos yet. Add your first one above!'
-              : 'No public to-dos in the workspace yet.'}
+            No to-dos found. Click &quot;Add To-Do&quot; to get started.
           </div>
         ) : (
-          displayList.map(todo => (
-            <TodoCard
-              key={todo.id}
-              todo={todo}
-              isOwner={activeTab === 'mine'}
-            />
-          ))
+          filteredTodos.map(todo => {
+            const done = !!todo.completed_at;
+            const isPublic = !!todo.is_public;
+            const Icon = isPublic ? Globe : Lock;
+            const color = isPublic ? '#10b981' : '#6366f1';
+
+            return (
+              <div
+                key={todo.id}
+                className={`${styles.activityCard} ${done ? styles.doneCard : ''}`}
+              >
+                <div className={styles.cardHeader}>
+                  <div className={styles.cardAvatar} style={{ background: `${color}18`, color }}>
+                    <Icon size={12} />
+                  </div>
+                  <div className={styles.cardHeaderInfo}>
+                    <div
+                      className={styles.cardName}
+                      style={{ textDecoration: done ? 'line-through' : 'none' }}
+                    >
+                      {todo.title}
+                    </div>
+                    <div className={styles.cardTime}>
+                      {isPublic ? 'Public' : 'Private'}
+                    </div>
+                  </div>
+                  {done && (
+                    <div
+                      style={{
+                        position: 'absolute', top: 0, right: 0,
+                        background: '#f0fdf4', color: '#10b981',
+                        padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-full)',
+                        fontSize: '0.65rem', fontWeight: 600, border: '1px solid #bbf7d0'
+                      }}
+                    >
+                      Done
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.cardBody}>
+                  {todo.description && (
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>Notes:</span>
+                      <span className={styles.detailValue}>{todo.description}</span>
+                    </div>
+                  )}
+                  {todo.owner_name && (
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>Owner:</span>
+                      <span className={styles.detailValue} style={{ fontWeight: 'bold' }}>{todo.owner_name}</span>
+                    </div>
+                  )}
+                  {todo.createdAt && (
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>Added:</span>
+                      <span className={styles.detailValue}>
+                        {new Date(todo.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.cardFooter}>
+                  <div className={styles.activityActions}>
+                    <button
+                      className={`${styles.iconBtn} ${styles.editBtn}`}
+                      title="Edit"
+                      onClick={() => handleEdit(todo)}
+                    >
+                      <Edit2 size={12} />
+                    </button>
+                    <button
+                      className={`${styles.iconBtn} ${done ? styles.undoBtn : styles.completeBtn}`}
+                      title={done ? 'Mark as Pending' : 'Mark as Complete'}
+                      onClick={() => handleComplete(todo)}
+                    >
+                      <CheckCircle size={12} />
+                    </button>
+                    <button
+                      className={`${styles.iconBtn} ${styles.deleteBtn}`}
+                      title="Delete"
+                      onClick={() => handleDelete(todo.id)}
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })
         )}
       </div>
+
+      {/* Add / Edit Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); resetForm(); }}
+        title={editingId ? 'Edit To-Do' : 'Add New To-Do'}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => { setIsModalOpen(false); resetForm(); }}>Cancel</Button>
+            <Button variant="primary" onClick={handleSave} isLoading={isSubmitting}>Save To-Do</Button>
+          </>
+        }
+      >
+        <div className={styles.modalForm}>
+          <FormField
+            label="Title"
+            name="title"
+            value={formData.title}
+            onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            required
+            placeholder="e.g. Review the contract"
+          />
+          <FormField
+            label="Description / Notes"
+            type="textarea"
+            name="description"
+            value={formData.description}
+            onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            rows={3}
+            placeholder="Add any notes here..."
+          />
+
+          {/* Visibility radio */}
+          <div className={styles.typeRadioGrid}>
+            <label className={styles.fieldLabel}>Visibility</label>
+            <div className={styles.typeRadioList}>
+              <label className={styles.typeRadioOption}>
+                <input
+                  type="radio"
+                  name="visibility"
+                  checked={!formData.is_public}
+                  onChange={() => setFormData(prev => ({ ...prev, is_public: false }))}
+                  style={{ accentColor: '#6366f1', width: '15px', height: '15px', marginTop: '2px', cursor: 'pointer' }}
+                />
+                <div className={styles.typeRadioText}>
+                  <Lock size={14} style={{ color: '#6366f1', marginRight: '0.4rem' }} />
+                  <span className={styles.typeRadioName}>Private — only you can see this</span>
+                </div>
+              </label>
+              <label className={styles.typeRadioOption}>
+                <input
+                  type="radio"
+                  name="visibility"
+                  checked={!!formData.is_public}
+                  onChange={() => setFormData(prev => ({ ...prev, is_public: true }))}
+                  style={{ accentColor: '#10b981', width: '15px', height: '15px', marginTop: '2px', cursor: 'pointer' }}
+                />
+                <div className={styles.typeRadioText}>
+                  <Globe size={14} style={{ color: '#10b981', marginRight: '0.4rem' }} />
+                  <span className={styles.typeRadioName}>Public — visible to everyone</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
