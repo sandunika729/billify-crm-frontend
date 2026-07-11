@@ -17,7 +17,7 @@ export default function CRMDashboard() {
   const [summary, setSummary] = useState(null);
   const [charts, setCharts] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState('month');
+  const [dateRange, setDateRange] = useState(() => new Date().toISOString().slice(0, 7));
   const [stageMap, setStageMap] = useState({});
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export default function CRMDashboard() {
     setLoading(true);
     try {
       const [summaryRes, chartsRes, stagesRes] = await Promise.all([
-        api.get('/crm/dashboard/summary'),
-        api.get('/crm/dashboard/charts'),
+        api.get('/crm/dashboard/summary', { params: { month: dateRange } }),
+        api.get('/crm/dashboard/charts', { params: { month: dateRange } }),
         api.get('/crm/deals/stages'),
       ]);
 
@@ -122,16 +122,12 @@ export default function CRMDashboard() {
           <h1 className={styles.pageTitle}>Dashboard Overview</h1>
         </div>
         <div className={styles.actions}>
-          <select 
+          <input 
+            type="month"
             className={styles.dateFilter} 
             value={dateRange} 
             onChange={(e) => setDateRange(e.target.value)}
-          >
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="year">This Year</option>
-          </select>
+          />
         </div>
       </header>
 
@@ -141,10 +137,6 @@ export default function CRMDashboard() {
           <div className={styles.kpiContent}>
             <h3 className={styles.kpiLabel}>Monthly Sales (Won)</h3>
             <p className={styles.kpiValue}>{formatCurrency(summary?.monthlySalesValue)}</p>
-            <div className={styles.kpiTrend}>
-              <TrendingUp size={14} className={styles.trendUp} />
-              <span>vs last month</span>
-            </div>
           </div>
         </div>
 
