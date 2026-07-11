@@ -301,7 +301,7 @@ export default function DealsPage() {
 
   const handleDragStart = (e, dealId) => {
     setDraggedDealId(dealId);
-    e.dataTransfer.setData('text/plain', dealId);
+    e.dataTransfer.setData('text/plain', String(dealId));
     e.dataTransfer.effectAllowed = 'move';
 
     setTimeout(() => {
@@ -326,7 +326,7 @@ export default function DealsPage() {
 
     
     const deal = deals.find(d => String(d.id) === String(dealId));
-    if (!deal || deal.stage_id === stageId) return;
+    if (!deal || String(deal.stage_id) === String(stageId)) return;
 
     const targetStage = stages.find(s => s.id === stageId);
     if (targetStage && (targetStage.is_won_stage || targetStage.is_lost_stage)) {
@@ -585,6 +585,7 @@ export default function DealsPage() {
                 <div
                   key={stage.id}
                   className={styles.boardColumn}
+                  onDragEnter={handleDragOver}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, stage.id)}
                 >
