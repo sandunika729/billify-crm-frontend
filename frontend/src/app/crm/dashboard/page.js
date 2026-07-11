@@ -17,7 +17,7 @@ export default function CRMDashboard() {
   const [summary, setSummary] = useState(null);
   const [charts, setCharts] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState(() => new Date().toISOString().slice(0, 7));
+  const [dateRange, setDateRange] = useState(() => new Date().toISOString().slice(0, 10));
   const [stageMap, setStageMap] = useState({});
 
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function CRMDashboard() {
         </div>
         <div className={styles.actions}>
           <input 
-            type="month"
+            type="date"
             className={styles.dateFilter} 
             value={dateRange} 
             onChange={(e) => setDateRange(e.target.value)}
