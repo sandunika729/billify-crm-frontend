@@ -300,54 +300,27 @@ export default function CRMDashboard() {
           </div>
           <div className={styles.chartBody}>
             {charts?.ticketsByStatus?.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220}>
                 <RechartsPieChart>
                   <Pie
                     data={formatTicketStatusData(charts.ticketsByStatus)}
                     cx="50%"
-                    cy="50%"
-                    innerRadius={70}
-                    outerRadius={100}
-                    paddingAngle={5}
+                    cy="45%"
+                    innerRadius={52}
+                    outerRadius={72}
+                    paddingAngle={3}
                     dataKey="value"
                   >
                     {formatTicketStatusData(charts.ticketsByStatus).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={PASTEL_COLORS[index % PASTEL_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                  <Tooltip contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', fontSize: '12px' }} />
+                  <Legend verticalAlign="bottom" height={30} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '12px' }} />
                 </RechartsPieChart>
               </ResponsiveContainer>
             ) : (
               <div className={styles.emptyChart}>No ticket data available</div>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.chartCard}>
-          <div className={styles.chartHeader}>
-            <h3 className={styles.chartTitle}>Sales vs Payments</h3>
-            <BarChart2 className={styles.chartIcon} size={20} />
-          </div>
-          <div className={styles.chartBody}>
-            {(charts?.salesPerformance?.length > 0 || charts?.paymentCollection?.length > 0) ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <ComposedChart data={formatSalesPaymentsData(charts.salesPerformance, charts.paymentCollection)} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                  <Tooltip 
-                    cursor={{fill: 'rgba(59, 130, 246, 0.05)'}}
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
-                  />
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                  <Bar yAxisId="left" dataKey="sales" name="Sales (Won)" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={20} />
-                  <Bar yAxisId="left" dataKey="payments" name="Payments Collected" fill="#10b981" radius={[4, 4, 0, 0]} barSize={20} />
-                </ComposedChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className={styles.emptyChart}>No sales or payment data available</div>
             )}
           </div>
         </div>
