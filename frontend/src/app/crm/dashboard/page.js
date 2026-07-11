@@ -9,7 +9,8 @@ import {
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart as RechartsPieChart, Pie, Cell, ComposedChart, Line
+  PieChart as RechartsPieChart, Pie, Cell, ComposedChart, Line,
+  LineChart
 } from 'recharts';
 import styles from './page.module.css';
 
@@ -67,13 +68,39 @@ export default function CRMDashboard() {
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
   const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#64748b'];
+  const PASTEL_COLORS = [
+    '#a5b4fc', // lavender
+    '#86efac', // mint green
+    '#fca5a5', // rose
+    '#fde68a', // soft yellow
+    '#93c5fd', // sky blue
+    '#f9a8d4', // pink
+    '#6ee7b7', // teal
+    '#c4b5fd', // violet
+  ];
 
   const formatDealStageData = (data) => {
+    if (!data) return { lines: [], chartData: [] };
+    // Build one data point per stage for a multi-line chart
+    const lines = data.map((d, i) => ({
+      key: d.stage_name || stageMap[d.stage_id] || `Stage ${i + 1}`,
+      color: PASTEL_COLORS[i % PASTEL_COLORS.length],
+    }));
+    // Single "point" of data with each stage as a key
+    const point = { name: 'Current' };
+    data.forEach((d, i) => {
+      const key = d.stage_name || stageMap[d.stage_id] || `Stage ${i + 1}`;
+      point[key] = parseInt(d.count, 10);
+    });
+    return { lines, chartData: [point] };
+  };
+
+  const formatDealStageDataSimple = (data) => {
     if (!data) return [];
-    return data.map(d => ({
-      name: d.stage_name || stageMap[d.stage_id] || d.stage_id,
+    return data.map((d, i) => ({
+      name: d.stage_name || stageMap[d.stage_id] || `Stage ${i + 1}`,
       count: parseInt(d.count, 10),
-      value: parseFloat(d.totalValue) || 0
+      color: PASTEL_COLORS[i % PASTEL_COLORS.length],
     }));
   };
 
@@ -191,20 +218,44 @@ export default function CRMDashboard() {
             <BarChart2 className={styles.chartIcon} size={20} />
           </div>
           <div className={styles.chartBody}>
-            {charts?.dealsByStage?.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={formatDealStageData(charts.dealsByStage)} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b'}} />
-                  <Tooltip 
-                    cursor={{fill: 'rgba(59, 130, 246, 0.05)'}}
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
-                  />
-                  <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
+            {charts?.dealsByStage?.length > 0 ? (() => {
+              const stageData = formatDealStageDataSimple(charts.dealsByStage);
+              return (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={stageData} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                    <defs>
+                      {stageData.map((s, i) => (
+                        <linearGradient key={s.name} id={`grad${i}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={s.color} stopOpacity={0.25} />
+                          <stop offset="95%" stopColor={s.color} stopOpacity={0} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} allowDecimals={false} />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: '10px',
+                        border: 'none',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                        fontSize: '12px'
+                      }}
+                    />
+                    <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '12px', paddingTop: '12px' }} />
+                    <Line
+                      type="monotone"
+                      dataKey="count"
+                      name="Deals"
+                      stroke="#a5b4fc"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#a5b4fc', strokeWidth: 2, stroke: '#fff' }}
+                      activeDot={{ r: 7 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              );
+            })() : (
               <div className={styles.emptyChart}>No deal data available</div>
             )}
           </div>
