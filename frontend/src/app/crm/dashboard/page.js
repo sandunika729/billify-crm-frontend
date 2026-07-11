@@ -215,7 +215,6 @@ export default function CRMDashboard() {
         <div className={styles.chartCard}>
           <div className={styles.chartHeader}>
             <h3 className={styles.chartTitle}>Deals by Stage</h3>
-            <BarChart2 className={styles.chartIcon} size={20} />
           </div>
           <div className={styles.chartBody}>
             {charts?.dealsByStage?.length > 0 ? (() => {
@@ -264,7 +263,6 @@ export default function CRMDashboard() {
         <div className={styles.chartCard}>
           <div className={styles.chartHeader}>
             <h3 className={styles.chartTitle}>Lead Status Distribution</h3>
-            <PieChart className={styles.chartIcon} size={20} />
           </div>
           <div className={styles.chartBody}>
             {charts?.leadsByStatus?.length > 0 ? (
@@ -296,7 +294,6 @@ export default function CRMDashboard() {
         <div className={styles.chartCard}>
           <div className={styles.chartHeader}>
             <h3 className={styles.chartTitle}>Ticket Status</h3>
-            <PieChart className={styles.chartIcon} size={20} />
           </div>
           <div className={styles.chartBody}>
             {charts?.ticketsByStatus?.length > 0 ? (
@@ -328,7 +325,6 @@ export default function CRMDashboard() {
         <div className={styles.chartCard}>
           <div className={styles.chartHeader}>
             <h3 className={styles.chartTitle}>Lead Conversion</h3>
-            <CheckCircle className={styles.chartIcon} size={20} />
           </div>
           <div className={styles.chartBody} style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '0 20px' }}>
             <div style={{ width: '100%', marginBottom: '16px' }}>
