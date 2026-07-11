@@ -333,12 +333,12 @@ export default function CRMDashboard() {
           <div className={styles.chartBody} style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '0 20px' }}>
             <div style={{ width: '100%', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '14px', color: '#64748b' }}>Total Leads</span>
+                <span style={{ fontSize: '12px', color: '#64748b' }}>Total Leads</span>
                 <span style={{ fontWeight: 600, color: '#1e293b' }}>{charts?.conversion?.total || 0}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '14px', color: '#64748b' }}>Converted to Won</span>
-                <span style={{ fontWeight: 600, color: '#10b981' }}>{charts?.conversion?.converted || 0}</span>
+                <span style={{ fontSize: '12px', color: '#64748b' }}>Converted to Won</span>
+                <span style={{ fontWeight: 600, color: '#6ee7b7' }}>{charts?.conversion?.converted || 0}</span>
               </div>
             </div>
             
@@ -346,15 +346,15 @@ export default function CRMDashboard() {
               <div 
                 style={{ 
                   height: '100%', 
-                  backgroundColor: '#10b981', 
+                  backgroundColor: '#6ee7b7', 
                   width: `${charts?.conversion?.total ? (charts.conversion.converted / charts.conversion.total) * 100 : 0}%`,
                   transition: 'width 1s ease-in-out'
                 }} 
               />
             </div>
-            <p style={{ marginTop: '16px', fontSize: '24px', fontWeight: 700, color: '#1e293b' }}>
+            <p style={{ marginTop: '16px', fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
               {charts?.conversion?.total ? Math.round((charts.conversion.converted / charts.conversion.total) * 100) : 0}%
-              <span style={{ fontSize: '14px', fontWeight: 500, color: '#64748b', marginLeft: '8px' }}>Conversion Rate</span>
+              <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b', marginLeft: '8px' }}>Conversion Rate</span>
             </p>
           </div>
         </div>
