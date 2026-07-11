@@ -325,7 +325,7 @@ export default function DealsPage() {
     if (!dealId) return;
 
     
-    const deal = deals.find(d => d.id === dealId);
+    const deal = deals.find(d => String(d.id) === String(dealId));
     if (!deal || deal.stage_id === stageId) return;
 
     const targetStage = stages.find(s => s.id === stageId);
@@ -337,7 +337,7 @@ export default function DealsPage() {
     }
 
     setDeals(prevDeals => prevDeals.map(d =>
-      d.id === dealId ? { ...d, stage_id: stageId } : d
+      String(d.id) === String(dealId) ? { ...d, stage_id: stageId } : d
     ));
 
     try {
@@ -363,7 +363,7 @@ export default function DealsPage() {
 
     
     setDeals(prevDeals => prevDeals.map(d =>
-      d.id === dealId ? { ...d, stage_id: stageId, status: newStatus } : d
+      String(d.id) === String(dealId) ? { ...d, stage_id: stageId, status: newStatus } : d
     ));
 
     
@@ -377,7 +377,7 @@ export default function DealsPage() {
       setPendingStageChange(null);
       
       if (targetStage?.is_won_stage) {
-        const wonDealData = deals.find(d => d.id === dealId) || { title: '' };
+        const wonDealData = deals.find(d => String(d.id) === String(dealId)) || { title: '' };
         setWonDeal({ ...wonDealData, stage_id: stageId, status: 'won' });
         setIsWonPromptOpen(true);
       }
