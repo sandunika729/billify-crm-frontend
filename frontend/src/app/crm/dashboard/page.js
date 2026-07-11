@@ -268,23 +268,23 @@ export default function CRMDashboard() {
           </div>
           <div className={styles.chartBody}>
             {charts?.leadsByStatus?.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220}>
                 <RechartsPieChart>
                   <Pie
                     data={formatLeadStatusData(charts.leadsByStatus)}
                     cx="50%"
-                    cy="50%"
-                    innerRadius={70}
-                    outerRadius={100}
-                    paddingAngle={5}
+                    cy="45%"
+                    innerRadius={52}
+                    outerRadius={72}
+                    paddingAngle={3}
                     dataKey="value"
                   >
                     {formatLeadStatusData(charts.leadsByStatus).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={PASTEL_COLORS[index % PASTEL_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                  <Tooltip contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', fontSize: '12px' }} />
+                  <Legend verticalAlign="bottom" height={30} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '12px' }} />
                 </RechartsPieChart>
               </ResponsiveContainer>
             ) : (
