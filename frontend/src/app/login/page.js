@@ -38,7 +38,7 @@ export default function LoginPage() {
     const result = await login(email, password, tenantSlug);
     
     if (!result.success) {
-      setError(result.message);
+      setError('Invalid business name, email, or password.');
       setLoading(false);
     }
     
