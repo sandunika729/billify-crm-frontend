@@ -16,9 +16,17 @@ export default function LoginPage() {
 
   const handleBlur = (field) => setTouched((prev) => ({ ...prev, [field]: true }));
 
+  const getEmailError = () => {
+    if (!touched.email) return '';
+    if (!email.trim()) return 'Email address is required.';
+    if (!email.includes('@')) return "Please include an '@' in the email address.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Please enter a complete email address.";
+    return '';
+  };
+
   const fieldErrors = {
     tenantSlug: touched.tenantSlug && !tenantSlug.trim() ? 'Business name is required.' : '',
-    email: touched.email && !email.trim() ? 'Email address is required.' : '',
+    email: getEmailError(),
     password: touched.password && !password.trim() ? 'Password is required.' : '',
   };
 
@@ -36,7 +44,8 @@ export default function LoginPage() {
     
   };
 
-  const isSubmitDisabled = !tenantSlug.trim() || !email.trim() || !password.trim() || loading;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isSubmitDisabled = !tenantSlug.trim() || !isEmailValid || !password.trim() || loading;
 
   return (
     <div className={styles.loginContainer}>
