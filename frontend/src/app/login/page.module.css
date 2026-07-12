@@ -142,16 +142,6 @@
   border-color: #30bced;
 }
 
-.inputError {
-  border-color: #ef4444 !important;
-  background-color: #fff5f5 !important;
-}
-
-.inputError:focus {
-  border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
-}
-
 .fieldError {
   font-size: 0.78rem;
   font-weight: 500;
