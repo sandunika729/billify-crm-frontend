@@ -12,6 +12,15 @@ export default function LoginPage() {
   const [tenantSlug, setTenantSlug] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [touched, setTouched] = useState({ tenantSlug: false, email: false, password: false });
+
+  const handleBlur = (field) => setTouched((prev) => ({ ...prev, [field]: true }));
+
+  const fieldErrors = {
+    tenantSlug: touched.tenantSlug && !tenantSlug.trim() ? 'Business name is required.' : '',
+    email: touched.email && !email.trim() ? 'Email address is required.' : '',
+    password: touched.password && !password.trim() ? 'Password is required.' : '',
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,10 +55,13 @@ export default function LoginPage() {
                 type="text" 
                 value={tenantSlug}
                 onChange={(e) => setTenantSlug(e.target.value)}
+                onBlur={() => handleBlur('tenantSlug')}
                 placeholder="Enter business name"
+                className={fieldErrors.tenantSlug ? styles.inputError : ''}
                 required
               />
             </div>
+            {fieldErrors.tenantSlug && <span className={styles.fieldError}>{fieldErrors.tenantSlug}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -59,10 +71,13 @@ export default function LoginPage() {
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => handleBlur('email')}
                 placeholder="Enter email or username"
+                className={fieldErrors.email ? styles.inputError : ''}
                 required
               />
             </div>
+            {fieldErrors.email && <span className={styles.fieldError}>{fieldErrors.email}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -72,10 +87,13 @@ export default function LoginPage() {
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => handleBlur('password')}
                 placeholder="Enter password"
+                className={fieldErrors.password ? styles.inputError : ''}
                 required
               />
             </div>
+            {fieldErrors.password && <span className={styles.fieldError}>{fieldErrors.password}</span>}
           </div>
 
           <button 
