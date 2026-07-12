@@ -39,9 +39,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   
-  const login = async (email, password, tenantSlug, rememberMe = false) => {
+  const login = async (email, password, tenantSlug) => {
     try {
-      const res = await api.post('/auth/login', { email, password, tenantSlug, rememberMe });
+      const res = await api.post('/auth/login', { email, password, tenantSlug });
       const { accessToken, user: userData, tenant } = res.data.data;
 
       
