@@ -75,11 +75,13 @@ export default function LoginPage() {
             <div className={styles.inputWrapper}>
               <input 
                 type="text" 
+                name="organization"
                 value={tenantSlug}
                 onChange={(e) => setTenantSlug(e.target.value)}
                 onBlur={() => handleBlur('tenantSlug')}
                 placeholder="Enter business name"
                 className={fieldErrors.tenantSlug ? styles.inputError : ''}
+                autoComplete="organization"
                 required
               />
             </div>
@@ -91,6 +93,7 @@ export default function LoginPage() {
             <div className={styles.inputWrapper}>
               <input 
                 type="email" 
+                name="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={() => handleBlur('email')}
@@ -108,6 +111,7 @@ export default function LoginPage() {
             <div className={styles.inputWrapper}>
               <input 
                 type="password" 
+                name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={() => handleBlur('password')}
