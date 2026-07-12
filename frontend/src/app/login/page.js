@@ -14,12 +14,17 @@ export default function LoginPage() {
       router.push('/crm/dashboard');
     }
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    // Relying on native browser password manager via autocomplete
+  }, []);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [tenantSlug, setTenantSlug] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [touched, setTouched] = useState({ tenantSlug: false, email: false, password: false });
 
   const handleBlur = (field) => setTouched((prev) => ({ ...prev, [field]: true }));
@@ -43,7 +48,7 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    const result = await login(email, password, tenantSlug);
+    const result = await login(email, password, tenantSlug, rememberMe);
     
     if (!result.success) {
       setError('Invalid business name, email, or password.');
@@ -91,6 +96,7 @@ export default function LoginPage() {
                 onBlur={() => handleBlur('email')}
                 placeholder="Enter email or username"
                 className={fieldErrors.email ? styles.inputError : ''}
+                autoComplete="username"
                 required
               />
             </div>
@@ -107,10 +113,21 @@ export default function LoginPage() {
                 onBlur={() => handleBlur('password')}
                 placeholder="Enter password"
                 className={fieldErrors.password ? styles.inputError : ''}
+                autoComplete="current-password"
                 required
               />
             </div>
             {fieldErrors.password && <span className={styles.fieldError}>{fieldErrors.password}</span>}
+          </div>
+
+          <div className={styles.checkboxGroup}>
+            <input 
+              type="checkbox" 
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <label htmlFor="rememberMe">Remember my login</label>
           </div>
 
           <button 
