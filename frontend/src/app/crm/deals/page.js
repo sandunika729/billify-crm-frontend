@@ -15,9 +15,11 @@ import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
+import { useRouter } from 'next/navigation';
 
 export default function DealsPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [deals, setDeals] = useState([]);
   const [stages, setStages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -223,7 +225,7 @@ export default function DealsPage() {
       deal_id: deal.id,
     }));
     
-    window.location.href = '/crm/quotes?new=1';
+    router.push('/crm/quotes?new=1');
   };
 
   const handleOpenEditModal = (deal) => {
