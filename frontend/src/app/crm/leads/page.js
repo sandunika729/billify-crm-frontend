@@ -449,15 +449,6 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      {activeTab === 'converted' && (
-        <div className={styles.convertedPageHeading}>
-          <CheckCircle2 size={18} />
-          <div>
-            <h2 className={styles.convertedPageTitle}>Past Converted Leads</h2>
-            <p className={styles.convertedPageSubtitle}>{convertedCount} lead{convertedCount !== 1 ? 's' : ''} converted to deals</p>
-          </div>
-        </div>
-      )}
 
       {activeTab === 'converted' && (
         <div style={{ maxWidth: '400px' }}>
