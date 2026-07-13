@@ -208,10 +208,10 @@ export default function SupportTicketsPage() {
           </button>
           <div className={styles.detailTopActions}>
             <button className={styles.iconActionBtn} title="Edit" onClick={() => { setEditFormData({ id: tk.id, subject: tk.subject, customer_id: tk.customer_id || '', priority: tk.priority, status: tk.status, source: tk.source }); setIsEditModalOpen(true); }}>
-              <Edit2 size={16} />
+              <Edit2 size={12} />
             </button>
             <button className={`${styles.iconActionBtn} ${styles.deleteColor}`} title="Delete" onClick={() => handleDeleteTicket(tk.id)}>
-              <Trash2 size={16} />
+              <Trash2 size={12} />
             </button>
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function SupportTicketsPage() {
             )}
 
             <div style={{ marginTop:'0.5rem', padding:'0.6rem 0.75rem', background:'#f8fafc', borderRadius:8, display:'flex', gap:'0.4rem', alignItems:'center' }}>
-              <MessageSquare size={13} style={{ color:'#94a3b8' }} />
+              <MessageSquare size={12} style={{ color:'#94a3b8' }} />
               <span style={{ fontSize:'0.75rem', color:'#64748b' }}>{messages.length} message{messages.length !== 1 ? 's' : ''} in thread</span>
             </div>
           </div>
@@ -298,7 +298,7 @@ export default function SupportTicketsPage() {
             <div className={styles.threadHeader}>
               <h3>Conversation</h3>
               <button className={styles.refreshBtn} onClick={() => openTicketDetail(tk.id)} title="Refresh thread">
-                <RefreshCw size={13} />
+                <RefreshCw size={12} />
               </button>
             </div>
 
@@ -450,9 +450,9 @@ export default function SupportTicketsPage() {
                       </td>
                       <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                         <div className={styles.rowActions}>
-                          <button className={styles.actionBtn} title="Open Thread" onClick={() => handleOpenDetail(ticket)}><MessageSquare size={14} color="#3b82f6" /></button>
-                          <button className={styles.actionBtn} title="Edit" onClick={() => { setEditFormData({ id: ticket.id, subject: ticket.subject, customer_id: ticket.customer_id || '', priority: ticket.priority, status: ticket.status, source: ticket.source }); setIsEditModalOpen(true); }}><Edit2 size={14} color="#94a3b8" /></button>
-                          <button className={styles.actionBtn} title="Delete" onClick={() => handleDeleteTicket(ticket.id)}><Trash2 size={14} color="#ef4444" /></button>
+                          <button className={styles.actionBtn} title="Open Thread" onClick={() => handleOpenDetail(ticket)}><MessageSquare size={12} color="#3b82f6" /></button>
+                          <button className={styles.actionBtn} title="Edit" onClick={() => { setEditFormData({ id: ticket.id, subject: ticket.subject, customer_id: ticket.customer_id || '', priority: ticket.priority, status: ticket.status, source: ticket.source }); setIsEditModalOpen(true); }}><Edit2 size={12} color="#94a3b8" /></button>
+                          <button className={styles.actionBtn} title="Delete" onClick={() => handleDeleteTicket(ticket.id)}><Trash2 size={12} color="#ef4444" /></button>
                         </div>
                       </td>
                     </tr>

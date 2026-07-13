@@ -252,7 +252,7 @@ export default function DocumentsPage() {
           {/* ── Group By ── */}
           <div className={styles.filterGroup} style={{ flex: 'none' }}>
             <div className={styles.groupByWrapper}>
-              <Layers size={13} className={styles.groupByIcon} />
+              <Layers size={12} className={styles.groupByIcon} />
               <select
                 className={styles.filterSelect}
                 value={groupBy}
@@ -300,8 +300,8 @@ export default function DocumentsPage() {
                       <td colSpan="6" className={styles.groupHeaderCell}>
                         <span className={styles.groupChevron}>
                           {collapsedGroups[groupLabel]
-                            ? <ChevronRight size={14} />
-                            : <ChevronDown size={14} />}
+                            ? <ChevronRight size={12} />
+                            : <ChevronDown size={12} />}
                         </span>
                         <span className={styles.groupLabel}>{groupLabel}</span>
                         <span className={styles.groupCount}>{docs.length} file{docs.length !== 1 ? 's' : ''}</span>
@@ -333,8 +333,8 @@ export default function DocumentsPage() {
                         </td>
                         <td className={styles.actionsCol}>
                           <div className={styles.rowActions}>
-                            <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id)}><Download size={14} /></button>
-                            <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={14} /></button>
+                            <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id)}><Download size={12} /></button>
+                            <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                           </div>
                         </td>
                       </tr>
@@ -368,8 +368,8 @@ export default function DocumentsPage() {
                     </td>
                     <td className={styles.actionsCol}>
                       <div className={styles.rowActions}>
-                        <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id)}><Download size={14} /></button>
-                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={14} /></button>
+                        <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id)}><Download size={12} /></button>
+                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                       </div>
                     </td>
                   </tr>

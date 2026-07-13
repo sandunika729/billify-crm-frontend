@@ -249,8 +249,8 @@ export default function ActivitiesPage() {
           <FilterSelect
             value={filterDone}
             onChange={setFilterDone}
+            placeholder="All Statuses"
             options={[
-              { value: 'all', label: 'All Statuses' },
               { value: 'pending', label: 'Pending' },
               { value: 'done', label: 'Completed' },
             ]}
@@ -259,15 +259,14 @@ export default function ActivitiesPage() {
           <FilterSelect
             value={filterType}
             onChange={setFilterType}
-            options={[
-              { value: '', label: 'All Types' },
-              ...ACTIVITY_TYPES
-            ]}
+            placeholder="All Types"
+            options={ACTIVITY_TYPES}
             label=""
           />
           <FilterSelect
             value={filterEntity}
             onChange={setFilterEntity}
+            placeholder="All Entities"
             options={ENTITY_TYPES}
             label=""
           />
@@ -465,7 +464,7 @@ export default function ActivitiesPage() {
                       style={{ accentColor: '#a855f7', width: '15px', height: '15px', marginTop: '2px', cursor: 'pointer' }}
                     />
                     <div className={styles.typeRadioText}>
-                      <Icon size={14} style={{ color: t.color, marginRight: '0.4rem' }} />
+                      <Icon size={12} style={{ color: t.color, marginRight: '0.4rem' }} />
                       <span className={styles.typeRadioName}>{t.label}</span>
                     </div>
                   </label>

@@ -273,12 +273,12 @@ export default function CustomerProfilePage() {
             <div className={styles.contactChips}>
               {customer.email && (
                 <div className={styles.contactChip}>
-                  <Mail size={14} /> <span>{customer.email}</span>
+                  <Mail size={12} /> <span>{customer.email}</span>
                 </div>
               )}
               {customer.phone && (
                 <div className={styles.contactChip}>
-                  <Phone size={14} /> <span>{customer.phone}</span>
+                  <Phone size={12} /> <span>{customer.phone}</span>
                 </div>
               )}
             </div>

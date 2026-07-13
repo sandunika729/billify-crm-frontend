@@ -159,7 +159,7 @@ export default function RolesPage() {
                   </div>
                 </div>
                 <div className={styles.roleUserCount}>
-                  <Users size={14} />
+                  <Users size={12} />
                   <span>{role.user_count}</span>
                 </div>
               </div>

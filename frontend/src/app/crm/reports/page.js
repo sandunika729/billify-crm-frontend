@@ -538,7 +538,7 @@ export default function ReportsPage() {
         <div className={styles.filtersBar}>
           <div className={styles.filtersLeft}>
             <div className={styles.filterGroup}>
-              <div className={styles.filterLabel}><Calendar size={14} /> Date Range</div>
+              <div className={styles.filterLabel}><Calendar size={12} /> Date Range</div>
               <FilterSelect 
                 id="report-date-range"
                 value={dateRange} 

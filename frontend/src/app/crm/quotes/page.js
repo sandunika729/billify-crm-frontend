@@ -402,17 +402,17 @@ export default function QuotesPage() {
 
               {}
               <button className={styles.wfBtn} onClick={() => handleDownloadPdf(activeWorkflowQuote)}>
-                <Download size={15} /> Download PDF
+                <Download size={12} /> Download PDF
               </button>
               <button className={styles.wfBtn} onClick={() => handleCloneQuote(activeWorkflowQuote)}>
-                <Copy size={15} /> Clone / Revise Quote
+                <Copy size={12} /> Clone / Revise Quote
               </button>
 
               {}
               {!['accepted', 'rejected', 'converted', 'expired'].includes(activeWorkflowQuote.status) && (
                 <>
                   <button className={`${styles.wfBtn} ${styles.wfBtnEmail}`} onClick={() => handleSendEmail(activeWorkflowQuote)}>
-                    <Send size={15} /> Send Email
+                    <Send size={12} /> Send Email
                   </button>
                   <button className={`${styles.wfBtn} ${styles.wfBtnWA}`} onClick={() => handleSendWhatsApp(activeWorkflowQuote)}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -426,28 +426,28 @@ export default function QuotesPage() {
               {}
               {activeWorkflowQuote.status === 'sent' && (
                 <button className={`${styles.wfBtn} ${styles.wfBtnViewed}`} onClick={() => handleMarkViewed(activeWorkflowQuote)}>
-                  <MessageSquare size={15} /> Mark as Viewed
+                  <MessageSquare size={12} /> Mark as Viewed
                 </button>
               )}
 
               {}
               {['sent', 'viewed'].includes(activeWorkflowQuote.status) && (
                 <button className={`${styles.wfBtn} ${styles.wfBtnResponse}`} onClick={() => handleOpenResponseModal(activeWorkflowQuote)}>
-                  <MessageSquare size={15} /> Log Customer Response
+                  <MessageSquare size={12} /> Log Customer Response
                 </button>
               )}
 
               {}
               {activeWorkflowQuote.status === 'accepted' && (
                 <button className={`${styles.wfBtn} ${styles.wfBtnConvert}`} onClick={() => handleConvertToInvoice(activeWorkflowQuote)}>
-                  <ArrowRightLeft size={15} /> Convert to POS Invoice
+                  <ArrowRightLeft size={12} /> Convert to POS Invoice
                 </button>
               )}
 
               {}
               {activeWorkflowQuote.status === 'rejected' && (
                 <div className={styles.wfRejectedNote}>
-                  <XCircle size={15} /> Customer rejected this quote. You may create a revised quote.
+                  <XCircle size={12} /> Customer rejected this quote. You may create a revised quote.
                 </div>
               )}
             </div>
@@ -536,7 +536,7 @@ export default function QuotesPage() {
                         </td>
                         <td>
                           <div className={styles.dateCell}>
-                            <Calendar size={14} />
+                            <Calendar size={12} />
                             {quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : 'N/A'}
                           </div>
                         </td>
@@ -548,14 +548,14 @@ export default function QuotesPage() {
                         <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                           <div className={styles.rowActions} style={{ gap: '8px' }}>
                             <button className={styles.actionBtn} title="Download PDF" onClick={() => handleDownloadPdf(quote)}>
-                              <Download size={14} />
+                              <Download size={12} />
                             </button>
                             <button className={styles.actionBtn} title="Clone Quote" onClick={() => handleCloneQuote(quote)} style={{ color: 'var(--color-primary)' }}>
-                              <Copy size={14} />
+                              <Copy size={12} />
                             </button>
                             {!['accepted', 'rejected', 'converted', 'expired'].includes(quote.status) && (
                               <button className={styles.actionBtn} title="Send via Email" onClick={() => handleSendEmail(quote)}>
-                                <Send size={14} />
+                                <Send size={12} />
                               </button>
                             )}
                             {quote.status === 'accepted' && (
@@ -565,7 +565,7 @@ export default function QuotesPage() {
                                 onClick={() => handleConvertToInvoice(quote)}
                                 style={{ color: 'var(--color-success)' }}
                               >
-                                <ArrowRightLeft size={14} />
+                                <ArrowRightLeft size={12} />
                               </button>
                             )}
                             <button
@@ -574,7 +574,7 @@ export default function QuotesPage() {
                               onClick={() => setActiveWorkflowQuote(quote)}
                               style={{ color: 'var(--color-primary)' }}
                             >
-                              <ChevronRight size={14} />
+                              <ChevronRight size={12} />
                             </button>
                             <button
                               className={styles.actionBtnDelete}
@@ -582,7 +582,7 @@ export default function QuotesPage() {
                               onClick={() => handleDeleteQuote(quote)}
                               style={{ color: 'var(--color-danger)' }}
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={12} />
                             </button>
                           </div>
                         </td>
@@ -630,14 +630,14 @@ export default function QuotesPage() {
                       </p>
                       <div className={styles.boardCardActions}>
                         <button className={styles.boardActionBtn} title="Download PDF" onClick={e => { e.stopPropagation(); handleDownloadPdf(quote); }}>
-                          <Download size={14} />
+                          <Download size={12} />
                         </button>
                         <button className={styles.boardActionBtn} title="Clone Quote" onClick={e => { e.stopPropagation(); handleCloneQuote(quote); }} style={{ color: 'var(--color-primary)' }}>
-                          <Copy size={14} />
+                          <Copy size={12} />
                         </button>
                         {!['accepted', 'rejected', 'converted', 'expired'].includes(quote.status) && (
                           <button className={styles.boardActionBtn} title="Email" onClick={e => { e.stopPropagation(); handleSendEmail(quote); }}>
-                            <Send size={14} />
+                            <Send size={12} />
                           </button>
                         )}
                         {['sent', 'viewed'].includes(quote.status) && (
@@ -646,7 +646,7 @@ export default function QuotesPage() {
                             title="Log Customer Response"
                             onClick={e => { e.stopPropagation(); handleOpenResponseModal(quote); }}
                           >
-                            <MessageSquare size={14} />
+                            <MessageSquare size={12} />
                           </button>
                         )}
                         {quote.status === 'accepted' && (
@@ -656,7 +656,7 @@ export default function QuotesPage() {
                             onClick={e => { e.stopPropagation(); handleConvertToInvoice(quote); }}
                             style={{ color: 'var(--color-success)' }}
                           >
-                            <ArrowRightLeft size={14} />
+                            <ArrowRightLeft size={12} />
                           </button>
                         )}
                         <button
@@ -665,7 +665,7 @@ export default function QuotesPage() {
                           onClick={e => { e.stopPropagation(); handleDeleteQuote(quote); }}
                           style={{ color: 'var(--color-danger)' }}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={12} />
                         </button>
                       </div>
                     </div>
@@ -708,13 +708,13 @@ export default function QuotesPage() {
                 className={`${styles.decisionBtn} ${responseDecision === 'accepted' ? styles.decisionBtnAccept : ''}`}
                 onClick={() => setResponseDecision('accepted')}
               >
-                <CheckCircle size={18} /> Customer Accepted
+                <CheckCircle size={12} /> Customer Accepted
               </button>
               <button
                 className={`${styles.decisionBtn} ${responseDecision === 'rejected' ? styles.decisionBtnReject : ''}`}
                 onClick={() => setResponseDecision('rejected')}
               >
-                <XCircle size={18} /> Customer Rejected
+                <XCircle size={12} /> Customer Rejected
               </button>
             </div>
 
@@ -730,7 +730,7 @@ export default function QuotesPage() {
                 />
                 {responseQuote.deal_id && (
                   <div className={styles.responseRejectNote}>
-                    <XCircle size={13} /> The linked Deal will automatically be moved to <strong>Closed Lost</strong>.
+                    <XCircle size={12} /> The linked Deal will automatically be moved to <strong>Closed Lost</strong>.
                   </div>
                 )}
               </div>
@@ -738,7 +738,7 @@ export default function QuotesPage() {
 
             {responseDecision === 'accepted' && (
               <div className={styles.responseAcceptNote}>
-                <CheckCircle size={14} />
+                <CheckCircle size={12} />
                 <div>
                   Quote will be marked <strong>Accepted</strong>.
                   {responseQuote.deal_id && (

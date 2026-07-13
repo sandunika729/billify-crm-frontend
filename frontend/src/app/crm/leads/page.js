@@ -417,15 +417,15 @@ export default function LeadsPage() {
           <h1>Leads</h1>
         </div>
         <div className={styles.headerActions}>
-          <Button variant="outline" icon={Download} iconSize={14} onClick={handleExport}>
+          <Button variant="outline" icon={Download} iconsize={12} onClick={handleExport}>
             Export
           </Button>
-          <Button variant="outline" icon={Upload} iconSize={14} onClick={() => setIsImportModalOpen(true)}>
+          <Button variant="outline" icon={Upload} iconsize={12} onClick={() => setIsImportModalOpen(true)}>
             Import
           </Button>
           {activeTab === 'active' ? (
             <>
-              <Button variant="outline" icon={CheckCircle2} iconSize={14} onClick={() => {
+              <Button variant="outline" icon={CheckCircle2} iconsize={12} onClick={() => {
                 setActiveTab('converted');
                 setSearchTerm('');
                 if (!convertedLoaded) fetchConvertedLeads();
@@ -577,7 +577,7 @@ export default function LeadsPage() {
                       <td className={styles.actionsCol}>
                         <div className={styles.headerActions}>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
-                            <Eye size={14} />
+                            <Eye size={12} />
                           </button>
                           {lead.deal_id && (
                             <button
@@ -585,7 +585,7 @@ export default function LeadsPage() {
                               onClick={() => router.push(`/crm/deals`)}
                               title="View Linked Deal"
                             >
-                              <ExternalLink size={14} />
+                              <ExternalLink size={12} />
                             </button>
                           )}
                         </div>
@@ -671,18 +671,18 @@ export default function LeadsPage() {
                       <td className={styles.actionsCol}>
                         <div className={styles.headerActions}>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
-                            <Eye size={14} />
+                            <Eye size={12} />
                           </button>
                           {lead.status !== 'converted' && lead.status !== 'disqualified' && (
                             <button className={styles.actionBtnSuccess} onClick={() => handleOpenConvertModal(lead)} title="Convert to Deal">
-                              <ArrowRightCircle size={14} />
+                              <ArrowRightCircle size={12} />
                             </button>
                           )}
                           <button className={styles.actionBtn} onClick={() => handleOpenEditModal(lead)} title="Edit">
-                            <Edit2 size={14} />
+                            <Edit2 size={12} />
                           </button>
                           <button className={styles.actionBtnDelete} onClick={() => handleDeleteLead(lead.id)} title="Delete">
-                            <Trash2 size={14} />
+                            <Trash2 size={12} />
                           </button>
                         </div>
                       </td>
@@ -1004,7 +1004,7 @@ export default function LeadsPage() {
           <div className={styles.formGroup}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <label className={styles.label}>
-                <Package size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                <Package size={12} style={{ marginRight: 6, verticalAlign: 'middle' }} />
                 Products of Interest
               </label>
               <Button type="button" variant="outline" size="small" onClick={handleAddCustomConvertProduct} icon={Plus}>
@@ -1018,7 +1018,7 @@ export default function LeadsPage() {
                   return (
                     <div key={sp.product_id} className={styles.productInterestRow}>
                       <div className={styles.productInterestName}>
-                        <Package size={13} />
+                        <Package size={12} />
                         <input
                           type="text"
                           placeholder="Item Name"
@@ -1045,7 +1045,7 @@ export default function LeadsPage() {
                           = Rs. {(Number(sp.unit_price) * Number(sp.qty)).toLocaleString()}
                         </span>
                         <button type="button" className={styles.removeProductBtn} onClick={() => handleRemoveConvertProduct(sp.product_id)}>
-                          <X size={14} />
+                          <X size={12} />
                         </button>
                       </div>
                     </div>
@@ -1082,17 +1082,17 @@ export default function LeadsPage() {
             <div className={styles.contactInfoGrid}>
               {viewLead.email && (
                 <div className={styles.contactInfoItem}>
-                  <Mail size={15} /> {viewLead.email}
+                  <Mail size={12} /> {viewLead.email}
                 </div>
               )}
               {viewLead.phone && (
                 <div className={styles.contactInfoItem}>
-                  <Phone size={15} /> {viewLead.phone}
+                  <Phone size={12} /> {viewLead.phone}
                 </div>
               )}
               {viewLead.company_name && (
                 <div className={styles.contactInfoItem}>
-                  <Building2 size={15} /> {viewLead.company_name}
+                  <Building2 size={12} /> {viewLead.company_name}
                 </div>
               )}
             </div>

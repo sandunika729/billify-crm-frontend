@@ -143,7 +143,7 @@ export default function TodosPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Button variant="primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-            <Plus size={15} style={{ marginRight: '0.4rem' }} /> Add To-Do
+            <Plus size={12} style={{ marginRight: '0.4rem' }} /> Add To-Do
           </Button>
         </div>
       </div>
@@ -161,8 +161,8 @@ export default function TodosPage() {
           <FilterSelect
             value={filterStatus}
             onChange={setFilterStatus}
+            placeholder="All Statuses"
             options={[
-              { value: 'all', label: 'All Statuses' },
               { value: 'pending', label: 'Pending' },
               { value: 'done', label: 'Completed' },
             ]}
@@ -171,8 +171,8 @@ export default function TodosPage() {
           <FilterSelect
             value={filterVisibility}
             onChange={setFilterVisibility}
+            placeholder="All Visibility"
             options={[
-              { value: '', label: 'All Visibility' },
               { value: 'public', label: 'Public' },
               { value: 'private', label: 'Private' },
             ]}
@@ -328,7 +328,7 @@ export default function TodosPage() {
                   style={{ accentColor: '#6366f1', width: '15px', height: '15px', marginTop: '2px', cursor: 'pointer' }}
                 />
                 <div className={styles.typeRadioText}>
-                  <Lock size={14} style={{ color: '#6366f1', marginRight: '0.4rem' }} />
+                  <Lock size={12} style={{ color: '#6366f1', marginRight: '0.4rem' }} />
                   <span className={styles.typeRadioName}>Private — only you can see this</span>
                 </div>
               </label>
@@ -341,7 +341,7 @@ export default function TodosPage() {
                   style={{ accentColor: '#10b981', width: '15px', height: '15px', marginTop: '2px', cursor: 'pointer' }}
                 />
                 <div className={styles.typeRadioText}>
-                  <Globe size={14} style={{ color: '#10b981', marginRight: '0.4rem' }} />
+                  <Globe size={12} style={{ color: '#10b981', marginRight: '0.4rem' }} />
                   <span className={styles.typeRadioName}>Public — visible to everyone</span>
                 </div>
               </label>

@@ -390,7 +390,7 @@ export default function SettingsPage() {
                         <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                           {profileError && <p className={styles.errorMsg}>{profileError}</p>}
                           <div className={styles.formActions}>
-                            {profileSuccess && <span className={styles.successMsg}><CheckCircle size={14} />{profileSuccess}</span>}
+                            {profileSuccess && <span className={styles.successMsg}><CheckCircle size={12} />{profileSuccess}</span>}
                             <Button variant="primary" type="submit" disabled={profileSaving}>{profileSaving ? 'Saving...' : 'Save Profile'}</Button>
                           </div>
                         </div>
@@ -445,17 +445,17 @@ export default function SettingsPage() {
                       <div className={styles.apiKeyRow}>
                         <input className={styles.apiKeyInput} type="text" readOnly value={apiKey} />
                         <button className={`${styles.copyBtn} ${keyCopied ? styles.copyBtnSuccess : ''}`} onClick={handleCopyKey}>
-                          <Copy size={13} />{keyCopied ? 'Copied!' : 'Copy'}
+                          <Copy size={12} />{keyCopied ? 'Copied!' : 'Copy'}
                         </button>
                         <button className={styles.regenBtn} onClick={handleRegenKey} disabled={regenLoading}>
-                          <RefreshCw size={13} />{regenLoading ? 'Regenerating...' : 'Regenerate'}
+                          <RefreshCw size={12} />{regenLoading ? 'Regenerating...' : 'Regenerate'}
                         </button>
                       </div>
                     </div>
 
                     {}
                     <div className={styles.warningBox}>
-                      <AlertTriangle size={15} style={{ flexShrink: 0 }} />
+                      <AlertTriangle size={12} style={{ flexShrink: 0 }} />
                       <span>
                         Keep this key safe. Do not share it privately. If your key is compromised, click <strong>Regenerate</strong> — your current widget will stop working until you replace the snippet on your website.
                       </span>
@@ -464,12 +464,12 @@ export default function SettingsPage() {
                     {}
                     <div className={styles.snippetBox}>
                       <div className={styles.snippetLabel}>
-                        <span><Code2 size={13} style={{ marginRight: 5, verticalAlign: 'middle' }} />Embeddable HTML Snippet</span>
+                        <span><Code2 size={12} style={{ marginRight: 5, verticalAlign: 'middle' }} />Embeddable HTML Snippet</span>
                       </div>
                       <pre className={styles.snippetCode}>{buildSnippet(apiKey)}</pre>
                       <div className={styles.snippetFooter}>
                         <button className={`${styles.copyBtn} ${snippetCopied ? styles.copyBtnSuccess : ''}`} onClick={handleCopySnippet}>
-                          <Copy size={13} />{snippetCopied ? 'Copied!' : 'Copy Snippet'}
+                          <Copy size={12} />{snippetCopied ? 'Copied!' : 'Copy Snippet'}
                         </button>
                       </div>
                     </div>
@@ -538,7 +538,7 @@ export default function SettingsPage() {
                         </div>
                       </div>
                       <button className={styles.deleteBtn} onClick={() => handleDeleteCfField(field.id)} title="Delete field">
-                        <Trash2 size={15} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   ))

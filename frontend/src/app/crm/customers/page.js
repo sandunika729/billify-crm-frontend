@@ -357,13 +357,13 @@ export default function CustomersPage() {
                     <td className={styles.actionsCol}>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         <Link href={`/crm/customers/${customer.id}`} className={styles.actionBtnPrimary} title="View Details">
-                          <Eye size={14} />
+                          <Eye size={12} />
                         </Link>
                         <button className={styles.actionBtn} onClick={() => openEditCustomerModal(customer)} title="Edit">
-                          <Edit2 size={14} />
+                          <Edit2 size={12} />
                         </button>
                         <button className={styles.actionBtnDelete} onClick={() => handleDeleteCustomer(customer.id)} title="Delete">
-                          <Trash2 size={14} />
+                          <Trash2 size={12} />
                         </button>
                       </div>
                     </td>

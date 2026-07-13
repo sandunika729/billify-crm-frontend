@@ -332,7 +332,7 @@ export default function InboxPage() {
                               onClick={(e) => handleDeleteLog(item.originalId || item.id.replace('interaction_', '').replace('notification_', ''), e)}
                               title="Delete Message"
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={12} />
                             </button>
                           </div>
                         </div>
@@ -493,7 +493,7 @@ export default function InboxPage() {
               <h2 className={styles.emailSubject}>{previewData.subject}</h2>
               {previewData.date && (
                 <div className={styles.emailMeta}>
-                  <Clock size={13} />
+                  <Clock size={12} />
                   {new Date(previewData.date).toLocaleString()}
                 </div>
               )}

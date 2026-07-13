@@ -306,7 +306,7 @@ export default function CreateQuoteModal({ isOpen, onClose, onSave }) {
                           </td>
                           <td>
                             <button className={styles.deleteItemBtn} onClick={() => removeItem(item.id)} disabled={items.length === 1}>
-                              <Trash2 size={16} />
+                              <Trash2 size={12} />
                             </button>
                           </td>
                         </tr>

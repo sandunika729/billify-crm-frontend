@@ -523,13 +523,13 @@ export default function DealsPage() {
                 className={`${styles.viewToggleBtn} ${viewMode === 'board' ? styles.active : ''}`}
                 onClick={() => setViewMode('board')}
               >
-                <LayoutGrid size={14} /> Board
+                <LayoutGrid size={12} /> Board
               </button>
               <button
                 className={`${styles.viewToggleBtn} ${viewMode === 'table' ? styles.active : ''}`}
                 onClick={() => setViewMode('table')}
               >
-                <List size={14} /> List
+                <List size={12} /> List
               </button>
             </div>
           </div>
@@ -731,11 +731,11 @@ export default function DealsPage() {
                             <td className={styles.actionsCol}>
                               <div className={styles.headerActions}>
                                 <button className={styles.actionBtnPrimary} onClick={() => { setViewDeal(deal); setIsDetailModalOpen(true); }} title="View Details">
-                                  <Eye size={14} />
+                                  <Eye size={12} />
                                 </button>
                                 {deal.status !== 'won' && deal.status !== 'lost' && (
                                   <button className={styles.actionBtnSuccess} onClick={() => handleCreateQuoteFromDeal(deal)} title="Create Quote">
-                                    <FileText size={14} />
+                                    <FileText size={12} />
                                   </button>
                                 )}
                                 <button className={styles.actionBtn} onClick={() => {
@@ -758,10 +758,10 @@ export default function DealsPage() {
                                   setSelectedProducts(parsedList);
                                   setIsModalOpen(true);
                                 }} title="Edit">
-                                  <Edit2 size={14} />
+                                  <Edit2 size={12} />
                                 </button>
                                 <button className={styles.actionBtnDelete} onClick={() => handleDeleteDeal(deal.id)} title="Delete">
-                                  <Trash2 size={14} />
+                                  <Trash2 size={12} />
                                 </button>
                               </div>
                             </td>
@@ -828,7 +828,7 @@ export default function DealsPage() {
           <div className={styles.formGroup}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <label className={styles.label}>
-                <Package size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                <Package size={12} style={{ marginRight: 6, verticalAlign: 'middle' }} />
                 Products of Interest
               </label>
               <Button type="button" variant="outline" size="small" onClick={handleAddCustomItem} icon={Plus}>
@@ -842,7 +842,7 @@ export default function DealsPage() {
                   return (
                     <div key={sp.product_id} className={styles.productInterestRow}>
                       <div className={styles.productInterestName}>
-                        <Package size={13} />
+                        <Package size={12} />
                         <input
                           type="text"
                           placeholder="Item Name"
@@ -869,7 +869,7 @@ export default function DealsPage() {
                           = Rs. {(Number(sp.unit_price) * Number(sp.qty)).toLocaleString()}
                         </span>
                         <button type="button" className={styles.removeProductBtn} onClick={() => handleRemoveProductInterest(sp.product_id)}>
-                          <X size={14} />
+                          <X size={12} />
                         </button>
                       </div>
                     </div>
@@ -988,7 +988,7 @@ export default function DealsPage() {
                     </div>
                   </div>
                   <button className={styles.deleteRuleBtn} onClick={() => handleDeleteRule(rule.id)}>
-                    <Trash2 size={16} />
+                    <Trash2 size={12} />
                   </button>
                 </li>
               ))}

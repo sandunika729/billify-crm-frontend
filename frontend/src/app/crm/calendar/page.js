@@ -156,13 +156,7 @@ export default function CalendarPage() {
         <div className={styles.yearNavigation}>
           <button className={styles.navBtn} onClick={handlePrevYear}><ChevronLeft size={16} /></button>
           <span className={styles.yearLabel}>{currentYear}</span>
-          <button className={styles.navBtn} onClick={handleNextYear}><ChevronRight size={16} /></button>
-        </div>
-        <div className={styles.viewTabs}>
-          <button className={`${styles.tabBtn} ${styles.active}`}>Year</button>
-          <button className={styles.tabBtn}>Week</button>
-          <button className={styles.tabBtn}>Month</button>
-          <button className={styles.tabBtn}>Day</button>
+          <button className={styles.navBtn} onClick={handleNextYear}><ChevronRight size={12} /></button>
         </div>
       </div>
 

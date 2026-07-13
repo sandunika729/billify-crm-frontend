@@ -435,7 +435,7 @@ export default function TeamMembersPage() {
                               onClick={() => openViewDetailsModal(u)}
                               title="View Details"
                             >
-                              <Eye size={14} />
+                              <Eye size={12} />
                             </button>
                             {isSuperAdmin && (
                               <>
@@ -444,14 +444,14 @@ export default function TeamMembersPage() {
                                   onClick={() => openEditModal(u)}
                                   title="Edit Details"
                                 >
-                                  <Edit2 size={14} />
+                                  <Edit2 size={12} />
                                 </button>
                                 <button
                                   className={styles.actionBtnPurple}
                                   onClick={() => openResetModal(u)}
                                   title="Reset Password"
                                 >
-                                  <Key size={14} />
+                                  <Key size={12} />
                                 </button>
                                 {!isCurrentUser && u.role !== 'super_admin' && (
                                   <button
@@ -459,7 +459,7 @@ export default function TeamMembersPage() {
                                     onClick={() => handleToggleStatus(u)}
                                     title={u.is_active ? "Deactivate" : "Reactivate"}
                                   >
-                                    {u.is_active ? <UserX size={14} /> : <UserCheck size={14} />}
+                                    {u.is_active ? <UserX size={12} /> : <UserCheck size={12} />}
                                   </button>
                                 )}
                               </>
@@ -535,7 +535,7 @@ export default function TeamMembersPage() {
       >
         <form onSubmit={handleAddUser} className={styles.modalForm}>
           {addFormError && (
-            <div className={styles.formError}><AlertTriangle size={14} /> {addFormError}</div>
+            <div className={styles.formError}><AlertTriangle size={12} /> {addFormError}</div>
           )}
 
           <div className={styles.formRow}>
@@ -593,7 +593,7 @@ export default function TeamMembersPage() {
                     <span className={styles.roleOptionDesc}>{r.desc}</span>
                   </div>
                   {addForm.role === r.value && (
-                    <Check size={14} style={{ color: r.color, flexShrink: 0 }} />
+                    <Check size={12} style={{ color: r.color, flexShrink: 0 }} />
                   )}
                 </button>
               ))}
@@ -602,7 +602,7 @@ export default function TeamMembersPage() {
 
           <div className={styles.passwordSection}>
             <div className={styles.passwordLabel}>
-              <Lock size={14} />
+              <Lock size={12} />
               <span>Set Temporary Password</span>
             </div>
             <div className={styles.formRow}>
@@ -621,7 +621,7 @@ export default function TeamMembersPage() {
                   className={styles.eyeBtn}
                   onClick={() => setShowPassword(p => !p)}
                 >
-                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  {showPassword ? <EyeOff size={12} /> : <Eye size={12} />}
                 </button>
               </div>
               <FormField
@@ -658,7 +658,7 @@ export default function TeamMembersPage() {
         >
           <form onSubmit={handleEditUser} className={styles.modalForm}>
             {editFormError && (
-              <div className={styles.formError}><AlertTriangle size={14} /> {editFormError}</div>
+              <div className={styles.formError}><AlertTriangle size={12} /> {editFormError}</div>
             )}
 
             <div className={styles.formRow}>
@@ -733,7 +733,7 @@ export default function TeamMembersPage() {
           </div>
 
           {resetFormError && (
-            <div className={styles.formError}><AlertTriangle size={14} /> {resetFormError}</div>
+            <div className={styles.formError}><AlertTriangle size={12} /> {resetFormError}</div>
           )}
 
           <div className={styles.passwordField}>
@@ -750,7 +750,7 @@ export default function TeamMembersPage() {
               className={styles.eyeBtn}
               onClick={() => setShowResetPassword(p => !p)}
             >
-              {showResetPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+              {showResetPassword ? <EyeOff size={12} /> : <Eye size={12} />}
             </button>
           </div>
 
