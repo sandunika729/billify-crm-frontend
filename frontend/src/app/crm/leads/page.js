@@ -37,6 +37,7 @@ export default function LeadsPage() {
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [reassignOwnerId, setReassignOwnerId] = useState('');
   const [users, setUsers] = useState([]);
+  const [assigneeIds, setAssigneeIds] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
@@ -150,7 +151,8 @@ export default function LeadsPage() {
       const { customerSearch, ...restData } = formData;
       const dataToSave = {
         ...restData,
-        customer_id: restData.customer_id || null
+        customer_id: restData.customer_id || null,
+        assignee_ids: assigneeIds
       };
 
       if (leadToEdit) {
@@ -159,6 +161,7 @@ export default function LeadsPage() {
           setLeads(leads.map(l => l.id === leadToEdit.id ? res.data : l));
           setIsModalOpen(false);
           setLeadToEdit(null);
+          setAssigneeIds([]);
           setFormData({ name: '', email: '', phone: '', company_name: '', source: 'website', interest: '', estimated_value_lkr: '', status: 'new', temperature: 'cold', next_follow_up_at: '', customer_id: '', customerSearch: '' });
         }
       } else {
@@ -166,6 +169,7 @@ export default function LeadsPage() {
         if (res.success) {
           setLeads([res.data, ...leads]);
           setIsModalOpen(false);
+          setAssigneeIds([]);
           setFormData({ name: '', email: '', phone: '', company_name: '', source: 'website', interest: '', estimated_value_lkr: '', status: 'new', temperature: 'cold', next_follow_up_at: '', customer_id: '', customerSearch: '' });
         }
       }
@@ -179,6 +183,7 @@ export default function LeadsPage() {
 
   const handleOpenEditModal = (lead) => {
     setLeadToEdit(lead);
+    setAssigneeIds(lead.assignees?.map(a => a.id) || []);
     setFormData({
       name: lead.name || '',
       email: lead.email || '',
@@ -435,6 +440,7 @@ export default function LeadsPage() {
               </Button>
               <Button variant="primary" onClick={() => {
                 setLeadToEdit(null);
+                setAssigneeIds([]);
                 setFormData({ name: '', email: '', phone: '', company_name: '', source: 'website', interest: '', estimated_value_lkr: '', status: 'new', temperature: 'cold', next_follow_up_at: '', customer_id: '', customerSearch: '' });
                 setIsModalOpen(true);
               }}>
@@ -619,6 +625,7 @@ export default function LeadsPage() {
                   <th>Estimated Value</th>
                   <th>Status</th>
                   <th>Temperature</th>
+                  <th>Assigned To</th>
                   <th>Follow Up</th>
                   <th className={styles.actionsCol}>Actions</th>
                 </tr>
@@ -667,6 +674,31 @@ export default function LeadsPage() {
                       </td>
                       <td>
                         {lead.next_follow_up_at ? new Date(lead.next_follow_up_at).toLocaleDateString() : 'Not Set'}
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          {(lead.assignees || []).slice(0, 3).map(a => (
+                            <div
+                              key={a.id}
+                              title={`${a.first_name} ${a.last_name}`}
+                              style={{
+                                width: '22px', height: '22px', borderRadius: '50%',
+                                background: '#e8f0fe', color: '#4f46e5',
+                                fontSize: '0.55rem', fontWeight: 700,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                border: '1.5px solid #fff', marginLeft: '-4px'
+                              }}
+                            >
+                              {a.first_name?.[0]}{a.last_name?.[0]}
+                            </div>
+                          ))}
+                          {(lead.assignees || []).length > 3 && (
+                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9', color: '#64748b', fontSize: '0.55rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-4px' }}>
+                              +{(lead.assignees || []).length - 3}
+                            </div>
+                          )}
+                          {(lead.assignees || []).length === 0 && <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>—</span>}
+                        </div>
                       </td>
                       <td className={styles.actionsCol}>
                         <div className={styles.headerActions}>
@@ -773,6 +805,30 @@ export default function LeadsPage() {
 
                       <div className={styles.cardFooter}>
                         <Badge variant={lead.temperature || 'cold'} hasDot={true}>{lead.temperature || 'cold'}</Badge>
+                        {(lead.assignees || []).length > 0 && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '6px' }}>
+                            {(lead.assignees || []).slice(0, 3).map(a => (
+                              <div
+                                key={a.id}
+                                title={`${a.first_name} ${a.last_name}`}
+                                style={{
+                                  width: '20px', height: '20px', borderRadius: '50%',
+                                  background: '#e8f0fe', color: '#4f46e5',
+                                  fontSize: '0.5rem', fontWeight: 700,
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  border: '1.5px solid #fff', marginLeft: '-4px'
+                                }}
+                              >
+                                {a.first_name?.[0]}{a.last_name?.[0]}
+                              </div>
+                            ))}
+                            {(lead.assignees || []).length > 3 && (
+                              <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#f1f5f9', color: '#64748b', fontSize: '0.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-4px' }}>
+                                +{(lead.assignees || []).length - 3}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -946,6 +1002,58 @@ export default function LeadsPage() {
               onChange={handleInputChange}
             />
           </div>
+
+          {/* Assign Team Members */}
+          {users.length > 0 && (
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Assign Team Members</label>
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', gap: '0.5rem',
+                padding: '0.6rem', borderRadius: '8px',
+                border: '1px solid var(--color-border)',
+                background: 'var(--color-surface)',
+                maxHeight: '140px', overflowY: 'auto'
+              }}>
+                {users.map(u => {
+                  const isSelected = assigneeIds.includes(u.id);
+                  const initials = `${u.first_name?.[0] || ''}${u.last_name?.[0] || ''}`.toUpperCase();
+                  return (
+                    <button
+                      key={u.id}
+                      type="button"
+                      onClick={() => setAssigneeIds(prev =>
+                        prev.includes(u.id) ? prev.filter(id => id !== u.id) : [...prev, u.id]
+                      )}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '0.4rem',
+                        padding: '0.3rem 0.65rem',
+                        borderRadius: '999px',
+                        border: isSelected ? '1.5px solid #4f46e5' : '1.5px solid var(--color-border)',
+                        background: isSelected ? '#eef2ff' : 'transparent',
+                        color: isSelected ? '#4f46e5' : 'var(--color-text-secondary)',
+                        fontSize: '0.72rem', fontWeight: 600,
+                        cursor: 'pointer', transition: 'all 0.15s'
+                      }}
+                    >
+                      <div style={{
+                        width: '18px', height: '18px', borderRadius: '50%',
+                        background: isSelected ? '#4f46e5' : '#e2e8f0',
+                        color: isSelected ? '#fff' : '#64748b',
+                        fontSize: '0.5rem', fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>{initials}</div>
+                      {u.first_name} {u.last_name}
+                    </button>
+                  );
+                })}
+              </div>
+              {assigneeIds.length > 0 && (
+                <p style={{ marginTop: '0.35rem', fontSize: '0.68rem', color: '#4f46e5' }}>
+                  {assigneeIds.length} member{assigneeIds.length > 1 ? 's' : ''} assigned
+                </p>
+              )}
+            </div>
+          )}
         </form>
       </Modal>
 
