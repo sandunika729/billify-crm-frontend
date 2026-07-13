@@ -6,7 +6,7 @@ import leadService from '../../../services/leadService';
 import customerService from '../../../services/customerService';
 import api from '../../../services/api';
 import styles from './page.module.css';
-import { Search, Plus, Filter, MoreVertical, Flame, Target, Banknote, Calendar, X, Eye, Mail, Phone, Building2, Edit, Edit2, Trash2, ArrowRightCircle, Download, Upload, Users, UserCheck, LayoutGrid, List, Package } from 'lucide-react';
+import { Search, Plus, Filter, MoreVertical, Flame, Target, Banknote, Calendar, X, Eye, Mail, Phone, Building2, Edit, Edit2, Trash2, ArrowRightCircle, Download, Upload, Users, UserCheck, LayoutGrid, List, Package, CheckCircle2, ExternalLink } from 'lucide-react';
 import ActivityPanel from '../../../components/crm/ActivityPanel';
 
 import dealService from '../../../services/dealService';
@@ -20,6 +20,8 @@ import SearchBar from '@/components/ui/SearchBar';
 export default function LeadsPage() {
   const { user } = useAuth();
   const [leads, setLeads] = useState([]);
+  const [convertedLeads, setConvertedLeads] = useState([]);
+  const [convertedLoaded, setConvertedLoaded] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,6 +30,7 @@ export default function LeadsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [viewMode, setViewMode] = useState('table');
+  const [activeTab, setActiveTab] = useState('active'); // 'active' | 'converted'
   const [draggedLeadId, setDraggedLeadId] = useState(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importFile, setImportFile] = useState(null);
@@ -95,12 +98,30 @@ export default function LeadsPage() {
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const res = await leadService.getAllLeads();
+      // Only fetch non-converted leads for the active tab
+      const res = await leadService.getAllLeads({ status: 'active' });
       if (res.success) {
-        setLeads(Array.isArray(res.data) ? res.data : []);
+        // Backend may not support 'active' pseudo-status, so filter client-side as fallback
+        const all = Array.isArray(res.data) ? res.data : [];
+        setLeads(all.filter(l => l.status !== 'converted'));
       }
     } catch (error) {
       console.error('Failed to fetch leads:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchConvertedLeads = async () => {
+    setLoading(true);
+    try {
+      const res = await leadService.getAllLeads({ status: 'converted' });
+      if (res.success) {
+        setConvertedLeads(Array.isArray(res.data) ? res.data : []);
+        setConvertedLoaded(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch converted leads:', error);
     } finally {
       setLoading(false);
     }
@@ -365,7 +386,6 @@ export default function LeadsPage() {
   };
 
   const filteredLeads = leads.filter(l => {
-    if (l.status === 'converted') return false;
     if (filterStatus && l.status !== filterStatus) return false;
     if (filterTemperature && l.temperature !== filterTemperature) return false;
 
@@ -376,6 +396,19 @@ export default function LeadsPage() {
     }
     return true;
   });
+
+  const filteredConvertedLeads = convertedLeads.filter(l => {
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      return l.name.toLowerCase().includes(lowerSearch) ||
+        (l.customer?.name && l.customer.name.toLowerCase().includes(lowerSearch)) ||
+        (l.company_name && l.company_name.toLowerCase().includes(lowerSearch));
+    }
+    return true;
+  });
+
+  const convertedCount = convertedLeads.length;
+  const activeCount = leads.length;
 
   return (
     <div className={styles.pageContainer}>
@@ -390,18 +423,50 @@ export default function LeadsPage() {
           <Button variant="outline" icon={Upload} iconSize={14} onClick={() => setIsImportModalOpen(true)}>
             Import
           </Button>
-          <Button variant="primary" onClick={() => {
-            setLeadToEdit(null);
-            setFormData({ name: '', email: '', phone: '', company_name: '', source: 'website', interest: '', estimated_value_lkr: '', status: 'new', temperature: 'cold', next_follow_up_at: '', customer_id: '', customerSearch: '' });
-            setIsModalOpen(true);
-          }}>
-            New Lead
-          </Button>
+          {activeTab === 'active' ? (
+            <>
+              <Button variant="outline" icon={CheckCircle2} iconSize={14} onClick={() => {
+                setActiveTab('converted');
+                setSearchTerm('');
+                if (!convertedLoaded) fetchConvertedLeads();
+              }}>
+                Past Leads
+                {convertedCount > 0 && <span className={styles.pastLeadsBadge}>{convertedCount}</span>}
+              </Button>
+              <Button variant="primary" onClick={() => {
+                setLeadToEdit(null);
+                setFormData({ name: '', email: '', phone: '', company_name: '', source: 'website', interest: '', estimated_value_lkr: '', status: 'new', temperature: 'cold', next_follow_up_at: '', customer_id: '', customerSearch: '' });
+                setIsModalOpen(true);
+              }}>
+                New Lead
+              </Button>
+            </>
+          ) : (
+            <Button variant="outline" onClick={() => { setActiveTab('active'); setSearchTerm(''); }}>
+              ← Back to Active Leads
+            </Button>
+          )}
         </div>
       </div>
 
+      {activeTab === 'converted' && (
+        <div className={styles.convertedPageHeading}>
+          <CheckCircle2 size={18} />
+          <div>
+            <h2 className={styles.convertedPageTitle}>Past Converted Leads</h2>
+            <p className={styles.convertedPageSubtitle}>{convertedCount} lead{convertedCount !== 1 ? 's' : ''} converted to deals</p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'converted' && (
+        <div style={{ maxWidth: '400px' }}>
+          <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search converted leads..." label="" />
+        </div>
+      )}
+
       {}
-      {selectedLeads.length > 0 && (
+      {activeTab === 'active' && selectedLeads.length > 0 && (
         <div className={styles.bulkActionBar}>
           <span className={styles.bulkActionText}>
             {selectedLeads.length} lead(s) selected
@@ -417,7 +482,7 @@ export default function LeadsPage() {
         </div>
       )}
 
-      <div className={`${styles.filtersBar} ${styles.filtersBarLayout}`}>
+      {activeTab === 'active' && <div className={`${styles.filtersBar} ${styles.filtersBarLayout}`}>
         <div className={styles.filtersLeft}>
           <div className={styles.viewToggleContainer}>
             <span className={styles.viewToggleLabel}>Show as:</span>
@@ -467,9 +532,83 @@ export default function LeadsPage() {
         <div style={{ flex: 1, minWidth: '350px' }}>
           <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search leads..." label="" />
         </div>
-      </div>
+      </div>}
 
-      {viewMode === 'table' && (
+      {activeTab === 'converted' && (
+        <div className={styles.tableCard}>
+          <div className={styles.convertedBanner}>
+            <CheckCircle2 size={16} />
+            <span>These leads have been converted to deals. They are read-only records for reference.</span>
+          </div>
+          <div className={styles.tableWrapper}>
+            <table className={styles.leadsTable}>
+              <thead>
+                <tr>
+                  <th>Contact Name</th>
+                  <th>Company</th>
+                  <th>Interest</th>
+                  <th>Estimated Value</th>
+                  <th>Source</th>
+                  <th>Converted On</th>
+                  <th className={styles.actionsCol}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" className={styles.emptyState}>Loading...</td>
+                  </tr>
+                ) : filteredConvertedLeads.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className={styles.emptyState}>
+                      No converted leads yet.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredConvertedLeads.map(lead => (
+                    <tr key={lead.id} className={styles.convertedRow}>
+                      <td>
+                        <div className={styles.viewToggleContainer}>
+                          <div className={`${styles.avatar} ${styles.avatarConverted}`}>
+                            {lead.name.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <span style={{ fontWeight: 600, color: '#0f172a' }}>{lead.name}</span>
+                            {lead.email && <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{lead.email}</div>}
+                          </div>
+                        </div>
+                      </td>
+                      <td>{lead.company_name || '—'}</td>
+                      <td>{lead.interest || '—'}</td>
+                      <td>{lead.estimated_value_lkr ? `Rs. ${Number(lead.estimated_value_lkr).toLocaleString()}` : '—'}</td>
+                      <td><Badge variant="default" hasDot={false}>{lead.source || '—'}</Badge></td>
+                      <td>{lead.updatedAt ? new Date(lead.updatedAt).toLocaleDateString() : '—'}</td>
+                      <td className={styles.actionsCol}>
+                        <div className={styles.headerActions}>
+                          <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
+                            <Eye size={14} />
+                          </button>
+                          {lead.deal_id && (
+                            <button
+                              className={styles.actionBtnDeal}
+                              onClick={() => router.push(`/crm/deals`)}
+                              title="View Linked Deal"
+                            >
+                              <ExternalLink size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'active' && viewMode === 'table' && (
         <div className={styles.tableCard}>
 
           <div className={styles.tableWrapper}>
@@ -565,7 +704,7 @@ export default function LeadsPage() {
         </div>
       )}
 
-      {viewMode === 'board' && (
+      {activeTab === 'active' && viewMode === 'board' && (
         <div className={styles.boardContainer}>
           {[
             { value: 'new', label: 'New' },

@@ -78,6 +78,94 @@
   border-color: var(--color-text-muted);
 }
 
+/* ── Past Leads button badge ──────────────────── */
+.pastLeadsBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: #d1fae5;
+  color: #059669;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+/* ── Converted page heading ───────────────────── */
+.convertedPageHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.1rem;
+  background: linear-gradient(90deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-lg);
+  color: #059669;
+}
+
+.convertedPageTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+}
+
+.convertedPageSubtitle {
+  font-size: 0.75rem;
+  color: #059669;
+  margin: 0;
+}
+
+/* ── Converted Leads styles ───────────────────── */
+.convertedBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: linear-gradient(90deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-bottom: 1px solid #bbf7d0;
+  color: #059669;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.convertedRow {
+  opacity: 0.9;
+  background: #f9fafb;
+}
+
+.convertedRow:hover {
+  background: #f0fdf4 !important;
+}
+
+.avatarConverted {
+  background: #d1fae5 !important;
+  color: #059669 !important;
+}
+
+.actionBtnDeal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: #ede9fe;
+  color: #7c3aed;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.actionBtnDeal:hover {
+  background: #7c3aed;
+  color: white;
+}
+
 .tableCard {
   background: #ffffff;
   border-radius: var(--radius-lg);
