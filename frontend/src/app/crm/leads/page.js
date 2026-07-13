@@ -144,6 +144,25 @@ export default function LeadsPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Extracts user-friendly error messages, with special handling for 403 permission errors
+  const getErrorMessage = (error, fallback) => {
+    const status = error?.response?.status;
+    const serverMsg = error?.response?.data?.message;
+    if (status === 403) {
+      if (serverMsg && serverMsg.includes('Required permission:')) {
+        const perm = serverMsg.split('Required permission:')[1]?.trim() || '';
+        const parts = perm.split('_'); // e.g. ['crm', 'leads', 'create']
+        const action = parts[parts.length - 1];
+        const module = parts[parts.length - 2];
+        const actionLabel = action === 'create' ? 'create' : action === 'update' ? 'edit' : action === 'delete' ? 'delete' : action;
+        const moduleLabel = module ? module.charAt(0).toUpperCase() + module.slice(1) : 'this resource';
+        return `⚠️ You don't have permission to ${actionLabel} ${moduleLabel}. Please contact your administrator.`;
+      }
+      return `⚠️ ${serverMsg || "You don't have permission to perform this action. Please contact your administrator."}`;
+    }
+    return serverMsg || fallback;
+  };
+
   const handleSaveLead = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -175,7 +194,7 @@ export default function LeadsPage() {
       }
     } catch (error) {
       console.error('Failed to save lead:', error);
-      alert('Error saving lead. Please check your input.');
+      alert(getErrorMessage(error, 'Error saving lead. Please check your input.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -211,7 +230,7 @@ export default function LeadsPage() {
       }
     } catch (error) {
       console.error('Failed to delete lead:', error);
-      alert('Error deleting lead.');
+      alert(getErrorMessage(error, 'Error deleting lead.'));
     }
     setOpenMenuId(null);
   };
@@ -227,7 +246,7 @@ export default function LeadsPage() {
       }
     } catch (error) {
       console.error('Failed to bulk delete:', error);
-      alert('Error deleting selected leads.');
+      alert(getErrorMessage(error, 'Error deleting selected leads.'));
     }
   };
 
@@ -243,7 +262,7 @@ export default function LeadsPage() {
       }
     } catch (error) {
       console.error('Failed to bulk reassign:', error);
-      alert('Error reassigning selected leads.');
+      alert(getErrorMessage(error, 'Error reassigning selected leads.'));
     }
   };
 
@@ -252,7 +271,7 @@ export default function LeadsPage() {
       await leadService.exportLeads();
     } catch (error) {
       console.error('Failed to export leads:', error);
-      alert('Error exporting leads.');
+      alert(getErrorMessage(error, 'Error exporting leads.'));
     }
   };
 
@@ -269,7 +288,7 @@ export default function LeadsPage() {
       }
     } catch (error) {
       console.error('Failed to import leads:', error);
-      alert('Error importing leads. Please check your CSV format.');
+      alert(getErrorMessage(error, 'Error importing leads. Please check your CSV format.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -313,7 +332,7 @@ export default function LeadsPage() {
       }
     } catch (error) {
       console.error('Failed to convert lead:', error);
-      alert('Error converting lead.');
+      alert(getErrorMessage(error, 'Error converting lead.'));
     } finally {
       setIsSubmitting(false);
     }
