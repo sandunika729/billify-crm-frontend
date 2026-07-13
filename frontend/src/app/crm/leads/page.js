@@ -1033,8 +1033,10 @@ export default function LeadsPage() {
                 background: 'var(--color-surface)',
                 maxHeight: '140px', overflowY: 'auto'
               }}>
-                {users.map(u => {
-                  const isSelected = assigneeIds.includes(u.id);
+                {users
+                  .filter(u => u.id !== (leadToEdit ? leadToEdit.owner_id : user?.id))
+                  .map(u => {
+                    const isSelected = assigneeIds.includes(u.id);
                   const initials = `${u.first_name?.[0] || ''}${u.last_name?.[0] || ''}`.toUpperCase();
                   return (
                     <button
