@@ -415,7 +415,7 @@ export default function TeamMembersPage() {
 
                         { }
                         <td>
-                          <Badge variant={u.is_active ? 'active' : 'inactive'} style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
+                          <Badge variant={u.is_active ? 'active' : 'inactive'}>
                             {u.is_active ? 'Active' : 'Inactive'}
                           </Badge>
                         </td>
@@ -798,7 +798,7 @@ export default function TeamMembersPage() {
               <div>
                 <label className={styles.fieldLabel}>Status</label>
                 <div style={{ marginTop: '0.25rem' }}>
-                  <Badge variant={viewUser.is_active ? 'active' : 'inactive'} style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
+                  <Badge variant={viewUser.is_active ? 'active' : 'inactive'}>
                     {viewUser.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>

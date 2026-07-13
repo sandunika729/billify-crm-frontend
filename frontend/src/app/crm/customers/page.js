@@ -342,12 +342,12 @@ export default function CustomersPage() {
                       {customer.phone || '-'}
                     </td>
                     <td>
-                      <Badge variant={getTypeVariant(customer.type || 'retail')} style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
+                      <Badge variant={getTypeVariant(customer.type || 'retail')}>
                         {customer.type || 'retail'}
                       </Badge>
                     </td>
                     <td>
-                      <Badge variant={statusVariant(customer.status || 'active')} style={{ fontSize: '0.62rem', padding: '0.15rem 0.5rem' }}>
+                      <Badge variant={statusVariant(customer.status || 'active')}>
                         {customer.status || 'active'}
                       </Badge>
                     </td>
