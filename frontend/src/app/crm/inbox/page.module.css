@@ -148,19 +148,17 @@
 .feedItem {
   display: flex;
   gap: 1.25rem;
-  padding: 1.25rem 1.5rem;
-  background: white;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  background: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .feedItem:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transform: translateY(-1px);
-  border-color: var(--color-primary-light);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .avatarWrapper {
@@ -265,9 +263,9 @@
 }
 
 .itemTitle {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--color-text-primary);
-  font-weight: 500;
+  font-weight: 400;
   margin: 0 0 0.25rem 0;
   word-break: break-word;
   overflow-wrap: break-word;
