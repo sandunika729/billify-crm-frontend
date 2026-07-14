@@ -178,6 +178,7 @@
   text-decoration: none;
   transition: color var(--transition-fast);
   display: block;
+  white-space: nowrap;
 }
 
 .primaryTextLink:hover {
