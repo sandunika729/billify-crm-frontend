@@ -219,10 +219,10 @@ export default function TodosPage() {
                   {done && (
                     <div
                       style={{
-                        position: 'absolute', top: 0, right: 0,
                         background: '#f0fdf4', color: '#10b981',
                         padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-full)',
-                        fontSize: '0.65rem', fontWeight: 600, border: '1px solid #bbf7d0'
+                        fontSize: '0.65rem', fontWeight: 600, border: '1px solid #bbf7d0',
+                        flexShrink: 0
                       }}
                     >
                       Done
