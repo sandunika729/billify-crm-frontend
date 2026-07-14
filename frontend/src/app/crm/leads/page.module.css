@@ -321,8 +321,9 @@
 }
 
 .actionsCol {
-  width: 60px;
+  width: 130px;
   text-align: right;
+  white-space: nowrap;
 }
 
 .headerActions {
@@ -330,6 +331,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 0.25rem;
+  flex-wrap: nowrap;
 }
 
 .actionBtn {
