@@ -325,6 +325,13 @@
   text-align: right;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
 .actionBtn {
   background: transparent;
   border: none;
