@@ -589,7 +589,7 @@ export default function LeadsPage() {
                             {lead.name.substring(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <span style={{ fontWeight: 600, color: '#0f172a' }}>{lead.name}</span>
+                            <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>{lead.name}</span>
                             {lead.email && <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{lead.email}</div>}
                           </div>
                         </div>
@@ -676,7 +676,7 @@ export default function LeadsPage() {
                           <div className={styles.avatar}>
                             {lead.name.substring(0, 2).toUpperCase()}
                           </div>
-                          <span style={{ fontWeight: 600, color: '#0f172a' }}>{lead.name}</span>
+                          <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>{lead.name}</span>
                         </div>
                       </td>
                       <td>
