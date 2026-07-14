@@ -321,17 +321,8 @@
 }
 
 .actionsCol {
-  width: 130px;
+  width: 60px;
   text-align: right;
-  white-space: nowrap;
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.25rem;
-  flex-wrap: nowrap;
 }
 
 .actionBtn {
