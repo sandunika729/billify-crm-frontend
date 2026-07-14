@@ -13,6 +13,7 @@ import OverdueBell from '../../../components/crm/OverdueBell';
 import SearchBar from '../../../components/ui/SearchBar';
 import FilterSelect from '../../../components/ui/FilterSelect';
 import CalendarPage from '../calendar/page';
+import { useAuth } from '../../../context/AuthContext';
 
 const ACTIVITY_TYPES = [
   { value: 'call', label: 'Call', icon: Phone, color: '#3b82f6' },
@@ -32,6 +33,7 @@ const ENTITY_TYPES = [
 
 export default function ActivitiesPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -205,6 +207,11 @@ export default function ActivitiesPage() {
   };
 
   const filteredActivities = activities.filter(a => {
+    if (user && user.role !== 'admin' && user.role !== 'Super Admin') {
+      if (a.owner_id !== user.id && a.user_id !== user.id && a.created_by !== user.id) {
+        return false;
+      }
+    }
     if (filterType && a.activity_type !== filterType) return false;
     if (filterDone === 'pending' && a.completed_at) return false;
     if (filterDone === 'done' && !a.completed_at) return false;
