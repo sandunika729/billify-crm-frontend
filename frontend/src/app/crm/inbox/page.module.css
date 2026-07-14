@@ -269,9 +269,9 @@
   color: var(--color-text-primary);
   font-weight: 500;
   margin: 0 0 0.25rem 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .itemSnippet {
@@ -641,5 +641,24 @@
 
   .tableWrapper {
     overflow-x: auto;
+  }
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .itemHeader {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .itemName {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
   }
 }
