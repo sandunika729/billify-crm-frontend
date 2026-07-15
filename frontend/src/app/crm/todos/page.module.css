@@ -121,10 +121,10 @@
 }
 
 /* ── Todo list ── */
-.todoList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
 }
 
 .emptyState {

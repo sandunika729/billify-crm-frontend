@@ -706,7 +706,7 @@ export default function DealsPage() {
                             <td>
                               {deal.customer?.name || deal.lead?.name || 'N/A'}
                             </td>
-                            <td>
+                            <td style={{ whiteSpace: 'nowrap' }}>
                               {deal.value_lkr ? `Rs. ${Number(deal.value_lkr).toLocaleString()}` : '-'}
                             </td>
                             <td>
