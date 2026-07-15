@@ -729,7 +729,7 @@ export default function DealsPage() {
                               {deal.expected_close_at ? new Date(deal.expected_close_at).toLocaleDateString() : 'N/A'}
                             </td>
                             <td className={styles.actionsCol}>
-                              <div className={styles.headerActions}>
+                              <div className={styles.tableActions}>
                                 <button className={styles.actionBtnPrimary} onClick={() => { setViewDeal(deal); setIsDetailModalOpen(true); }} title="View Details">
                                   <Eye size={12} />
                                 </button>

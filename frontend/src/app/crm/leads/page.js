@@ -600,7 +600,7 @@ export default function LeadsPage() {
                       <td><Badge variant="default" hasDot={false}>{lead.source || '—'}</Badge></td>
                       <td>{lead.updatedAt ? new Date(lead.updatedAt).toLocaleDateString() : '—'}</td>
                       <td className={styles.actionsCol}>
-                        <div className={styles.headerActions}>
+                        <div className={styles.tableActions}>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
                             <Eye size={12} />
                           </button>
@@ -720,7 +720,7 @@ export default function LeadsPage() {
                         </div>
                       </td>
                       <td className={styles.actionsCol}>
-                        <div className={styles.headerActions}>
+                        <div className={styles.tableActions}>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
                             <Eye size={12} />
                           </button>
