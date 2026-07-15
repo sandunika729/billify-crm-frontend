@@ -514,8 +514,8 @@ export default function DealsPage() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <div className={styles.viewToggleContainer}>
             <span className={styles.viewToggleLabel}>Show as:</span>
             <div className={styles.viewToggle}>
@@ -572,7 +572,7 @@ export default function DealsPage() {
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: '350px' }}>
+        <div style={{ flex: 1, minWidth: '200px' }}>
           <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search deals or customers..." label="" />
         </div>
       </div>

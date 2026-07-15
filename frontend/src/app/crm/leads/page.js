@@ -545,7 +545,7 @@ export default function LeadsPage() {
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: '350px' }}>
+        <div style={{ flex: 1, minWidth: '200px' }}>
           <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search leads..." label="" />
         </div>
       </div>}
