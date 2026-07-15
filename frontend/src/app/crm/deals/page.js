@@ -700,7 +700,7 @@ export default function DealsPage() {
                                 <div className={styles.avatar} style={{ width: '25px', height: '25px', minWidth: '25px', fontSize: '0.65rem', marginRight: '0.75rem', borderRadius: '50%', background: 'var(--color-primary-light, #e8f0fe)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>
                                   {deal.title.substring(0, 2).toUpperCase()}
                                 </div>
-                                <span style={{ fontWeight: 600, color: '#0f172a' }}>{deal.title}</span>
+                                <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>{deal.title}</span>
                               </div>
                             </td>
                             <td>
