@@ -184,7 +184,7 @@ export default function SupportTicketsPage() {
       return <span style={{ background:'#fee2e2', color:'#ef4444', padding:'3px 8px', borderRadius:99, fontSize:'0.72rem', fontWeight:700, display:'inline-flex', gap:4, alignItems:'center' }}>Overdue</span>;
     if (hoursLeft <= 4)
       return <span style={{ background:'#fef3c7', color:'#d97706', padding:'3px 8px', borderRadius:99, fontSize:'0.72rem', fontWeight:700, display:'inline-flex', gap:4, alignItems:'center' }}><Clock size={11}/>Due in {Math.ceil(hoursLeft)}h</span>;
-    return <span style={{ background:'#d1fae5', color:'#059669', padding:'3px 8px', borderRadius:99, fontSize:'0.72rem', fontWeight:700, display:'inline-flex', gap:4, alignItems:'center' }}><CheckCircle2 size={11}/>On Track</span>;
+    return <span style={{ background:'#d1fae5', color:'#059669', padding:'3px 8px', borderRadius:99, fontSize:'0.72rem', fontWeight:700, display:'inline-flex', gap:4, alignItems:'center', whiteSpace:'nowrap' }}>On Track</span>;
   };
 
   const filteredTickets = tickets.filter(t => {
@@ -437,7 +437,7 @@ export default function SupportTicketsPage() {
                         <div style={{ fontWeight:600, color:'#0f172a', fontSize:'0.875rem' }}>{ticket.subject}</div>
 
                       </td>
-                      <td style={{ fontSize:'0.85rem', color:'#334155' }}>{ticket.customer?.name || ticket.Customer?.name || 'Unknown'}</td>
+                      <td style={{ fontSize:'0.85rem', color:'#334155', whiteSpace: 'nowrap' }}>{ticket.customer?.name || ticket.Customer?.name || 'Unknown'}</td>
                       <td>
                         <span style={{ background:`${pc.color}15`, color:pc.color, border: `1px solid ${pc.color}30`, padding:'0.15rem 0.6rem', borderRadius:99, fontSize:'0.62rem', fontWeight:700 }}>{pc.label}</span>
                       </td>

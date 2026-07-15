@@ -719,7 +719,8 @@ export default function DealsPage() {
                                   fontSize: '0.7rem',
                                   fontWeight: 600,
                                   backgroundColor: stage.color ? `${stage.color}1A` : '#f1f5f9',
-                                  color: stage.color || '#64748b'
+                                  color: stage.color || '#64748b',
+                                  whiteSpace: 'nowrap'
                                 }}>
                                   {stage.name}
                                 </span>
