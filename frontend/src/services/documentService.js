@@ -38,6 +38,18 @@ const documentService = {
   getDownloadUrl: (id) => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
     return `${API_URL}/crm/documents/${id}/download`;
+  },
+
+  downloadDocument: async (id) => {
+    try {
+      const response = await api.get(`/crm/documents/${id}/download`, {
+        responseType: 'blob',
+      });
+      return response;
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      throw error;
+    }
   }
 };
 

@@ -5,7 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import styles from './page.module.css';
 import { Search, Plus, Upload, Folder, FileText, Image, File, Download, Trash2, Eye, X, Calendar, User, ChevronDown, ChevronRight, Layers } from 'lucide-react';
 import documentService from '../../../services/documentService';
-import { getAccessToken } from '../../../services/api';
+
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
@@ -139,31 +139,26 @@ export default function DocumentsPage() {
     }
   };
 
-  const handleDownload = (id) => {
-    const url = documentService.getDownloadUrl(id);
-    const token = typeof window !== 'undefined' ? getAccessToken() : null;
-
-
-    fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (!response.ok) throw new Error('Download failed');
-        const filename = response.headers.get('content-disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'document';
-        return response.blob().then(blob => ({ blob, filename }));
-      })
-      .then(({ blob, filename }) => {
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-      })
-      .catch(error => {
-        console.error('Download error:', error);
-        alert('Failed to download document');
-      });
+  const handleDownload = async (id, originalName) => {
+    try {
+      const response = await documentService.downloadDocument(id);
+      const blob = new Blob([response.data]);
+      const contentDisposition = response.headers?.['content-disposition'];
+      const filename = contentDisposition
+        ? contentDisposition.split('filename=')[1]?.replace(/"/g, '') || originalName || 'document'
+        : originalName || 'document';
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download document. The file may no longer exist on the server.');
+    }
   };
 
   const handleFileChange = (e) => {
@@ -333,7 +328,7 @@ export default function DocumentsPage() {
                         </td>
                         <td className={styles.actionsCol}>
                           <div className={styles.rowActions}>
-                            <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id)}><Download size={12} /></button>
+                            <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id, doc.original_name)}><Download size={12} /></button>
                             <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                           </div>
                         </td>
@@ -368,7 +363,7 @@ export default function DocumentsPage() {
                     </td>
                     <td className={styles.actionsCol}>
                       <div className={styles.rowActions}>
-                        <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id)}><Download size={12} /></button>
+                        <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id, doc.original_name)}><Download size={12} /></button>
                         <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                       </div>
                     </td>
