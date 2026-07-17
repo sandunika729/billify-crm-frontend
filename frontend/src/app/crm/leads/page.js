@@ -707,7 +707,11 @@ export default function LeadsPage() {
                           </div>
                           <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
                             {lead.name}
-                            <button onClick={(e) => handleToggleFlag(e, lead)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '4px' }}>
+                            <button 
+                              onClick={(e) => handleToggleFlag(e, lead)} 
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '4px' }}
+                              title={lead.flag_status === 'completed' ? 'Completed' : lead.flag_status === 'flagged' ? 'Flagged' : 'Mark for Follow-up'}
+                            >
                               {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={12} color="#cbd5e1" fill="none" />}
                               {lead.flag_status === 'flagged' && <Flag size={12} color="#ef4444" fill="#ef4444" />}
                               {lead.flag_status === 'completed' && <CheckCircle2 size={12} color="#10b981" />}
@@ -822,7 +826,11 @@ export default function LeadsPage() {
                         <div className={styles.cardHeaderInfo}>
                           <div className={styles.cardName} style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {lead.name}
-                            <button onClick={(e) => handleToggleFlag(e, lead)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0' }}>
+                            <button 
+                              onClick={(e) => handleToggleFlag(e, lead)} 
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0' }}
+                              title={lead.flag_status === 'completed' ? 'Completed' : lead.flag_status === 'flagged' ? 'Flagged' : 'Mark for Follow-up'}
+                            >
                               {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={10} color="#cbd5e1" fill="none" />}
                               {lead.flag_status === 'flagged' && <Flag size={10} color="#ef4444" fill="#ef4444" />}
                               {lead.flag_status === 'completed' && <CheckCircle2 size={10} color="#10b981" />}
