@@ -712,9 +712,9 @@ export default function LeadsPage() {
                               style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '4px' }}
                               title={lead.flag_status === 'completed' ? 'Completed' : lead.flag_status === 'flagged' ? 'Flagged' : 'Mark for Follow-up'}
                             >
-                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={12} color="#cbd5e1" fill="none" strokeWidth={3} />}
-                              {lead.flag_status === 'flagged' && <Flag size={12} color="#ef4444" fill="#ef4444" strokeWidth={3} />}
-                              {lead.flag_status === 'completed' && <CheckCircle2 size={12} color="#10b981" strokeWidth={3} />}
+                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={12} color="#94a3b8" fill="none" />}
+                              {lead.flag_status === 'flagged' && <Flag size={12} color="#ef4444" fill="#ef4444" />}
+                              {lead.flag_status === 'completed' && <CheckCircle2 size={12} color="#10b981" />}
                             </button>
                           </span>
                         </div>
@@ -831,9 +831,9 @@ export default function LeadsPage() {
                               style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0', flexShrink: 0 }}
                               title={lead.flag_status === 'completed' ? 'Completed' : lead.flag_status === 'flagged' ? 'Flagged' : 'Mark for Follow-up'}
                             >
-                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={10} color="#cbd5e1" fill="none" strokeWidth={3} />}
-                              {lead.flag_status === 'flagged' && <Flag size={10} color="#ef4444" fill="#ef4444" strokeWidth={3} />}
-                              {lead.flag_status === 'completed' && <CheckCircle2 size={10} color="#10b981" strokeWidth={3} />}
+                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={10} color="#94a3b8" fill="none" />}
+                              {lead.flag_status === 'flagged' && <Flag size={10} color="#ef4444" fill="#ef4444" />}
+                              {lead.flag_status === 'completed' && <CheckCircle2 size={10} color="#10b981" />}
                             </button>
                           </div>
                           <div className={styles.cardTime} style={{ fontSize: '0.65rem' }}>
