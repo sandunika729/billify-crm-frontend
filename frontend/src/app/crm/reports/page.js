@@ -60,6 +60,12 @@ export default function ReportsPage() {
     fetchReports();
   }, [dateFrom, dateTo]);
 
+  const handleDateFromChange = (e) => {
+    const val = e.target.value;
+    setDateFrom(val);
+    if (dateTo < val) setDateTo(val);
+  };
+
   const fetchReports = async () => {
     setLoading(true);
     try {
@@ -265,19 +271,21 @@ export default function ReportsPage() {
         return (
           <div>
             {/* Stat Cards */}
-            <div className={styles.kpiGrid}>
-              {[
-                { label: 'Total Won', value: totalWon },
-                { label: 'Total Lost', value: totalLost },
-                { label: 'Win Rate', value: `${winRate}%`, primary: true },
-              ].map(stat => (
-                <div key={stat.label} className={`${styles.kpiCard} ${stat.primary ? styles.primaryCard : ''}`}>
-                  <div className={styles.kpiContent}>
-                    <h3 className={styles.kpiLabel}>{stat.label}</h3>
-                    <p className={styles.kpiValue}>{stat.value}</p>
+            <div className={styles.statSection}>
+              <div className={styles.kpiGrid}>
+                {[
+                  { label: 'Total Won', value: totalWon },
+                  { label: 'Total Lost', value: totalLost },
+                  { label: 'Win Rate', value: `${winRate}%` },
+                ].map(stat => (
+                  <div key={stat.label} className={styles.kpiCard}>
+                    <div className={styles.kpiContent}>
+                      <h3 className={styles.kpiLabel}>{stat.label}</h3>
+                      <p className={styles.kpiValue}>{stat.value}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
@@ -326,18 +334,20 @@ export default function ReportsPage() {
         const maxR = Math.max(...reasonBreakdown.map(r => r.count), 1);
         return (
           <div>
-            <div className={styles.kpiGrid}>
-              {[
-                { label: 'Total Lost Deals', value: totalLost },
-                { label: 'Total Value Lost', value: `Rs. ${totalValueLost.toLocaleString()}`, primary: true }
-              ].map(stat => (
-                <div key={stat.label} className={`${styles.kpiCard} ${stat.primary ? styles.primaryCard : ''}`}>
-                  <div className={styles.kpiContent}>
-                    <h3 className={styles.kpiLabel}>{stat.label}</h3>
-                    <p className={styles.kpiValue}>{stat.value}</p>
+            <div className={styles.statSection}>
+              <div className={styles.kpiGrid}>
+                {[
+                  { label: 'Total Lost Deals', value: totalLost },
+                  { label: 'Total Value Lost', value: `Rs. ${totalValueLost.toLocaleString()}` }
+                ].map(stat => (
+                  <div key={stat.label} className={styles.kpiCard}>
+                    <div className={styles.kpiContent}>
+                      <h3 className={styles.kpiLabel}>{stat.label}</h3>
+                      <p className={styles.kpiValue}>{stat.value}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
             {reasonBreakdown.length > 0 && (
               <div style={{ marginBottom: '1.5rem' }}>
@@ -355,21 +365,25 @@ export default function ReportsPage() {
                 ))}
               </div>
             )}
-            <table className={styles.dealsTable}>
-              <thead><tr><th>Deal</th><th>Customer</th><th>Owner</th><th className={styles.textRight}>Value</th><th>Reason</th><th>Date Lost</th></tr></thead>
-              <tbody>
-                {lostList.filter(r => !tableSearchTerm || r.title.toLowerCase().includes(tableSearchTerm.toLowerCase()) || r.customer.toLowerCase().includes(tableSearchTerm.toLowerCase())).map((row, idx) => (
-                  <tr key={idx}>
-                    <td className={styles.primaryText}>{row.title}</td>
-                    <td>{row.customer}</td>
-                    <td>{row.owner}</td>
-                    <td className={styles.textRight}>Rs. {row.value_lkr.toLocaleString()}</td>
-                    <td><span style={{ background: '#fee2e2', color: '#ef4444', padding: '0.15rem 0.5rem', borderRadius: 99, fontSize: '0.75rem', fontWeight: 600 }}>{row.reason}</span></td>
-                    <td>{new Date(row.date).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className={styles.tableCard}>
+              <div className={styles.tableWrapper}>
+                <table className={styles.dealsTable}>
+                  <thead><tr><th>Deal</th><th>Customer</th><th>Owner</th><th className={styles.textRight}>Value</th><th>Reason</th><th>Date Lost</th></tr></thead>
+                  <tbody>
+                    {lostList.filter(r => !tableSearchTerm || r.title.toLowerCase().includes(tableSearchTerm.toLowerCase()) || r.customer.toLowerCase().includes(tableSearchTerm.toLowerCase())).map((row, idx) => (
+                      <tr key={idx}>
+                        <td className={styles.primaryText}>{row.title}</td>
+                        <td>{row.customer}</td>
+                        <td>{row.owner}</td>
+                        <td className={styles.textRight}>Rs. {row.value_lkr.toLocaleString()}</td>
+                        <td><span style={{ background: '#fee2e2', color: '#ef4444', padding: '0.15rem 0.5rem', borderRadius: 99, fontSize: '0.75rem', fontWeight: 600 }}>{row.reason}</span></td>
+                        <td>{new Date(row.date).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         );
       }
@@ -379,29 +393,35 @@ export default function ReportsPage() {
         const STATUS_COLORS = { draft: '#94a3b8', sent: '#3b82f6', viewed: '#8b5cf6', accepted: '#10b981', rejected: '#ef4444', expired: '#f59e0b', converted: '#06b6d4' };
         return (
           <div>
-            <div className={styles.kpiGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
-              {breakdown.map(r => (
-                <div key={r.status} className={styles.kpiCard}>
-                  <div className={styles.kpiContent}>
-                    <h3 className={styles.kpiLabel} style={{textTransform: 'capitalize'}}>{r.status} (Rs. {r.total_value.toLocaleString()})</h3>
-                    <p className={styles.kpiValue}>{r.count}</p>
+            <div className={styles.statSection}>
+              <div className={styles.kpiGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
+                {breakdown.map(r => (
+                  <div key={r.status} className={styles.kpiCard}>
+                    <div className={styles.kpiContent}>
+                      <h3 className={styles.kpiLabel} style={{textTransform: 'capitalize'}}>{r.status} (Rs. {r.total_value.toLocaleString()})</h3>
+                      <p className={styles.kpiValue}>{r.count}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <table className={styles.dealsTable}>
-              <thead><tr><th>Status</th><th className={styles.textCenter}>Count</th><th className={styles.textCenter}>% of Total</th><th className={styles.textRight}>Total Value</th></tr></thead>
-              <tbody>
-                {breakdown.map((row, idx) => (
-                  <tr key={idx}>
-                    <td><span style={{ background: `${STATUS_COLORS[row.status]}18`, color: STATUS_COLORS[row.status], padding: '0.2rem 0.6rem', borderRadius: 99, fontSize: '0.78rem', fontWeight: 700, textTransform: 'capitalize' }}>{row.status}</span></td>
-                    <td className={styles.textCenter}>{row.count}</td>
-                    <td className={styles.textCenter}>{totalQuotes > 0 ? Math.round((row.count / totalQuotes) * 100) : 0}%</td>
-                    <td className={`${styles.textRight} ${styles.primaryText}`}>Rs. {row.total_value.toLocaleString()}</td>
-                  </tr>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </div>
+            <div className={styles.tableCard}>
+              <div className={styles.tableWrapper}>
+                <table className={styles.dealsTable}>
+                  <thead><tr><th>Status</th><th className={styles.textCenter}>Count</th><th className={styles.textCenter}>% of Total</th><th className={styles.textRight}>Total Value</th></tr></thead>
+                  <tbody>
+                    {breakdown.map((row, idx) => (
+                      <tr key={idx}>
+                        <td><span style={{ background: `${STATUS_COLORS[row.status]}18`, color: STATUS_COLORS[row.status], padding: '0.2rem 0.6rem', borderRadius: 99, fontSize: '0.78rem', fontWeight: 700, textTransform: 'capitalize' }}>{row.status}</span></td>
+                        <td className={styles.textCenter}>{row.count}</td>
+                        <td className={styles.textCenter}>{totalQuotes > 0 ? Math.round((row.count / totalQuotes) * 100) : 0}%</td>
+                        <td className={`${styles.textRight} ${styles.primaryText}`}>Rs. {row.total_value.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         );
       }
@@ -410,37 +430,43 @@ export default function ReportsPage() {
         const { timeline = [], totalSent = 0, totalAccepted = 0, overallRate = 0 } = qc;
         return (
           <div>
-            <div className={styles.kpiGrid}>
-              {[
-                { label: 'Total Quotes Sent', value: totalSent },
-                { label: 'Accepted / Converted', value: totalAccepted },
-                { label: 'Overall Conversion Rate', value: `${overallRate}%`, primary: true }
-              ].map(stat => (
-                <div key={stat.label} className={`${styles.kpiCard} ${stat.primary ? styles.primaryCard : ''}`}>
-                  <div className={styles.kpiContent}>
-                    <h3 className={styles.kpiLabel}>{stat.label}</h3>
-                    <p className={styles.kpiValue}>{stat.value}</p>
+            <div className={styles.statSection}>
+              <div className={styles.kpiGrid}>
+                {[
+                  { label: 'Total Quotes Sent', value: totalSent },
+                  { label: 'Accepted / Converted', value: totalAccepted },
+                  { label: 'Overall Conversion Rate', value: `${overallRate}%` }
+                ].map(stat => (
+                  <div key={stat.label} className={styles.kpiCard}>
+                    <div className={styles.kpiContent}>
+                      <h3 className={styles.kpiLabel}>{stat.label}</h3>
+                      <p className={styles.kpiValue}>{stat.value}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <table className={styles.dealsTable}>
-              <thead><tr><th>Month</th><th className={styles.textCenter}>Total</th><th className={styles.textCenter}>Accepted</th><th className={styles.textCenter}>Rejected</th><th className={styles.textCenter}>Conversion Rate</th></tr></thead>
-              <tbody>
-                {timeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
-                  <tr key={idx}>
-                    <td>{row.month}</td>
-                    <td className={styles.textCenter}>{row.total}</td>
-                    <td className={`${styles.textCenter}`} style={{ color: '#10b981', fontWeight: 600 }}>{row.accepted}</td>
-                    <td className={`${styles.textCenter}`} style={{ color: '#ef4444' }}>{row.rejected}</td>
-                    <td className={styles.textCenter}>
-                      <span style={{ background: row.conversionRate >= 50 ? '#d1fae5' : '#fee2e2', color: row.conversionRate >= 50 ? '#059669' : '#ef4444', padding: '0.15rem 0.5rem', borderRadius: 99, fontSize: '0.78rem', fontWeight: 700 }}>{row.conversionRate}%</span>
-                    </td>
-                  </tr>
                 ))}
-                {timeline.length === 0 && <tr><td colSpan="5" className={styles.emptyState}>No data found</td></tr>}
-              </tbody>
-            </table>
+              </div>
+            </div>
+            <div className={styles.tableCard}>
+              <div className={styles.tableWrapper}>
+                <table className={styles.dealsTable}>
+                  <thead><tr><th>Month</th><th className={styles.textCenter}>Total</th><th className={styles.textCenter}>Accepted</th><th className={styles.textCenter}>Rejected</th><th className={styles.textCenter}>Conversion Rate</th></tr></thead>
+                  <tbody>
+                    {timeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
+                      <tr key={idx}>
+                        <td>{row.month}</td>
+                        <td className={styles.textCenter}>{row.total}</td>
+                        <td className={`${styles.textCenter}`} style={{ color: '#10b981', fontWeight: 600 }}>{row.accepted}</td>
+                        <td className={`${styles.textCenter}`} style={{ color: '#ef4444' }}>{row.rejected}</td>
+                        <td className={styles.textCenter}>
+                          <span style={{ background: row.conversionRate >= 50 ? '#d1fae5' : '#fee2e2', color: row.conversionRate >= 50 ? '#059669' : '#ef4444', padding: '0.15rem 0.5rem', borderRadius: 99, fontSize: '0.78rem', fontWeight: 700 }}>{row.conversionRate}%</span>
+                        </td>
+                      </tr>
+                    ))}
+                    {timeline.length === 0 && <tr><td colSpan="5" className={styles.emptyState}>No data found</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         );
       }
@@ -450,24 +476,29 @@ export default function ReportsPage() {
         const maxSrc = Math.max(...bySource.map(s => s.count), 1);
         return (
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-            <div>
-              <div className={styles.kpiGrid} style={{ gridTemplateColumns: '1fr', marginBottom: '1rem' }}>
-                <div className={`${styles.kpiCard} ${styles.primaryCard}`}>
-                  <div className={styles.kpiContent}>
-                    <h3 className={styles.kpiLabel}>New Customers</h3>
-                    <p className={styles.kpiValue}>{total}</p>
+              <div className={styles.statSection}>
+                <div className={styles.kpiGrid} style={{ gridTemplateColumns: '1fr' }}>
+                  <div className={styles.kpiCard}>
+                    <div className={styles.kpiContent}>
+                      <h3 className={styles.kpiLabel}>New Customers</h3>
+                      <p className={styles.kpiValue}>{total}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <table className={styles.dealsTable}>
-                <thead><tr><th>Month</th><th className={styles.textRight}>New Customers</th></tr></thead>
-                <tbody>
-                  {ncTimeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
-                    <tr key={idx}><td>{row.month}</td><td className={`${styles.textRight} ${styles.primaryText}`}>{row.count}</td></tr>
-                  ))}
-                  {ncTimeline.length === 0 && <tr><td colSpan="2" className={styles.emptyState}>No data found</td></tr>}
-                </tbody>
-              </table>
+              <div className={styles.tableCard}>
+                <div className={styles.tableWrapper}>
+                  <table className={styles.dealsTable}>
+                    <thead><tr><th>Month</th><th className={styles.textRight}>New Customers</th></tr></thead>
+                    <tbody>
+                      {ncTimeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
+                        <tr key={idx}><td>{row.month}</td><td className={`${styles.textRight} ${styles.primaryText}`}>{row.count}</td></tr>
+                      ))}
+                      {ncTimeline.length === 0 && <tr><td colSpan="2" className={styles.emptyState}>No data found</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
             <div>
               <h4 style={{ fontSize: '0.82rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>By Source</h4>
@@ -490,9 +521,11 @@ export default function ReportsPage() {
         const topC = reportsData.topCustomersByRevenue || [];
         const filtered = topC.filter(r => !tableSearchTerm || r.name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.dealsTable}>
-            <thead><tr><th>Rank</th><th>Customer</th><th>Type</th><th className={styles.textCenter}>Deals Won</th><th className={styles.textRight}>Total Revenue</th></tr></thead>
-            <tbody>
+          <div className={styles.tableCard}>
+            <div className={styles.tableWrapper}>
+              <table className={styles.dealsTable}>
+                <thead><tr><th>Rank</th><th>Customer</th><th>Type</th><th className={styles.textCenter}>Deals Won</th><th className={styles.textRight}>Total Revenue</th></tr></thead>
+                <tbody>
               {filtered.map((row, idx) => (
                 <tr key={idx}>
                   <td><span style={{ background: idx === 0 ? '#fef3c7' : idx === 1 ? '#f1f5f9' : idx === 2 ? '#fef3c7' : 'transparent', color: idx < 3 ? '#92400e' : '#64748b', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: 6 }}>#{row.rank}</span></td>
@@ -506,8 +539,10 @@ export default function ReportsPage() {
                 </tr>
               ))}
               {filtered.length === 0 && <tr><td colSpan="5" className={styles.emptyState}>No data found</td></tr>}
-            </tbody>
-          </table>
+                </tbody>
+              </table>
+            </div>
+          </div>
         );
       }
       default:
@@ -572,7 +607,7 @@ export default function ReportsPage() {
               className={styles.dateFilter}
               value={dateFrom}
               max={dateTo}
-              onChange={(e) => setDateFrom(e.target.value)}
+              onChange={handleDateFromChange}
             />
             <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>To</span>
             <input
@@ -583,6 +618,7 @@ export default function ReportsPage() {
               max={new Date().toISOString().slice(0, 10)}
               onChange={(e) => setDateTo(e.target.value)}
             />
+            <span style={{ fontSize: '11px', color: '#94a3b8', fontStyle: 'italic' }}>Set same date for single day</span>
           </div>
         </div>
 
