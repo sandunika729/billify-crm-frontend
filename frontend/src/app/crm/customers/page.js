@@ -124,6 +124,15 @@ export default function CustomersPage() {
 
   const handleSaveCustomer = async (e) => {
     e.preventDefault();
+
+    if (formData.phone) {
+      const phoneRegex = /^[+]?[\d\s-]{10,}$/;
+      if (!phoneRegex.test(formData.phone.trim())) {
+        alert("Please enter a valid mobile number (minimum 10 digits).");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     try {
       const payload = { ...formData };

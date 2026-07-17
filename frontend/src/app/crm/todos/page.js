@@ -143,7 +143,7 @@ export default function TodosPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Button variant="primary" onClick={() => { resetForm(); setIsModalOpen(true); }}>
-             Add To-Do
+            Add To-Do
           </Button>
         </div>
       </div>
