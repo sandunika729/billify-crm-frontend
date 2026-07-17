@@ -61,10 +61,10 @@ export default function ReportsPage() {
   const fetchReports = async () => {
     setLoading(true);
     try {
-      // Calculate month boundaries from the selected date
+      // Calculate start and end of the exactly selected date
       const selected = new Date(dateRange);
-      const from = new Date(selected.getFullYear(), selected.getMonth(), 1).toISOString();
-      const to = new Date(selected.getFullYear(), selected.getMonth() + 1, 0, 23, 59, 59).toISOString();
+      const from = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate()).toISOString();
+      const to = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 23, 59, 59, 999).toISOString();
 
       const res = await reportService.getReports(from, to);
       if (res.success) {
