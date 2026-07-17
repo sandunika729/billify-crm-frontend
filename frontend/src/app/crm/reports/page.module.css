@@ -195,7 +195,7 @@
 
 .reportInfo p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
   line-height: 1.4;
   display: -webkit-box;
@@ -270,91 +270,91 @@
   box-shadow: none;
 }
 
-/* ── Report detail filter bar ── */
-.reportFiltersBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 0.75rem 1.25rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+/* Dashboard KPI styles */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.reportFiltersLeft {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.reportFiltersRight {
-  flex: 1;
-  min-width: 200px;
-  max-width: 300px;
-}
-
-/* Quick preset buttons */
-.quickPresets {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.presetBtn {
-  padding: 0.32rem 0.7rem;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background: #f8fafc;
-  color: var(--color-text-secondary);
-  font-size: 0.7rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-}
-
-.presetBtn:hover {
-  background: rgba(139, 92, 246, 0.06);
-  border-color: #8b5cf6;
-  color: #8b5cf6;
-}
-
-/* Date pickers */
-.dateInputGroup {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.dateLabel {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-
-.dateFilter {
-  padding: 0.36rem 0.65rem;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
+.kpiCard {
   background-color: #ffffff;
-  color: #334155;
-  font-size: 0.72rem;
-  font-weight: 500;
-  outline: none;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: border-color var(--transition-fast);
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease;
 }
 
-.dateFilter:focus {
-  border-color: #8b5cf6;
+.kpiCard:hover {
+  transform: translateY(-2px);
+}
+
+.primaryCard {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+}
+
+.primaryCard .kpiLabel,
+.primaryCard .kpiValue {
+  color: white;
+}
+
+.kpiContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpiLabel {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+}
+
+.kpiValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Leads Table CSS */
+.leadsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.leadsTable th {
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--color-bg-hover);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.leadsTable td {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.leadsTable tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.02);
+}
+
+.leadsTable tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .tableCard {

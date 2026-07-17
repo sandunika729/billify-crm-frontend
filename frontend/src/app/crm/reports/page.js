@@ -46,14 +46,7 @@ const AVAILABLE_REPORTS = [
 export default function ReportsPage() {
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Full date range filters (dashboard-style)
-  const today = new Date();
-  const defaultFrom = new Date(today.getFullYear(), 0, 1).toISOString().slice(0, 10);
-  const defaultTo = today.toISOString().slice(0, 10);
-  const [dateFrom, setDateFrom] = useState(defaultFrom);
-  const [dateTo, setDateTo] = useState(defaultTo);
-  const [groupBy, setGroupBy] = useState('month');
+  const [dateRange, setDateRange] = useState('year');
 
   const [activeTab, setActiveTab] = useState('sales');
   const [selectedReport, setSelectedReport] = useState(null);
@@ -63,13 +56,22 @@ export default function ReportsPage() {
 
   useEffect(() => {
     fetchReports();
-  }, [dateFrom, dateTo]);
+  }, [dateRange]);
 
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const from = dateFrom ? new Date(dateFrom).toISOString() : undefined;
-      const to = dateTo ? new Date(dateTo + 'T23:59:59').toISOString() : undefined;
+      let from, to;
+      const today = new Date();
+      
+      if (dateRange === 'month') {
+        from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
+      } else if (dateRange === 'quarter') {
+        from = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1).toISOString();
+      } else if (dateRange === 'year') {
+        from = new Date(today.getFullYear(), 0, 1).toISOString();
+      }
+
       const res = await reportService.getReports(from, to);
       if (res.success) {
         setReportsData(res.data);
@@ -79,23 +81,6 @@ export default function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleQuickRange = (preset) => {
-    const now = new Date();
-    let from;
-    if (preset === 'month') {
-      from = new Date(now.getFullYear(), now.getMonth(), 1);
-    } else if (preset === 'quarter') {
-      from = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
-    } else if (preset === 'year') {
-      from = new Date(now.getFullYear(), 0, 1);
-    } else {
-      // all time — use a far past date
-      from = new Date(2000, 0, 1);
-    }
-    setDateFrom(from.toISOString().slice(0, 10));
-    setDateTo(now.toISOString().slice(0, 10));
   };
 
   const formatCurrency = (amount) => {
@@ -189,7 +174,7 @@ export default function ReportsPage() {
       case 'revenue': {
         const rows = (reportsData.revenueTrend || []).filter(r => r.month.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.dataTable}>
+          <table className={styles.leadsTable}>
             <thead><tr><th>Month</th><th className={styles.textRight}>Revenue Closed</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -206,7 +191,7 @@ export default function ReportsPage() {
       case 'team': {
         const rows = (reportsData.teamPerformance || []).filter(r => r.name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.dataTable}>
+          <table className={styles.leadsTable}>
             <thead><tr><th>Sales Rep</th><th className={styles.textCenter}>Deals Won</th><th className={styles.textRight}>Total Revenue</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -224,7 +209,7 @@ export default function ReportsPage() {
       case 'pipeline': {
         const rows = (reportsData.pipelineValue || []).filter(r => r.stage_name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.dataTable}>
+          <table className={styles.leadsTable}>
             <thead><tr><th>Pipeline Stage</th><th className={styles.textRight}>Estimated Value</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -243,7 +228,7 @@ export default function ReportsPage() {
       case 'funnel': {
         const rows = (reportsData.leadFunnel || []).filter(r => r.stage.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.dataTable}>
+          <table className={styles.leadsTable}>
             <thead><tr><th>Lead Stage</th><th className={styles.textRight}>Count</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -260,7 +245,7 @@ export default function ReportsPage() {
       case 'tickets': {
         const rows = (reportsData.ticketStats || []).filter(r => r.month.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.dataTable}>
+          <table className={styles.leadsTable}>
             <thead><tr><th>Month</th><th className={styles.textCenter}>Opened</th><th className={styles.textCenter}>Resolved</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -282,16 +267,18 @@ export default function ReportsPage() {
 
         return (
           <div>
-            {}
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+            {/* Stat Cards */}
+            <div className={styles.kpiGrid}>
               {[
-                { label: 'Total Won', value: totalWon, color: '#10b981', bg: '#d1fae5' },
-                { label: 'Total Lost', value: totalLost, color: '#ef4444', bg: '#fee2e2' },
-                { label: 'Win Rate', value: `${winRate}%`, color: '#3b82f6', bg: '#dbeafe' },
+                { label: 'Total Won', value: totalWon },
+                { label: 'Total Lost', value: totalLost },
+                { label: 'Win Rate', value: `${winRate}%`, primary: true },
               ].map(stat => (
-                <div key={stat.label} style={{ flex: 1, minWidth: 120, padding: '1rem', background: stat.bg, borderRadius: 10, textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: stat.color }}>{stat.value}</div>
-                  <div style={{ fontSize: '0.78rem', color: stat.color, fontWeight: 600 }}>{stat.label}</div>
+                <div key={stat.label} className={`${styles.kpiCard} ${stat.primary ? styles.primaryCard : ''}`}>
+                  <div className={styles.kpiContent}>
+                    <h3 className={styles.kpiLabel}>{stat.label}</h3>
+                    <p className={styles.kpiValue}>{stat.value}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -342,14 +329,16 @@ export default function ReportsPage() {
         const maxR = Math.max(...reasonBreakdown.map(r => r.count), 1);
         return (
           <div>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div className={styles.kpiGrid}>
               {[
-                { label: 'Total Lost Deals', value: totalLost, color: '#ef4444', bg: '#fee2e2' },
-                { label: 'Total Value Lost', value: `Rs. ${totalValueLost.toLocaleString()}`, color: '#f59e0b', bg: '#fef3c7' }
-              ].map(s => (
-                <div key={s.label} style={{ flex: 1, padding: '1rem', background: s.bg, borderRadius: 10, textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: s.color }}>{s.value}</div>
-                  <div style={{ fontSize: '0.78rem', color: s.color, fontWeight: 600 }}>{s.label}</div>
+                { label: 'Total Lost Deals', value: totalLost },
+                { label: 'Total Value Lost', value: `Rs. ${totalValueLost.toLocaleString()}`, primary: true }
+              ].map(stat => (
+                <div key={stat.label} className={`${styles.kpiCard} ${stat.primary ? styles.primaryCard : ''}`}>
+                  <div className={styles.kpiContent}>
+                    <h3 className={styles.kpiLabel}>{stat.label}</h3>
+                    <p className={styles.kpiValue}>{stat.value}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -369,7 +358,7 @@ export default function ReportsPage() {
                 ))}
               </div>
             )}
-            <table className={styles.dataTable}>
+            <table className={styles.leadsTable}>
               <thead><tr><th>Deal</th><th>Customer</th><th>Owner</th><th className={styles.textRight}>Value</th><th>Reason</th><th>Date Lost</th></tr></thead>
               <tbody>
                 {lostList.filter(r => !tableSearchTerm || r.title.toLowerCase().includes(tableSearchTerm.toLowerCase()) || r.customer.toLowerCase().includes(tableSearchTerm.toLowerCase())).map((row, idx) => (
@@ -393,16 +382,17 @@ export default function ReportsPage() {
         const STATUS_COLORS = { draft: '#94a3b8', sent: '#3b82f6', viewed: '#8b5cf6', accepted: '#10b981', rejected: '#ef4444', expired: '#f59e0b', converted: '#06b6d4' };
         return (
           <div>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+            <div className={styles.kpiGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
               {breakdown.map(r => (
-                <div key={r.status} style={{ flex: '1', minWidth: 110, padding: '1rem', background: `${STATUS_COLORS[r.status] || '#64748b'}15`, border: `1px solid ${STATUS_COLORS[r.status] || '#64748b'}30`, borderRadius: 10, textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: STATUS_COLORS[r.status] || '#64748b' }}>{r.count}</div>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: STATUS_COLORS[r.status] || '#64748b', textTransform: 'capitalize', marginBottom: '0.2rem' }}>{r.status}</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Rs. {r.total_value.toLocaleString()}</div>
+                <div key={r.status} className={styles.kpiCard}>
+                  <div className={styles.kpiContent}>
+                    <h3 className={styles.kpiLabel} style={{textTransform: 'capitalize'}}>{r.status} (Rs. {r.total_value.toLocaleString()})</h3>
+                    <p className={styles.kpiValue}>{r.count}</p>
+                  </div>
                 </div>
               ))}
             </div>
-            <table className={styles.dataTable}>
+            <table className={styles.leadsTable}>
               <thead><tr><th>Status</th><th className={styles.textCenter}>Count</th><th className={styles.textCenter}>% of Total</th><th className={styles.textRight}>Total Value</th></tr></thead>
               <tbody>
                 {breakdown.map((row, idx) => (
@@ -423,19 +413,21 @@ export default function ReportsPage() {
         const { timeline = [], totalSent = 0, totalAccepted = 0, overallRate = 0 } = qc;
         return (
           <div>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div className={styles.kpiGrid}>
               {[
-                { label: 'Total Quotes Sent', value: totalSent, color: '#3b82f6', bg: '#dbeafe' },
-                { label: 'Accepted / Converted', value: totalAccepted, color: '#10b981', bg: '#d1fae5' },
-                { label: 'Overall Conversion Rate', value: `${overallRate}%`, color: '#8b5cf6', bg: '#ede9fe' }
-              ].map(s => (
-                <div key={s.label} style={{ flex: 1, padding: '1rem', background: s.bg, borderRadius: 10, textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: s.color }}>{s.value}</div>
-                  <div style={{ fontSize: '0.78rem', color: s.color, fontWeight: 600 }}>{s.label}</div>
+                { label: 'Total Quotes Sent', value: totalSent },
+                { label: 'Accepted / Converted', value: totalAccepted },
+                { label: 'Overall Conversion Rate', value: `${overallRate}%`, primary: true }
+              ].map(stat => (
+                <div key={stat.label} className={`${styles.kpiCard} ${stat.primary ? styles.primaryCard : ''}`}>
+                  <div className={styles.kpiContent}>
+                    <h3 className={styles.kpiLabel}>{stat.label}</h3>
+                    <p className={styles.kpiValue}>{stat.value}</p>
+                  </div>
                 </div>
               ))}
             </div>
-            <table className={styles.dataTable}>
+            <table className={styles.leadsTable}>
               <thead><tr><th>Month</th><th className={styles.textCenter}>Total</th><th className={styles.textCenter}>Accepted</th><th className={styles.textCenter}>Rejected</th><th className={styles.textCenter}>Conversion Rate</th></tr></thead>
               <tbody>
                 {timeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
@@ -462,11 +454,15 @@ export default function ReportsPage() {
         return (
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
             <div>
-              <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: '#dbeafe', borderRadius: 10, display: 'inline-block' }}>
-                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#3b82f6' }}>{total}</span>
-                <span style={{ fontSize: '0.8rem', color: '#3b82f6', fontWeight: 600, marginLeft: '0.5rem' }}>New Customers</span>
+              <div className={styles.kpiGrid} style={{ gridTemplateColumns: '1fr', marginBottom: '1rem' }}>
+                <div className={`${styles.kpiCard} ${styles.primaryCard}`}>
+                  <div className={styles.kpiContent}>
+                    <h3 className={styles.kpiLabel}>New Customers</h3>
+                    <p className={styles.kpiValue}>{total}</p>
+                  </div>
+                </div>
               </div>
-              <table className={styles.dataTable}>
+              <table className={styles.leadsTable}>
                 <thead><tr><th>Month</th><th className={styles.textRight}>New Customers</th></tr></thead>
                 <tbody>
                   {ncTimeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
@@ -497,7 +493,7 @@ export default function ReportsPage() {
         const topC = reportsData.topCustomersByRevenue || [];
         const filtered = topC.filter(r => !tableSearchTerm || r.name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.dataTable}>
+          <table className={styles.leadsTable}>
             <thead><tr><th>Rank</th><th>Customer</th><th>Type</th><th className={styles.textCenter}>Deals Won</th><th className={styles.textRight}>Total Revenue</th></tr></thead>
             <tbody>
               {filtered.map((row, idx) => (
@@ -549,50 +545,22 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className={styles.reportFiltersBar}>
-          <div className={styles.reportFiltersLeft}>
-            {/* Quick presets */}
-            <div className={styles.quickPresets}>
-              {[{k:'month',l:'This Month'},{k:'quarter',l:'Quarter'},{k:'year',l:'This Year'},{k:'all',l:'All Time'}].map(p => (
-                <button key={p.k} className={styles.presetBtn} onClick={() => handleQuickRange(p.k)}>{p.l}</button>
-              ))}
-            </div>
-            {/* Full date pickers */}
-            <div className={styles.dateInputGroup}>
-              <span className={styles.dateLabel}>From</span>
-              <input
-                type="date"
-                className={styles.dateFilter}
-                value={dateFrom}
-                max={dateTo}
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
-            </div>
-            <div className={styles.dateInputGroup}>
-              <span className={styles.dateLabel}>To</span>
-              <input
-                type="date"
-                className={styles.dateFilter}
-                value={dateTo}
-                min={dateFrom}
-                max={new Date().toISOString().slice(0, 10)}
-                onChange={(e) => setDateTo(e.target.value)}
-              />
-            </div>
-            {/* Group By */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <div className={styles.filterGroup} style={{ flex: 'none' }}>
               <select
                 className={styles.filterSelect}
-                value={groupBy}
-                onChange={(e) => setGroupBy(e.target.value)}
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
               >
-                <option value="month">Group by Month</option>
-                <option value="quarter">Group by Quarter</option>
-                <option value="year">Group by Year</option>
+                <option value="month">This Month</option>
+                <option value="quarter">This Quarter</option>
+                <option value="year">This Year</option>
+                <option value="all">All Time</option>
               </select>
             </div>
           </div>
-          <div className={styles.reportFiltersRight}>
+          <div style={{ flex: 1, minWidth: '200px' }}>
             <SearchBar
               value={tableSearchTerm}
               onChange={setTableSearchTerm}
