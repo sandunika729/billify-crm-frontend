@@ -46,33 +46,30 @@ const AVAILABLE_REPORTS = [
 export default function ReportsPage() {
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState('year');
-  
+
+  // Full date range filters (dashboard-style)
+  const today = new Date();
+  const defaultFrom = new Date(today.getFullYear(), 0, 1).toISOString().slice(0, 10);
+  const defaultTo = today.toISOString().slice(0, 10);
+  const [dateFrom, setDateFrom] = useState(defaultFrom);
+  const [dateTo, setDateTo] = useState(defaultTo);
+  const [groupBy, setGroupBy] = useState('month');
+
   const [activeTab, setActiveTab] = useState('sales');
   const [selectedReport, setSelectedReport] = useState(null);
 
-  
   const [librarySearchTerm, setLibrarySearchTerm] = useState('');
   const [tableSearchTerm, setTableSearchTerm] = useState('');
 
   useEffect(() => {
     fetchReports();
-  }, [dateRange]);
+  }, [dateFrom, dateTo]);
 
   const fetchReports = async () => {
     setLoading(true);
     try {
-      let from, to;
-      const today = new Date();
-      
-      if (dateRange === 'month') {
-        from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
-      } else if (dateRange === 'quarter') {
-        from = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1).toISOString();
-      } else if (dateRange === 'year') {
-        from = new Date(today.getFullYear(), 0, 1).toISOString();
-      }
-
+      const from = dateFrom ? new Date(dateFrom).toISOString() : undefined;
+      const to = dateTo ? new Date(dateTo + 'T23:59:59').toISOString() : undefined;
       const res = await reportService.getReports(from, to);
       if (res.success) {
         setReportsData(res.data);
@@ -82,6 +79,23 @@ export default function ReportsPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickRange = (preset) => {
+    const now = new Date();
+    let from;
+    if (preset === 'month') {
+      from = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (preset === 'quarter') {
+      from = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+    } else if (preset === 'year') {
+      from = new Date(now.getFullYear(), 0, 1);
+    } else {
+      // all time — use a far past date
+      from = new Date(2000, 0, 1);
+    }
+    setDateFrom(from.toISOString().slice(0, 10));
+    setDateTo(now.toISOString().slice(0, 10));
   };
 
   const formatCurrency = (amount) => {
@@ -535,32 +549,57 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className={styles.filtersBar}>
-          <div className={styles.filtersLeft}>
-            <div className={styles.filterGroup}>
-              <div className={styles.filterLabel}><Calendar size={12} /> Date Range</div>
-              <FilterSelect 
-                id="report-date-range"
-                value={dateRange} 
-                onChange={setDateRange}
-                options={[
-                  { value: 'month', label: 'This Month' },
-                  { value: 'quarter', label: 'This Quarter' },
-                  { value: 'year', label: 'This Year' },
-                  { value: 'all', label: 'All Time' }
-                ]}
-                label=""
+        <div className={styles.reportFiltersBar}>
+          <div className={styles.reportFiltersLeft}>
+            {/* Quick presets */}
+            <div className={styles.quickPresets}>
+              {[{k:'month',l:'This Month'},{k:'quarter',l:'Quarter'},{k:'year',l:'This Year'},{k:'all',l:'All Time'}].map(p => (
+                <button key={p.k} className={styles.presetBtn} onClick={() => handleQuickRange(p.k)}>{p.l}</button>
+              ))}
+            </div>
+            {/* Full date pickers */}
+            <div className={styles.dateInputGroup}>
+              <span className={styles.dateLabel}>From</span>
+              <input
+                type="date"
+                className={styles.dateFilter}
+                value={dateFrom}
+                max={dateTo}
+                onChange={(e) => setDateFrom(e.target.value)}
               />
             </div>
+            <div className={styles.dateInputGroup}>
+              <span className={styles.dateLabel}>To</span>
+              <input
+                type="date"
+                className={styles.dateFilter}
+                value={dateTo}
+                min={dateFrom}
+                max={new Date().toISOString().slice(0, 10)}
+                onChange={(e) => setDateTo(e.target.value)}
+              />
+            </div>
+            {/* Group By */}
+            <div className={styles.filterGroup} style={{ flex: 'none' }}>
+              <select
+                className={styles.filterSelect}
+                value={groupBy}
+                onChange={(e) => setGroupBy(e.target.value)}
+              >
+                <option value="month">Group by Month</option>
+                <option value="quarter">Group by Quarter</option>
+                <option value="year">Group by Year</option>
+              </select>
+            </div>
           </div>
-          
-          <SearchBar
-            value={tableSearchTerm}
-            onChange={setTableSearchTerm}
-            placeholder="Search report data..."
-            label=""
-            className={styles.searchBarWrapper}
-          />
+          <div className={styles.reportFiltersRight}>
+            <SearchBar
+              value={tableSearchTerm}
+              onChange={setTableSearchTerm}
+              placeholder="Search report data..."
+              label=""
+            />
+          </div>
         </div>
 
         <div className={styles.tableCard}>
@@ -589,19 +628,20 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      <div className={styles.filtersBar} style={{ marginBottom: '-0.5rem' }}>
-        <div className={styles.filtersLeft}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
             Browse and export predefined CRM datasets.
           </span>
         </div>
-        <SearchBar
-          value={librarySearchTerm}
-          onChange={setLibrarySearchTerm}
-          placeholder="Search for a report..."
-          label=""
-          className={styles.searchBarWrapper}
-        />
+        <div style={{ flex: 1, minWidth: '200px' }}>
+          <SearchBar
+            value={librarySearchTerm}
+            onChange={setLibrarySearchTerm}
+            placeholder="Search for a report..."
+            label=""
+          />
+        </div>
       </div>
 
       <div className={styles.rolesLayout}>
