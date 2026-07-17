@@ -648,6 +648,11 @@
   padding-bottom: 1rem;
 }
 
+.boardContainer::-webkit-scrollbar {
+  display: none;
+}
+
+
 .boardColumn {
   flex: 0 0 280px;
   background: transparent;
@@ -731,7 +736,7 @@
 }
 
 .cardName {
-  font-weight: 600;
+  font-weight: normal;
   color: #1e293b;
   font-size: 0.95rem;
   margin-bottom: 0.1rem;

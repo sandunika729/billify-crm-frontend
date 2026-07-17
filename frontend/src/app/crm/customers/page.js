@@ -251,7 +251,7 @@ export default function CustomersPage() {
     <div className={styles.pageContainer}>
       <div className={styles.pageHeader}>
         <div>
-          <h1>Customers</h1>
+          <h1>Company</h1>
         </div>
         <div className={styles.headerActions}>
           <Button variant="outline" icon={Download} iconSize={14} onClick={handleExport}>
