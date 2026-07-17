@@ -148,9 +148,14 @@ export default function LeadsPage() {
   const handleToggleFlag = async (e, lead) => {
     e.stopPropagation();
     try {
-      const newStatus = !lead.is_flagged;
-      setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, is_flagged: newStatus } : l));
-      await leadService.updateLead(lead.id, { is_flagged: newStatus });
+      const currentStatus = lead.flag_status || 'none';
+      let newStatus = 'none';
+      if (currentStatus === 'none') newStatus = 'flagged';
+      else if (currentStatus === 'flagged') newStatus = 'completed';
+      else newStatus = 'none';
+
+      setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, flag_status: newStatus } : l));
+      await leadService.updateLead(lead.id, { flag_status: newStatus });
     } catch (error) {
       console.error('Failed to toggle flag:', error);
       fetchLeads();
@@ -425,7 +430,7 @@ export default function LeadsPage() {
   const filteredLeads = leads.filter(l => {
     if (filterStatus && l.status !== filterStatus) return false;
     if (filterTemperature && l.temperature !== filterTemperature) return false;
-    if (showFlaggedOnly && !l.is_flagged) return false;
+    if (showFlaggedOnly && l.flag_status !== 'flagged') return false;
 
     if (searchTerm) {
       const lowerSearch = searchTerm.toLowerCase();
@@ -703,7 +708,9 @@ export default function LeadsPage() {
                           <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
                             {lead.name}
                             <button onClick={(e) => handleToggleFlag(e, lead)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '4px' }}>
-                              <Flag size={12} color={lead.is_flagged ? '#ef4444' : '#cbd5e1'} fill={lead.is_flagged ? '#ef4444' : 'none'} />
+                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={12} color="#cbd5e1" fill="none" />}
+                              {lead.flag_status === 'flagged' && <Flag size={12} color="#ef4444" fill="#ef4444" />}
+                              {lead.flag_status === 'completed' && <CheckCircle2 size={12} color="#10b981" />}
                             </button>
                           </span>
                         </div>
@@ -816,7 +823,9 @@ export default function LeadsPage() {
                           <div className={styles.cardName} style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {lead.name}
                             <button onClick={(e) => handleToggleFlag(e, lead)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0' }}>
-                              <Flag size={10} color={lead.is_flagged ? '#ef4444' : '#cbd5e1'} fill={lead.is_flagged ? '#ef4444' : 'none'} />
+                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={10} color="#cbd5e1" fill="none" />}
+                              {lead.flag_status === 'flagged' && <Flag size={10} color="#ef4444" fill="#ef4444" />}
+                              {lead.flag_status === 'completed' && <CheckCircle2 size={10} color="#10b981" />}
                             </button>
                           </div>
                           <div className={styles.cardTime} style={{ fontSize: '0.65rem' }}>
