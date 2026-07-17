@@ -15,9 +15,9 @@
   background: #ffffff;
   border: 1px solid #f1f5f9;
   border-radius: 5px;
-  padding: 2.25rem 3rem;
+  padding: 1.5rem 2rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 320px;
   box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(0, 0, 0, 0.02);
   transition: transform var(--transition-normal);
@@ -29,7 +29,7 @@
 
 .brandHeader {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .logoWrapper {
@@ -45,7 +45,7 @@
 }
 
 .brandHeader h1 {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: #1e293b;
   font-weight: 700;
   margin-bottom: 0;
@@ -100,7 +100,7 @@
 .loginForm {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.9rem;
 }
 
 .inputGroup {
@@ -123,10 +123,10 @@
 
 .inputWrapper input {
   width: 100%;
-  padding: 0.8rem 1rem;
+  padding: 0.55rem 0.75rem;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.925rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
   background: #ffffff;
   color: #1e293b;
   transition: all var(--transition-fast);
@@ -135,6 +135,7 @@
 .inputWrapper input::placeholder {
   color: #94a3b8;
   opacity: 0.7;
+  font-size: 0.72rem;
 }
 
 .inputWrapper input:focus {
@@ -163,26 +164,26 @@
 }
 
 .submitButton {
-  margin-top: 1.5rem;
-  background-color: #30bced;
+  margin-top: 0.75rem;
+  background-color: #a72bdd;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 0.85rem;
-  font-size: 0.95rem;
+  border-radius: 4px;
+  padding: 0.6rem;
+  font-size: 0.82rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: 0 4px 12px rgba(48, 188, 237, 0.15);
+  box-shadow: 0 4px 12px rgba(167, 43, 221, 0.2);
 }
 
 .submitButton:hover:not(:disabled) {
-  background-color: #23aada;
+  background-color: #8e22bc;
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(48, 188, 237, 0.25);
+  box-shadow: 0 6px 14px rgba(167, 43, 221, 0.3);
 }
 
 .submitButton:active:not(:disabled) {
@@ -190,7 +191,7 @@
 }
 
 .submitButton:disabled {
-  background-color: #b0e5f9;
+  background-color: #d89ef0;
   color: #ffffff;
   cursor: not-allowed;
   box-shadow: none;
