@@ -476,6 +476,7 @@ export default function ReportsPage() {
         const maxSrc = Math.max(...bySource.map(s => s.count), 1);
         return (
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+            <div>
               <div className={styles.statSection}>
                 <div className={styles.kpiGrid} style={{ gridTemplateColumns: '1fr' }}>
                   <div className={styles.kpiCard}>
