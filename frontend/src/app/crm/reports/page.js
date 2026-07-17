@@ -168,7 +168,7 @@ export default function ReportsPage() {
       case 'revenue': {
         const rows = (reportsData.revenueTrend || []).filter(r => r.month.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.leadsTable}>
+          <table className={styles.dealsTable}>
             <thead><tr><th>Month</th><th className={styles.textRight}>Revenue Closed</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -185,7 +185,7 @@ export default function ReportsPage() {
       case 'team': {
         const rows = (reportsData.teamPerformance || []).filter(r => r.name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.leadsTable}>
+          <table className={styles.dealsTable}>
             <thead><tr><th>Sales Rep</th><th className={styles.textCenter}>Deals Won</th><th className={styles.textRight}>Total Revenue</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -203,7 +203,7 @@ export default function ReportsPage() {
       case 'pipeline': {
         const rows = (reportsData.pipelineValue || []).filter(r => r.stage_name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.leadsTable}>
+          <table className={styles.dealsTable}>
             <thead><tr><th>Pipeline Stage</th><th className={styles.textCenter}>Deals Count</th><th className={styles.textRight}>Estimated Value</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -223,7 +223,7 @@ export default function ReportsPage() {
       case 'funnel': {
         const rows = (reportsData.leadFunnel || []).filter(r => r.stage.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.leadsTable}>
+          <table className={styles.dealsTable}>
             <thead><tr><th>Lead Stage</th><th className={styles.textRight}>Count</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -240,7 +240,7 @@ export default function ReportsPage() {
       case 'tickets': {
         const rows = (reportsData.ticketStats || []).filter(r => r.month.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.leadsTable}>
+          <table className={styles.dealsTable}>
             <thead><tr><th>Month</th><th className={styles.textCenter}>Opened</th><th className={styles.textCenter}>Resolved</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
@@ -353,7 +353,7 @@ export default function ReportsPage() {
                 ))}
               </div>
             )}
-            <table className={styles.leadsTable}>
+            <table className={styles.dealsTable}>
               <thead><tr><th>Deal</th><th>Customer</th><th>Owner</th><th className={styles.textRight}>Value</th><th>Reason</th><th>Date Lost</th></tr></thead>
               <tbody>
                 {lostList.filter(r => !tableSearchTerm || r.title.toLowerCase().includes(tableSearchTerm.toLowerCase()) || r.customer.toLowerCase().includes(tableSearchTerm.toLowerCase())).map((row, idx) => (
@@ -387,7 +387,7 @@ export default function ReportsPage() {
                 </div>
               ))}
             </div>
-            <table className={styles.leadsTable}>
+            <table className={styles.dealsTable}>
               <thead><tr><th>Status</th><th className={styles.textCenter}>Count</th><th className={styles.textCenter}>% of Total</th><th className={styles.textRight}>Total Value</th></tr></thead>
               <tbody>
                 {breakdown.map((row, idx) => (
@@ -422,7 +422,7 @@ export default function ReportsPage() {
                 </div>
               ))}
             </div>
-            <table className={styles.leadsTable}>
+            <table className={styles.dealsTable}>
               <thead><tr><th>Month</th><th className={styles.textCenter}>Total</th><th className={styles.textCenter}>Accepted</th><th className={styles.textCenter}>Rejected</th><th className={styles.textCenter}>Conversion Rate</th></tr></thead>
               <tbody>
                 {timeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
@@ -457,7 +457,7 @@ export default function ReportsPage() {
                   </div>
                 </div>
               </div>
-              <table className={styles.leadsTable}>
+              <table className={styles.dealsTable}>
                 <thead><tr><th>Month</th><th className={styles.textRight}>New Customers</th></tr></thead>
                 <tbody>
                   {ncTimeline.filter(r => !tableSearchTerm || r.month.includes(tableSearchTerm)).map((row, idx) => (
@@ -488,7 +488,7 @@ export default function ReportsPage() {
         const topC = reportsData.topCustomersByRevenue || [];
         const filtered = topC.filter(r => !tableSearchTerm || r.name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
-          <table className={styles.leadsTable}>
+          <table className={styles.dealsTable}>
             <thead><tr><th>Rank</th><th>Customer</th><th>Type</th><th className={styles.textCenter}>Deals Won</th><th className={styles.textRight}>Total Revenue</th></tr></thead>
             <tbody>
               {filtered.map((row, idx) => (
@@ -541,23 +541,23 @@ export default function ReportsPage() {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-            <div className={styles.filterGroup} style={{ flex: 'none' }}>
-              <input
-                type="date"
-                className={styles.dateFilter}
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-              />
-            </div>
-          </div>
-          <div style={{ flex: 1, minWidth: '200px', display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ flex: 1, minWidth: '200px' }}>
             <div style={{ width: '100%', maxWidth: '300px' }}>
               <SearchBar
                 value={tableSearchTerm}
                 onChange={setTableSearchTerm}
                 placeholder="Search report data..."
                 label=""
+              />
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <div className={styles.filterGroup} style={{ flex: 'none' }}>
+              <input
+                type="date"
+                className={styles.dateFilter}
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
               />
             </div>
           </div>
@@ -628,11 +628,11 @@ export default function ReportsPage() {
                 <p>{report.description}</p>
               </div>
               <button
-                className={styles.viewBtn}
+                className={styles.actionBtnPrimary}
                 onClick={() => setSelectedReport(report)}
                 title="View Report"
               >
-                <Eye size={16} />
+                <Eye size={12} />
               </button>
             </div>
           ))}
