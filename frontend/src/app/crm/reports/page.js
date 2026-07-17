@@ -46,7 +46,7 @@ const AVAILABLE_REPORTS = [
 export default function ReportsPage() {
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState('year');
+  const [dateRange, setDateRange] = useState(() => new Date().toISOString().slice(0, 10));
 
   const [activeTab, setActiveTab] = useState('sales');
   const [selectedReport, setSelectedReport] = useState(null);
@@ -61,16 +61,10 @@ export default function ReportsPage() {
   const fetchReports = async () => {
     setLoading(true);
     try {
-      let from, to;
-      const today = new Date();
-      
-      if (dateRange === 'month') {
-        from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
-      } else if (dateRange === 'quarter') {
-        from = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1).toISOString();
-      } else if (dateRange === 'year') {
-        from = new Date(today.getFullYear(), 0, 1).toISOString();
-      }
+      // Calculate month boundaries from the selected date
+      const selected = new Date(dateRange);
+      const from = new Date(selected.getFullYear(), selected.getMonth(), 1).toISOString();
+      const to = new Date(selected.getFullYear(), selected.getMonth() + 1, 0, 23, 59, 59).toISOString();
 
       const res = await reportService.getReports(from, to);
       if (res.success) {
@@ -210,17 +204,18 @@ export default function ReportsPage() {
         const rows = (reportsData.pipelineValue || []).filter(r => r.stage_name.toLowerCase().includes(tableSearchTerm.toLowerCase()));
         return (
           <table className={styles.leadsTable}>
-            <thead><tr><th>Pipeline Stage</th><th className={styles.textRight}>Estimated Value</th></tr></thead>
+            <thead><tr><th>Pipeline Stage</th><th className={styles.textCenter}>Deals Count</th><th className={styles.textRight}>Estimated Value</th></tr></thead>
             <tbody>
               {rows.map((row, idx) => (
                 <tr key={idx}>
                   <td>
                     <span className={styles.statusBadge}>{row.stage_name}</span>
                   </td>
+                  <td className={styles.textCenter}>{row.count}</td>
                   <td className={`${styles.textRight} ${styles.primaryText}`}>{formatCurrency(row.value)}</td>
                 </tr>
               ))}
-              {rows.length === 0 && <tr><td colSpan="2" className={styles.emptyState}>No data found</td></tr>}
+              {rows.length === 0 && <tr><td colSpan="3" className={styles.emptyState}>No data found</td></tr>}
             </tbody>
           </table>
         );
@@ -539,7 +534,7 @@ export default function ReportsPage() {
             </div>
           </div>
           <div className={styles.headerActions}>
-            <Button variant="secondary" icon={Download} onClick={handleDownloadCSV}>
+            <Button variant="outline" icon={Download} iconSize={14} onClick={handleDownloadCSV}>
               Export to CSV
             </Button>
           </div>
@@ -548,25 +543,23 @@ export default function ReportsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <div className={styles.filterGroup} style={{ flex: 'none' }}>
-              <select
-                className={styles.filterSelect}
+              <input
+                type="date"
+                className={styles.dateFilter}
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
-              >
-                <option value="month">This Month</option>
-                <option value="quarter">This Quarter</option>
-                <option value="year">This Year</option>
-                <option value="all">All Time</option>
-              </select>
+              />
             </div>
           </div>
-          <div style={{ flex: 1, minWidth: '200px' }}>
-            <SearchBar
-              value={tableSearchTerm}
-              onChange={setTableSearchTerm}
-              placeholder="Search report data..."
-              label=""
-            />
+          <div style={{ flex: 1, minWidth: '200px', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ width: '100%', maxWidth: '300px' }}>
+              <SearchBar
+                value={tableSearchTerm}
+                onChange={setTableSearchTerm}
+                placeholder="Search report data..."
+                label=""
+              />
+            </div>
           </div>
         </div>
 
