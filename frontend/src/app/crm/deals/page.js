@@ -714,12 +714,15 @@ export default function DealsPage() {
                                 <span style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  padding: '0.2rem 0.75rem',
+                                  gap: '0.35rem',
+                                  padding: '0.15rem 0.5rem',
                                   borderRadius: '1rem',
-                                  fontSize: '0.7rem',
+                                  fontSize: '0.62rem',
                                   fontWeight: 600,
+                                  textTransform: 'capitalize',
                                   backgroundColor: stage.color ? `${stage.color}1A` : '#f1f5f9',
                                   color: stage.color || '#64748b',
+                                  border: stage.color ? `1px solid ${stage.color}2E` : '1px solid #e2e8f0',
                                   whiteSpace: 'nowrap'
                                 }}>
                                   {stage.name}
