@@ -618,9 +618,6 @@ export default function ReportsPage() {
                 onClick={() => setActiveTab(category.id)}
               >
                 <div className={styles.roleInfo}>
-                  <div className={styles.roleIcon}>
-                    <FileText size={18} />
-                  </div>
                   <div className={styles.roleName}>{category.label}</div>
                 </div>
               </button>

@@ -918,6 +918,21 @@
   background-color: rgba(99, 102, 241, 0.02);
 }
 
+.stageBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
 @media (max-width: 768px) {
   .pageHeader {
     flex-direction: column;

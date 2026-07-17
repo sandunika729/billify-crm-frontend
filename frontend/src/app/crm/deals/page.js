@@ -711,20 +711,14 @@ export default function DealsPage() {
                             </td>
                             <td>
                               {stage ? (
-                                <span style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '0.35rem',
-                                  padding: '0.15rem 0.5rem',
-                                  borderRadius: '1rem',
-                                  fontSize: '0.62rem',
-                                  fontWeight: 600,
-                                  textTransform: 'capitalize',
-                                  backgroundColor: stage.color ? `${stage.color}1A` : '#f1f5f9',
-                                  color: stage.color || '#64748b',
-                                  border: stage.color ? `1px solid ${stage.color}2E` : '1px solid #e2e8f0',
-                                  whiteSpace: 'nowrap'
-                                }}>
+                                <span 
+                                  className={styles.stageBadge}
+                                  style={{
+                                    backgroundColor: stage.color ? `${stage.color}1A` : undefined,
+                                    color: stage.color || undefined,
+                                    borderColor: stage.color ? `${stage.color}2E` : undefined,
+                                  }}
+                                >
                                   {stage.name}
                                 </span>
                               ) : '-'}

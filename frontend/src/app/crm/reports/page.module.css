@@ -105,13 +105,13 @@
 .roleItem {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--color-border);
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
     cursor: pointer;
     transition: all var(--transition-fast);
     background: transparent;
-    border-left: none;
+    border-left: 3px solid transparent;
     border-right: none;
     border-top: none;
     width: 100%;
@@ -127,9 +127,8 @@
 }
 
 .roleItem.active {
-    background: #f0f7ff;
-    border-left: 3px solid var(--color-primary);
-    padding-left: calc(1.5rem - 3px);
+    background: rgba(139, 92, 246, 0.05);
+    border-left-color: #8b5cf6;
 }
 
 .roleInfo {

@@ -117,14 +117,18 @@
 .primaryText { font-weight: 500; color: var(--color-text-primary); font-size: 0.78rem; }
 
 .linkedBadge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-full);
-  font-size: 0.7rem;
-  font-weight: 500;
+  border-radius: 1rem;
+  font-size: 0.62rem;
+  font-weight: 600;
   text-transform: capitalize;
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--color-success);
+  white-space: nowrap;
+  background-color: rgba(139, 92, 246, 0.08);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.18);
 }
 
 .sizeText { font-size: 0.78rem; color: var(--color-text-primary); font-weight: 400; }
