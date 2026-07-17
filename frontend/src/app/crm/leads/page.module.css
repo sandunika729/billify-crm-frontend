@@ -646,12 +646,14 @@
   gap: 1.5rem;
   overflow-x: auto;
   padding-bottom: 1rem;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 .boardContainer::-webkit-scrollbar {
   display: none;
 }
-
 
 .boardColumn {
   flex: 0 0 280px;
@@ -736,7 +738,7 @@
 }
 
 .cardName {
-  font-weight: normal;
+  font-weight: 600;
   color: #1e293b;
   font-size: 0.95rem;
   margin-bottom: 0.1rem;
