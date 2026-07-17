@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import reportService from '../../../services/reportService';
 import { 
   TrendingUp, Users, Target, Ticket, BarChart3, 
-  ArrowLeft, Download, FileText, Calendar, UserCheck, FileSignature, XCircle
+  ArrowLeft, Download, FileText, Calendar, UserCheck, FileSignature, XCircle, Eye
 } from 'lucide-react';
 import styles from './page.module.css';
 import Button from '../../../components/ui/Button';
@@ -628,20 +628,13 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-            Browse and export predefined CRM datasets.
-          </span>
-        </div>
-        <div style={{ flex: 1, minWidth: '200px' }}>
-          <SearchBar
-            value={librarySearchTerm}
-            onChange={setLibrarySearchTerm}
-            placeholder="Search for a report..."
-            label=""
-          />
-        </div>
+      <div className={styles.librarySearchRow}>
+        <SearchBar
+          value={librarySearchTerm}
+          onChange={setLibrarySearchTerm}
+          placeholder="Search for a report..."
+          label=""
+        />
       </div>
 
       <div className={styles.rolesLayout}>
@@ -669,16 +662,17 @@ export default function ReportsPage() {
         <div className={styles.reportsList}>
           {displayedReports.map(report => (
             <div key={report.id} className={styles.reportCard}>
-              <div className={styles.reportIcon}>
-                <report.icon size={24} />
-              </div>
               <div className={styles.reportInfo}>
                 <h3>{report.title}</h3>
                 <p>{report.description}</p>
               </div>
-              <Button variant="secondary" onClick={() => setSelectedReport(report)}>
-                View Report
-              </Button>
+              <button
+                className={styles.viewBtn}
+                onClick={() => setSelectedReport(report)}
+                title="View Report"
+              >
+                <Eye size={16} />
+              </button>
             </div>
           ))}
           
