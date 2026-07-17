@@ -233,6 +233,12 @@
 
 .tableWrapper {
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .leadsTable {
