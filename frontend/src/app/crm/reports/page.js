@@ -46,7 +46,9 @@ const AVAILABLE_REPORTS = [
 export default function ReportsPage() {
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState(() => new Date().toISOString().slice(0, 10));
+  const today = new Date().toISOString().slice(0, 10);
+  const [dateFrom, setDateFrom] = useState(today);
+  const [dateTo, setDateTo] = useState(today);
 
   const [activeTab, setActiveTab] = useState('sales');
   const [selectedReport, setSelectedReport] = useState(null);
@@ -56,15 +58,15 @@ export default function ReportsPage() {
 
   useEffect(() => {
     fetchReports();
-  }, [dateRange]);
+  }, [dateFrom, dateTo]);
 
   const fetchReports = async () => {
     setLoading(true);
     try {
-      // Calculate start and end of the exactly selected date
-      const selected = new Date(dateRange);
-      const from = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate()).toISOString();
-      const to = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 23, 59, 59, 999).toISOString();
+      const fromDate = new Date(dateFrom);
+      const toDate = new Date(dateTo);
+      const from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0).toISOString();
+      const to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59, 999).toISOString();
 
       const res = await reportService.getReports(from, to);
       if (res.success) {
@@ -527,7 +529,7 @@ export default function ReportsPage() {
               setSelectedReport(null);
               setTableSearchTerm('');
             }}>
-              <ArrowLeft size={20} />
+              <ArrowLeft size={14} />
             </button>
             <div>
               <h1>{selectedReport.title}</h1>
@@ -542,24 +544,45 @@ export default function ReportsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ flex: 1, minWidth: '200px' }}>
-            <div style={{ width: '100%', maxWidth: '300px' }}>
+            <div style={{ width: '100%', maxWidth: '320px' }}>
               <SearchBar
                 value={tableSearchTerm}
                 onChange={setTableSearchTerm}
-                placeholder="Search report data..."
+                placeholder={
+                  selectedReport.id === 'revenue' ? 'Search by month...' :
+                  selectedReport.id === 'team' ? 'Search by sales rep...' :
+                  selectedReport.id === 'pipeline' ? 'Search by stage...' :
+                  selectedReport.id === 'funnel' ? 'Search by stage...' :
+                  selectedReport.id === 'tickets' ? 'Search by month...' :
+                  selectedReport.id === 'lostDeals' ? 'Search by deal or customer...' :
+                  selectedReport.id === 'quotes' ? 'Search by status...' :
+                  selectedReport.id === 'quoteConversion' ? 'Search by month...' :
+                  selectedReport.id === 'newCustomers' ? 'Search by month...' :
+                  selectedReport.id === 'topCustomers' ? 'Search by customer name...' :
+                  'Search...'
+                }
                 label=""
               />
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            <div className={styles.filterGroup} style={{ flex: 'none' }}>
-              <input
-                type="date"
-                className={styles.dateFilter}
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-              />
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>From</span>
+            <input
+              type="date"
+              className={styles.dateFilter}
+              value={dateFrom}
+              max={dateTo}
+              onChange={(e) => setDateFrom(e.target.value)}
+            />
+            <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>To</span>
+            <input
+              type="date"
+              className={styles.dateFilter}
+              value={dateTo}
+              min={dateFrom}
+              max={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => setDateTo(e.target.value)}
+            />
           </div>
         </div>
 
