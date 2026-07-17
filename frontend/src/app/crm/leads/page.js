@@ -6,7 +6,7 @@ import leadService from '../../../services/leadService';
 import customerService from '../../../services/customerService';
 import api from '../../../services/api';
 import styles from './page.module.css';
-import { Search, Plus, Filter, MoreVertical, Flame, Target, Banknote, Calendar, X, Eye, Mail, Phone, Building2, Edit, Edit2, Trash2, ArrowRightCircle, Download, Upload, Users, UserCheck, LayoutGrid, List, Package, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Search, Plus, Filter, MoreVertical, Flame, Target, Banknote, Calendar, X, Eye, Mail, Phone, Building2, Edit, Edit2, Trash2, ArrowRightCircle, Download, Upload, Users, UserCheck, LayoutGrid, List, Package, CheckCircle2, ExternalLink, Flag } from 'lucide-react';
 import ActivityPanel from '../../../components/crm/ActivityPanel';
 
 import dealService from '../../../services/dealService';
@@ -27,6 +27,7 @@ export default function LeadsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterTemperature, setFilterTemperature] = useState('');
+  const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [viewMode, setViewMode] = useState('table');
@@ -142,6 +143,18 @@ export default function LeadsPage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleToggleFlag = async (e, lead) => {
+    e.stopPropagation();
+    try {
+      const newStatus = !lead.is_flagged;
+      setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, is_flagged: newStatus } : l));
+      await leadService.updateLead(lead.id, { is_flagged: newStatus });
+    } catch (error) {
+      console.error('Failed to toggle flag:', error);
+      fetchLeads();
+    }
   };
 
   // Extracts user-friendly error messages, with special handling for 403 permission errors
@@ -412,6 +425,7 @@ export default function LeadsPage() {
   const filteredLeads = leads.filter(l => {
     if (filterStatus && l.status !== filterStatus) return false;
     if (filterTemperature && l.temperature !== filterTemperature) return false;
+    if (showFlaggedOnly && !l.is_flagged) return false;
 
     if (searchTerm) {
       const lowerSearch = searchTerm.toLowerCase();
@@ -516,6 +530,16 @@ export default function LeadsPage() {
                 <List size={12} /> List
               </button>
             </div>
+          </div>
+
+          <div className={styles.filterGroup}>
+            <button
+              className={`${styles.viewToggleBtn}`}
+              onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', background: showFlaggedOnly ? '#fee2e2' : 'white', color: showFlaggedOnly ? '#ef4444' : '#64748b', borderColor: showFlaggedOnly ? '#fca5a5' : '#e2e8f0', cursor: 'pointer', padding: '4px 8px', borderRadius: '4px', border: '1px solid' }}
+            >
+              <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} /> Flagged
+            </button>
           </div>
 
           <div className={styles.filterGroup}>
@@ -676,7 +700,12 @@ export default function LeadsPage() {
                           <div className={styles.avatar}>
                             {lead.name.substring(0, 2).toUpperCase()}
                           </div>
-                          <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>{lead.name}</span>
+                          <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                            {lead.name}
+                            <button onClick={(e) => handleToggleFlag(e, lead)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '4px' }}>
+                              <Flag size={12} color={lead.is_flagged ? '#ef4444' : '#cbd5e1'} fill={lead.is_flagged ? '#ef4444' : 'none'} />
+                            </button>
+                          </span>
                         </div>
                       </td>
                       <td>
@@ -784,7 +813,12 @@ export default function LeadsPage() {
                           {lead.name.substring(0, 2).toUpperCase()}
                         </div>
                         <div className={styles.cardHeaderInfo}>
-                          <div className={styles.cardName} style={{ fontSize: '0.75rem' }}>{lead.name}</div>
+                          <div className={styles.cardName} style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            {lead.name}
+                            <button onClick={(e) => handleToggleFlag(e, lead)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0' }}>
+                              <Flag size={10} color={lead.is_flagged ? '#ef4444' : '#cbd5e1'} fill={lead.is_flagged ? '#ef4444' : 'none'} />
+                            </button>
+                          </div>
                           <div className={styles.cardTime} style={{ fontSize: '0.65rem' }}>
                             {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'Today'}
                           </div>
