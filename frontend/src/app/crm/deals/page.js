@@ -183,7 +183,8 @@ export default function DealsPage() {
       }
     } catch (error) {
       console.error('Failed to save deal:', error);
-      alert('Error saving deal. Please check your input.');
+      const errorMessage = error.response?.data?.message || error.message || 'Error saving deal. Please check your input.';
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

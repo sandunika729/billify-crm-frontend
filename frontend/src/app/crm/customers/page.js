@@ -153,7 +153,8 @@ export default function CustomersPage() {
       }
     } catch (error) {
       console.error('Failed to save customer:', error);
-      alert('Error saving customer. Please check your input.');
+      const errorMessage = error.response?.data?.message || error.message || 'Error saving customer. Please check your input.';
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
