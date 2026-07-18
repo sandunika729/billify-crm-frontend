@@ -79,8 +79,8 @@ export default function NotificationBell() {
     }
   };
 
-  // Map backend link paths → actual frontend routes
-  // (backend may send /crm/tickets, /crm/contacts, etc. which don't exist here)
+  
+  
   const resolveLink = (link) => {
     if (!link) return null;
     return link

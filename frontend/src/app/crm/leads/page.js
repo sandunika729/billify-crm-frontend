@@ -34,7 +34,7 @@ export default function LeadsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [viewMode, setViewMode] = useState('table');
-  const [activeTab, setActiveTab] = useState('active'); // 'active' | 'converted'
+  const [activeTab, setActiveTab] = useState('active'); 
   const [draggedLeadId, setDraggedLeadId] = useState(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importFile, setImportFile] = useState(null);
@@ -116,10 +116,10 @@ export default function LeadsPage() {
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      // Only fetch non-converted leads for the active tab
+      
       const res = await leadService.getAllLeads({ status: 'active' });
       if (res.success) {
-        // Backend may not support 'active' pseudo-status, so filter client-side as fallback
+        
         const all = Array.isArray(res.data) ? res.data : [];
         setLeads(all.filter(l => l.status !== 'converted'));
       }
@@ -178,14 +178,14 @@ export default function LeadsPage() {
     }
   };
 
-  // Extracts user-friendly error messages, with special handling for 403 permission errors
+  
   const getErrorMessage = (error, fallback) => {
     const status = error?.response?.status;
     const serverMsg = error?.response?.data?.message;
     if (status === 403) {
       if (serverMsg && serverMsg.includes('Required permission:')) {
         const perm = serverMsg.split('Required permission:')[1]?.trim() || '';
-        const parts = perm.split('_'); // e.g. ['crm', 'leads', 'create']
+        const parts = perm.split('_'); 
         const action = parts[parts.length - 1];
         const module = parts[parts.length - 2];
         const actionLabel = action === 'create' ? 'create' : action === 'update' ? 'edit' : action === 'delete' ? 'delete' : action;
@@ -1152,7 +1152,7 @@ export default function LeadsPage() {
             </div>
           )}
 
-          {/* Assign Team Members */}
+          {}
           {users.length > 0 && (
             <div className={styles.formGroup}>
               <label className={styles.label}>Assign Team Members</label>

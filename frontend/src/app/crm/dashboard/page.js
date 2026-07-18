@@ -37,7 +37,7 @@ export default function CRMDashboard() {
       setSummary(summaryRes.data.data);
       setCharts(chartsRes.data.data);
 
-      // Build id → name map so the chart shows stage names instead of UUIDs
+      
       const stages = stagesRes.data.data || stagesRes.data || [];
       const map = {};
       stages.forEach(s => { map[s.id] = s.name; });
@@ -69,24 +69,24 @@ export default function CRMDashboard() {
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
   const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#64748b'];
   const PASTEL_COLORS = [
-    '#a5b4fc', // lavender
-    '#86efac', // mint green
-    '#fca5a5', // rose
-    '#fde68a', // soft yellow
-    '#93c5fd', // sky blue
-    '#f9a8d4', // pink
-    '#6ee7b7', // teal
-    '#c4b5fd', // violet
+    '#a5b4fc', 
+    '#86efac', 
+    '#fca5a5', 
+    '#fde68a', 
+    '#93c5fd', 
+    '#f9a8d4', 
+    '#6ee7b7', 
+    '#c4b5fd', 
   ];
 
   const formatDealStageData = (data) => {
     if (!data) return { lines: [], chartData: [] };
-    // Build one data point per stage for a multi-line chart
+    
     const lines = data.map((d, i) => ({
       key: d.stage_name || stageMap[d.stage_id] || `Stage ${i + 1}`,
       color: PASTEL_COLORS[i % PASTEL_COLORS.length],
     }));
-    // Single "point" of data with each stage as a key
+    
     const point = { name: 'Current' };
     data.forEach((d, i) => {
       const key = d.stage_name || stageMap[d.stage_id] || `Stage ${i + 1}`;

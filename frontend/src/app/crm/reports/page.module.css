@@ -280,7 +280,7 @@
   box-shadow: none;
 }
 
-/* Dashboard KPI styles */
+
 .kpiGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -335,7 +335,7 @@
   margin: 0;
 }
 
-/* Deals Table CSS */
+
 .dealsTable {
   width: 100%;
   border-collapse: collapse;

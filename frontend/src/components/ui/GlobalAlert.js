@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { subscribeToAlerts } from '@/utils/alertService';
-import Button from '@/components/ui/Button';
+import styles from './GlobalAlert.module.css';
 
 export default function GlobalAlert() {
   const [alerts, setAlerts] = useState([]);
@@ -16,91 +16,53 @@ export default function GlobalAlert() {
 
   if (alerts.length === 0) return null;
 
-  // We only show the top-most alert to avoid stacking modals weirdly
-  const currentAlert = alerts[0];
+  const current = alerts[0];
+  const isConfirm = current.type === 'confirm';
 
   const handleClose = (confirmed) => {
-    if (confirmed && currentAlert.onConfirm) currentAlert.onConfirm();
-    if (!confirmed && currentAlert.onCancel) currentAlert.onCancel();
-    
-    // Remove the current alert from the queue
+    if (confirmed && current.onConfirm) current.onConfirm();
+    if (!confirmed && current.onCancel) current.onCancel();
     setAlerts((prev) => prev.slice(1));
   };
 
+  const icon = isConfirm ? (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.8)" strokeWidth="1.5"/>
+      <path d="M12 8v4m0 4h.01" stroke="rgba(245,158,11,1)" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  ) : (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.8)" strokeWidth="1.5"/>
+      <path d="M12 8v4m0 4h.01" stroke="rgba(99,102,241,1)" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  const title = current.title || (isConfirm ? 'Confirm Action' : 'Alert');
+
   return (
-    <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <div style={styles.header}>
-          <h3 style={styles.title}>{currentAlert.title || 'Alert'}</h3>
+    <div
+      className={styles.overlay}
+      onClick={(e) => { if (e.target === e.currentTarget && !isConfirm) handleClose(true); }}
+    >
+      <div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="global-alert-title">
+        <div className={styles.body}>
+          <span className={styles.icon}>{icon}</span>
+          <div>
+            <h3 className={styles.title} id="global-alert-title">{title}</h3>
+            <p className={styles.message}>{current.message}</p>
+          </div>
         </div>
-        <div style={styles.body}>
-          <p style={styles.message}>{currentAlert.message}</p>
-        </div>
-        <div style={styles.footer}>
-          {currentAlert.type === 'confirm' && (
-            <Button variant="secondary" onClick={() => handleClose(false)}>
+        <div className={styles.footer}>
+          {isConfirm && (
+            <button className={styles.btnCancel} onClick={() => handleClose(false)}>
               Cancel
-            </Button>
+            </button>
           )}
-          <Button variant="primary" onClick={() => handleClose(true)}>
+          <button className={styles.btnOk} autoFocus onClick={() => handleClose(true)}>
             OK
-          </Button>
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    backdropFilter: 'blur(4px)',
-    zIndex: 99999, // Ensure it's on top of everything
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '1rem',
-  },
-  modal: {
-    backgroundColor: 'var(--color-bg)',
-    border: '1px solid var(--color-border)',
-    borderRadius: '16px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
-    width: '100%',
-    maxWidth: '420px',
-    overflow: 'hidden',
-    animation: 'modalSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-  },
-  header: {
-    padding: '20px 24px 12px 24px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.15rem',
-    fontWeight: '600',
-    color: 'var(--color-text)',
-  },
-  body: {
-    padding: '0 24px 24px 24px',
-  },
-  message: {
-    margin: 0,
-    fontSize: '0.95rem',
-    color: 'var(--color-text-muted)',
-    lineHeight: '1.5',
-    whiteSpace: 'pre-wrap', // Respect newlines in messages
-  },
-  footer: {
-    padding: '16px 24px',
-    backgroundColor: 'var(--color-bg-alt)',
-    borderTop: '1px solid var(--color-border)',
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '12px',
-  }
-};

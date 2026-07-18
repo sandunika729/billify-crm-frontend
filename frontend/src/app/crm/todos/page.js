@@ -35,14 +35,14 @@ export default function TodosPage() {
   const fetchTodos = async () => {
     setLoading(true);
     try {
-      // Fetch both own + all public todos
+      
       const [myRes, pubRes] = await Promise.all([
         todoService.getTodos(),
         todoService.getTodos({ filter: 'public' }),
       ]);
       const myTodos = myRes.success ? (Array.isArray(myRes.data) ? myRes.data : []) : [];
       const pubTodos = pubRes.success ? (Array.isArray(pubRes.data) ? pubRes.data : []) : [];
-      // Merge, avoiding duplicates (my public todos appear in both)
+      
       const merged = [...myTodos];
       pubTodos.forEach(pt => {
         if (!merged.find(t => t.id === pt.id)) merged.push(pt);
@@ -137,7 +137,7 @@ export default function TodosPage() {
 
   return (
     <div className={styles.pageContainer}>
-      {/* Header */}
+      {}
       <div className={styles.pageHeader}>
         <div>
           <h1>To-Do List</h1>
@@ -149,7 +149,7 @@ export default function TodosPage() {
         </div>
       </div>
 
-      {/* Filters bar */}
+      {}
       <div className={styles.filtersBar}>
         <SearchBar
           value={searchTerm}
@@ -182,7 +182,7 @@ export default function TodosPage() {
         </div>
       </div>
 
-      {/* Todo cards grid */}
+      {}
       <div className={styles.timeline}>
         {loading ? (
           <div className={styles.emptyState}>Loading to-dos...</div>
@@ -285,7 +285,7 @@ export default function TodosPage() {
         )}
       </div>
 
-      {/* Add / Edit Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); resetForm(); }}
@@ -316,7 +316,7 @@ export default function TodosPage() {
             placeholder="Add any notes here..."
           />
 
-          {/* Visibility radio */}
+          {}
           <div className={styles.typeRadioGrid}>
             <label className={styles.fieldLabel}>Visibility</label>
             <div className={styles.typeRadioList}>

@@ -181,7 +181,7 @@
   .tableWrapper { overflow-x: auto; }
 }
 
-/* ── Group By control ── */
+
 .groupByWrapper {
   position: relative;
   display: flex;
@@ -196,7 +196,7 @@
   z-index: 1;
 }
 
-/* ── Group header row ── */
+
 .groupHeaderRow {
   cursor: pointer;
   user-select: none;
@@ -242,4 +242,3 @@
   color: #6366f1;
   vertical-align: middle;
 }
-

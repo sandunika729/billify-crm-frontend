@@ -270,7 +270,7 @@ export default function ReportsPage() {
 
         return (
           <div>
-            {/* Stat Cards */}
+            {}
             <div className={styles.statSection}>
               <div className={styles.kpiGrid}>
                 {[

@@ -143,11 +143,11 @@
   flex-direction: column;
   gap: 1rem;
   padding-right: 0.5rem;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none; 
 }
 
 .feedScroll::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none; 
 }
 
 .feedItem {

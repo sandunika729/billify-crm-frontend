@@ -87,7 +87,7 @@
   border-color: var(--color-text-muted);
 }
 
-/* ── Past Leads button badge ──────────────────── */
+
 .pastLeadsBadge {
   display: inline-flex;
   align-items: center;
@@ -104,7 +104,7 @@
   margin-left: 2px;
 }
 
-/* ── Converted page heading ───────────────────── */
+
 .convertedPageHeading {
   display: flex;
   align-items: center;
@@ -129,7 +129,7 @@
   margin: 0;
 }
 
-/* ── Converted Leads styles ───────────────────── */
+
 .convertedBanner {
   display: flex;
   align-items: center;
@@ -652,9 +652,9 @@
   gap: 1.5rem;
   overflow-x: auto;
   padding-bottom: 1rem;
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
 }
 
 .boardContainer::-webkit-scrollbar {

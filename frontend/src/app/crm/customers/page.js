@@ -127,9 +127,16 @@ export default function CustomersPage() {
     e.preventDefault();
 
     if (formData.phone) {
-      const phoneRegex = /^[+]?[\d\s-]{10,}$/;
-      if (!phoneRegex.test(formData.phone.trim())) {
-        alert("Please enter a valid mobile number (minimum 10 digits).");
+      const sanitized = formData.phone.trim();
+      if (!/^[+]?[\d\s-]+$/.test(sanitized)) {
+        alert("Phone number can only contain digits, spaces, and hyphens.");
+        return;
+      }
+      const digitCount = sanitized.replace(/\D/g, '').length;
+      const isValidLength = sanitized.startsWith('+') ? (digitCount >= 11 && digitCount <= 12) : (digitCount === 10);
+      
+      if (!isValidLength) {
+        alert("Please enter a valid mobile number (exactly 10 digits).");
         return;
       }
     }

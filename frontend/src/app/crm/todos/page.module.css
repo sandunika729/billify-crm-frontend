@@ -17,7 +17,6 @@
   margin: 0;
 }
 
-/* ── Quick-add form ── */
 .addForm {
   display: flex;
   gap: 0.75rem;
@@ -73,7 +72,6 @@
   background: #10b98110;
 }
 
-/* ── Tabs ── */
 .tabs {
   display: flex;
   gap: 0.25rem;
@@ -120,7 +118,6 @@
   margin-left: 0.4rem;
 }
 
-/* ── Todo list ── */
 .timeline {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -138,7 +135,6 @@
   border: 1px dashed var(--color-border);
 }
 
-/* ── Todo card ── */
 .todoCard {
   display: flex;
   align-items: flex-start;
