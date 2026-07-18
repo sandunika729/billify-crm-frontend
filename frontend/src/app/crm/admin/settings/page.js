@@ -242,8 +242,8 @@ function buildSnippet(apiKey) {
       + (msgs || '<p style="color:#6b7280;font-size:14px;">No replies yet. Our team will respond soon.</p>')
       + '</div>'
       + '<form id="crm-reply-form" style="margin-top:16px;">'
-      +   '<textarea name="message" rows="3" placeholder="Type your reply..." required></textarea>'
-      +   '<button type="submit" style="margin-top:8px;">Send Reply</button>'
+      +   '<textarea name="message" rows="3" placeholder="Type your message..." required></textarea>'
+      +   '<button type="submit" style="margin-top:8px;">Send message</button>'
       + '</form>';
 
     var replyForm = document.getElementById('crm-reply-form');
