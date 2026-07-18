@@ -10,6 +10,7 @@ import ActivityPanel from '../../../components/crm/ActivityPanel';
 
 import customerService from '../../../services/customerService';
 import leadService from '../../../services/leadService';
+import customFieldService from '../../../services/customFieldService';
 import api from '../../../services/api';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
@@ -37,6 +38,7 @@ export default function DealsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [leadsList, setLeadsList] = useState([]);
+  const [customFields, setCustomFields] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
@@ -45,7 +47,8 @@ export default function DealsPage() {
     value_lkr: '',
     stage_id: '',
     expected_close_at: '',
-    notes: ''
+    notes: '',
+    custom_fields: {}
   });
 
   const [dealToEdit, setDealToEdit] = useState(null);
@@ -76,6 +79,7 @@ export default function DealsPage() {
     fetchStages();
     fetchDeals();
     fetchCustomersAndLeads();
+    fetchCustomFields();
   }, []);
 
   const fetchStages = async () => {
@@ -90,6 +94,17 @@ export default function DealsPage() {
       }
     } catch (error) {
       console.error('Failed to fetch stages:', error);
+    }
+  };
+
+  const fetchCustomFields = async () => {
+    try {
+      const res = await customFieldService.getFields('deal');
+      if (res.success) {
+        setCustomFields(res.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch custom fields:', error);
     }
   };
 
@@ -155,6 +170,7 @@ export default function DealsPage() {
           setDeals(deals.map(d => d.id === dealToEdit.id ? updatedDeal : d));
           setIsModalOpen(false);
           setSelectedProducts([]);
+          setFormData({ title: '', customer_id: '', lead_id: '', value_lkr: '', stage_id: stages.length > 0 ? stages[0].id : '', expected_close_at: '', notes: '', custom_fields: {} });
         }
       } else {
         const res = await dealService.createDeal(payload);
@@ -162,6 +178,7 @@ export default function DealsPage() {
           setDeals([...deals, res.data]);
           setIsModalOpen(false);
           setSelectedProducts([]);
+          setFormData({ title: '', customer_id: '', lead_id: '', value_lkr: '', stage_id: stages.length > 0 ? stages[0].id : '', expected_close_at: '', notes: '', custom_fields: {} });
         }
       }
     } catch (error) {
@@ -237,7 +254,8 @@ export default function DealsPage() {
       value_lkr: deal.value_lkr || '',
       stage_id: deal.stage_id || '',
       expected_close_at: (deal.expected_close_at && !isNaN(new Date(deal.expected_close_at).getTime())) ? new Date(deal.expected_close_at).toISOString().split('T')[0] : '',
-      notes: deal.notes || ''
+      notes: deal.notes || '',
+      custom_fields: deal.custom_fields || {}
     });
     let parsedProducts = [];
     if (typeof deal.products_interest === 'string') {
@@ -506,7 +524,7 @@ export default function DealsPage() {
           </Button>
           <Button variant="primary" onClick={() => {
             setDealToEdit(null);
-            setFormData({ title: '', customer_id: '', lead_id: '', value_lkr: '', stage_id: stages.length > 0 ? stages[0].id : '', expected_close_at: '', notes: '' });
+            setFormData({ title: '', customer_id: '', lead_id: '', value_lkr: '', stage_id: stages.length > 0 ? stages[0].id : '', expected_close_at: '', notes: '', custom_fields: {} });
             setIsModalOpen(true);
           }}>
             New Deal
@@ -878,6 +896,68 @@ export default function DealsPage() {
           </div>
 
           <FormField label="Notes / Description" type="textarea" name="notes" value={formData.notes} onChange={handleInputChange} rows={3} placeholder="Add any details, context, or next steps here..." />
+
+          {customFields.length > 0 && (
+            <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid var(--color-border)' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: 'var(--color-text-primary)' }}>Custom Fields</h4>
+              {customFields.map(field => {
+                const value = formData.custom_fields?.[field.field_name] ?? '';
+                return (
+                  <div key={field.id} className={styles.formGroup} style={{ marginBottom: '15px' }}>
+                    <label className={styles.label}>
+                      {field.field_label} {field.is_required && '*'}
+                    </label>
+                    
+                    {field.field_type === 'text' && (
+                      <input 
+                        type="text" 
+                        className={styles.input}
+                        value={value} 
+                        required={field.is_required}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
+                        })}
+                        placeholder={`Enter ${field.field_label.toLowerCase()}`}
+                      />
+                    )}
+
+                    {field.field_type === 'number' && (
+                      <input 
+                        type="number" 
+                        className={styles.input}
+                        value={value} 
+                        required={field.is_required}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
+                        })}
+                        placeholder={`Enter ${field.field_label.toLowerCase()}`}
+                      />
+                    )}
+
+                    {field.field_type === 'select' && (
+                      <select
+                        className={styles.input}
+                        value={value}
+                        required={field.is_required}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
+                        })}
+                      >
+                        <option value="">Select option...</option>
+                        {field.options && field.options.split(',').map(opt => {
+                          const o = opt.trim();
+                          return o ? <option key={o} value={o}>{o}</option> : null;
+                        })}
+                      </select>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </form>
       </Modal>
       {}
@@ -1109,6 +1189,24 @@ export default function DealsPage() {
               }
               return null;
             })()}
+
+            {customFields.length > 0 && viewDeal.custom_fields && Object.keys(viewDeal.custom_fields).length > 0 && (
+              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)' }}>
+                <label>Custom Fields</label>
+                <div className={styles.detailGrid} style={{ marginTop: '0.5rem' }}>
+                  {customFields.map(field => {
+                    const val = viewDeal.custom_fields?.[field.field_name];
+                    if (!val && val !== 0) return null;
+                    return (
+                      <div className={styles.detailItem} key={field.id}>
+                        <label>{field.field_label}</label>
+                        <p>{val}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <ActivityPanel relatedType="deal" relatedId={viewDeal.id} tenantId={user.tenantId} />
 
