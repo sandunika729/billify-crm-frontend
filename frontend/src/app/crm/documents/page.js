@@ -10,6 +10,7 @@ import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function DocumentsPage() {
   const { user } = useAuth();
@@ -126,7 +127,7 @@ export default function DocumentsPage() {
   })();
 
   const handleDeleteDoc = async (id) => {
-    if (confirm('Are you sure you want to delete this document?')) {
+    if (await confirm('Are you sure you want to delete this document?')) {
       try {
         const res = await documentService.deleteDocument(id);
         if (res.success) {

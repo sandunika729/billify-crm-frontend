@@ -11,6 +11,7 @@ import Modal from '../../../../components/modals/Modal';
 import FormField from '../../../../components/forms/FormField';
 import shopProfileService from '../../../../services/shopProfileService';
 import customFieldService from '../../../../services/customFieldService';
+import { alert, confirm } from '@/utils/alertService';
 
 const CF_TABS = [
   { key: 'customer', label: 'Customers' },
@@ -375,7 +376,7 @@ export default function SettingsPage() {
   };
 
   const handleRegenKey = async () => {
-    if (!confirm('Regenerate the API key? Your current website widget will stop working until you paste the new key.')) return;
+    if (!await confirm('Regenerate the API key? Your current website widget will stop working until you paste the new key.')) return;
     setRegenLoading(true);
     try {
       const res = await shopProfileService.regenerateKey();
@@ -420,7 +421,7 @@ export default function SettingsPage() {
   };
 
   const handleDeleteCfField = async (id) => {
-    if (!confirm('Delete this custom field? Existing data in records will not be removed, but the field will no longer appear in forms.')) return;
+    if (!await confirm('Delete this custom field? Existing data in records will not be removed, but the field will no longer appear in forms.')) return;
     try {
       await customFieldService.deleteField(id);
       fetchCfFields();

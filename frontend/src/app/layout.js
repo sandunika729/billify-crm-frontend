@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import "./globals.css";
 import { AuthProvider } from "../context/AuthContext";
+import GlobalAlert from "../components/ui/GlobalAlert";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <AuthProvider>
           {children}
+          <GlobalAlert />
         </AuthProvider>
       </body>
     </html>

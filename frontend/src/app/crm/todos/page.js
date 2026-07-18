@@ -9,6 +9,7 @@ import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
 import FilterSelect from '../../../components/ui/FilterSelect';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function TodosPage() {
   const [todos, setTodos] = useState([]);
@@ -113,7 +114,7 @@ export default function TodosPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this to-do?')) return;
+    if (!await confirm('Delete this to-do?')) return;
     try {
       const res = await todoService.deleteTodo(id);
       if (res.success || res.data || res.message) {

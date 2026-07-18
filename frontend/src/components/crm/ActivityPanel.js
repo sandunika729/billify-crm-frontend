@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import activityService from '../../services/activityService';
 import styles from './ActivityPanel.module.css';
 import { Plus, Phone, Mail, Users, FileText, CheckSquare, Bell, Trash2, CheckCircle, Calendar, Loader } from 'lucide-react';
+import { alert, confirm } from '@/utils/alertService';
 
 const ACTIVITY_TYPES = [
   { value: 'call',     label: 'Call',      icon: Phone,       color: '#3b82f6' },
@@ -78,7 +79,7 @@ export default function ActivityPanel({ relatedType, relatedId }) {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this activity?')) return;
+    if (!await confirm('Delete this activity?')) return;
     try {
       const res = await activityService.deleteActivity(id);
       if (res.success) setActivities(prev => prev.filter(a => a.id !== id));

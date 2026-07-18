@@ -7,6 +7,7 @@ import styles from './page.module.css';
 import Button from '../../../../components/ui/Button';
 import Modal from '../../../../components/modals/Modal';
 import FormField from '../../../../components/forms/FormField';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function CustomFieldsPage() {
   const [fields, setFields] = useState([]);
@@ -59,7 +60,7 @@ export default function CustomFieldsPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this custom field definition? Existing data in records will not be deleted, but it will no longer show in forms.')) return;
+    if (!await confirm('Are you sure you want to delete this custom field definition? Existing data in records will not be deleted, but it will no longer show in forms.')) return;
     
     try {
       await customFieldService.deleteField(id);

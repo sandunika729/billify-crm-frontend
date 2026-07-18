@@ -13,6 +13,7 @@ import {
   User, Building2, FileText, CheckCircle2, Plus, Upload, Paperclip, X as XIcon, Download, Clock, Trash2
 } from 'lucide-react';
 import styles from './page.module.css';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function InboxPage() {
   const [feed, setFeed] = useState([]);
@@ -193,7 +194,7 @@ export default function InboxPage() {
 
   const handleDeleteLog = async (id, e) => {
     e.stopPropagation();
-    if (!window.confirm('Are you sure you want to delete this message?')) return;
+    if (!await confirm('Are you sure you want to delete this message?')) return;
     
     try {
       const res = await activityService.deleteInteraction(id);

@@ -9,6 +9,7 @@ import { format, startOfYear, endOfYear, eachMonthOfInterval, getDaysInMonth, st
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import Button from '../../../components/ui/Button';
+import { alert, confirm } from '@/utils/alertService';
 
 const activityColorMap = {
   call: '#3b82f6', 

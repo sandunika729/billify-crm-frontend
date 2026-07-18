@@ -7,6 +7,7 @@ import { X, Save, Plus, Trash2 } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import FormField from '../../../components/forms/FormField';
 import Modal from '../../../components/modals/Modal';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function CreateQuoteModal({ isOpen, onClose, onSave }) {
   const [customers, setCustomers] = useState([]);

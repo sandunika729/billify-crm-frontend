@@ -16,6 +16,7 @@ import Button from '../../../../components/ui/Button';
 import Modal from '../../../../components/modals/Modal';
 import FormField from '../../../../components/forms/FormField';
 import ActivityPanel from '../../../../components/crm/ActivityPanel';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function CustomerProfilePage() {
   const params = useParams();

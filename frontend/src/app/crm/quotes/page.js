@@ -10,6 +10,7 @@ import Badge from '../../../components/ui/Badge';
 import SearchBar from '../../../components/ui/SearchBar';
 import Modal from '../../../components/modals/Modal';
 import CreateQuoteModal from './CreateQuoteModal';
+import { alert, confirm } from '@/utils/alertService';
 
 const QUOTE_STATUSES = [
   { value: 'draft',     label: 'Draft',     color: '#64748b' },
@@ -227,7 +228,7 @@ export default function QuotesPage() {
 
   
   const handleConvertToInvoice = async (quote) => {
-    const confirmConvert = window.confirm(
+    const confirmConvert = await confirm(
       `Convert Quote ${quote.quote_no} to a POS Invoice?\n\nThis will generate a real financial record in the system.`
     );
     if (!confirmConvert) return;
@@ -270,7 +271,7 @@ export default function QuotesPage() {
   };
 
   const handleDeleteQuote = async (quote) => {
-    if (!window.confirm(`Delete quote ${quote.quote_no}?`)) return;
+    if (!await confirm(`Delete quote ${quote.quote_no}?`)) return;
     try {
       const res = await quoteService.deleteQuote(quote.id);
       if (res.success) {

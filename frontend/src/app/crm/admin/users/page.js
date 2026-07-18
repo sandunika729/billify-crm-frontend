@@ -16,6 +16,7 @@ import FormField from '../../../../components/forms/FormField';
 import SearchBar from '../../../../components/ui/SearchBar';
 import Badge from '../../../../components/ui/Badge';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
+import { alert, confirm } from '@/utils/alertService';
 
 const CRM_ROLES = [
   { value: 'super_admin', label: 'Super Admin', color: '#7c3aed', desc: 'Full system access, all modules' },
@@ -241,7 +242,7 @@ export default function TeamMembersPage() {
   const handleToggleStatus = async (u) => {
     setOpenMenuId(null);
     const action = u.is_active ? 'deactivate' : 'reactivate';
-    if (!window.confirm(`Are you sure you want to ${action} ${u.name || u.email}?`)) return;
+    if (!await confirm(`Are you sure you want to ${action} ${u.name || u.email}?`)) return;
     try {
       const res = u.is_active
         ? await userService.deactivateUser(u.id)

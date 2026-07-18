@@ -14,6 +14,7 @@ import { Search, Plus, Building2, User, Phone, Mail, X, Upload, Download, Eye, E
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import customFieldService from '../../../services/customFieldService';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function CustomersPage() {
   const { user } = useAuth();
@@ -197,7 +198,7 @@ export default function CustomersPage() {
   };
 
   const handleDeleteCustomer = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this customer?')) return;
+    if (!await confirm('Are you sure you want to delete this customer?')) return;
     try {
       const res = await customerService.deleteCustomer(id);
       if (res.success) {

@@ -15,6 +15,7 @@ import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
+import { alert, confirm } from '@/utils/alertService';
 
 const TICKET_STATUSES = [
   { value: 'open',             label: 'Open',                color: '#3b82f6' },
@@ -155,7 +156,7 @@ export default function SupportTicketsPage() {
   };
 
   const handleDeleteTicket = async (id) => {
-    if (!confirm('Delete this ticket?')) return;
+    if (!await confirm('Delete this ticket?')) return;
     try {
       await ticketService.deleteTicket(id);
       if (selectedTicket?.id === id) handleCloseDetail();

@@ -17,6 +17,7 @@ import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import Badge from '../../../components/ui/Badge';
 import SearchBar from '@/components/ui/SearchBar';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function LeadsPage() {
   const { user } = useAuth();
@@ -256,7 +257,7 @@ export default function LeadsPage() {
   };
 
   const handleDeleteLead = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this lead?')) return;
+    if (!await confirm('Are you sure you want to delete this lead?')) return;
     try {
       const res = await leadService.deleteLead(id);
       if (res.success) {
@@ -271,7 +272,7 @@ export default function LeadsPage() {
 
   const handleBulkDelete = async () => {
     if (selectedLeads.length === 0) return;
-    if (!window.confirm(`Are you sure you want to delete ${selectedLeads.length} selected lead(s)?`)) return;
+    if (!await confirm(`Are you sure you want to delete ${selectedLeads.length} selected lead(s)?`)) return;
     try {
       const res = await leadService.bulkDelete(selectedLeads);
       if (res.success) {

@@ -14,6 +14,7 @@ import SearchBar from '../../../components/ui/SearchBar';
 import FilterSelect from '../../../components/ui/FilterSelect';
 import CalendarPage from '../calendar/page';
 import { useAuth } from '../../../context/AuthContext';
+import { alert, confirm } from '@/utils/alertService';
 
 const ACTIVITY_TYPES = [
   { value: 'call', label: 'Call', icon: Phone, color: '#3b82f6' },
@@ -169,7 +170,7 @@ export default function ActivitiesPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this activity?')) return;
+    if (!await confirm('Delete this activity?')) return;
     try {
       const res = await activityService.deleteActivity(id);
       if (res.success) setActivities(prev => prev.filter(a => a.id !== id));

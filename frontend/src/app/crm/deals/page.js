@@ -17,6 +17,7 @@ import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
 import { useRouter } from 'next/navigation';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function DealsPage() {
   const { user } = useAuth();
@@ -270,7 +271,7 @@ export default function DealsPage() {
   };
 
   const handleDeleteDeal = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this deal?')) return;
+    if (!await confirm('Are you sure you want to delete this deal?')) return;
     try {
       const res = await dealService.deleteDeal(id);
       if (res.success) {

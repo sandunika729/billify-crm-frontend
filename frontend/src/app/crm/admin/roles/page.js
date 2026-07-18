@@ -6,6 +6,7 @@ import roleService from '../../../../services/roleService';
 import styles from './page.module.css';
 import { Shield, Users, Search, Edit2, Trash2, Plus, X, Check, ChevronDown, ChevronRight } from 'lucide-react';
 import Button from '../../../../components/ui/Button';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function RolesPage() {
   const { user } = useAuth();
