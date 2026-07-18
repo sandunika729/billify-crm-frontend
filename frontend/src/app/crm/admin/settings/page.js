@@ -194,7 +194,7 @@ function buildSnippet(apiKey) {
       var time = m.created_at ? new Date(m.created_at).toLocaleString() : '';
       return '<div class="crm-msg ' + (isAgent ? 'agent' : 'customer') + '">'
         + '<div class="crm-msg-meta">' + who + ' &middot; ' + time + '</div>'
-        + '<div>' + (m.message || '').replace(/\n/g, '<br>') + '</div>'
+        + '<div>' + (m.message || '').replace(/\\n/g, '<br>') + '</div>'
         + '</div>';
     }).join('');
     container.innerHTML =
