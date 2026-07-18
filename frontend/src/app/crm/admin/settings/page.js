@@ -11,6 +11,7 @@ import Modal from '../../../../components/modals/Modal';
 import FormField from '../../../../components/forms/FormField';
 import shopProfileService from '../../../../services/shopProfileService';
 import customFieldService from '../../../../services/customFieldService';
+import outlookCalendarService from '../../../../services/outlookCalendarService';
 
 const CF_TABS = [
   { key: 'customer', label: 'Customers' },
@@ -299,13 +300,45 @@ export default function SettingsPage() {
   const [isCfModalOpen, setIsCfModalOpen] = useState(false);
   const [cfForm, setCfForm] = useState({ field_name: '', field_label: '', field_type: 'text', options: '', is_required: false });
 
+  // Integrations - Outlook
+  const [outlookConnected, setOutlookConnected] = useState(false);
+  const [outlookStatusLoading, setOutlookStatusLoading] = useState(false);
+  const [outlookDisconnecting, setOutlookDisconnecting] = useState(false);
+
   useEffect(() => {
     if (mainTab === 'shop' || mainTab === 'widget') {
       fetchProfile();
     } else if (mainTab === 'customfields') {
       fetchCfFields();
+    } else if (mainTab === 'integrations') {
+      fetchOutlookStatus();
     }
   }, [mainTab, cfTab]);
+
+  const fetchOutlookStatus = async () => {
+    setOutlookStatusLoading(true);
+    try {
+      const res = await outlookCalendarService.getStatus();
+      if (res.success) setOutlookConnected(res.data.connected);
+    } catch {
+      setOutlookConnected(false);
+    } finally {
+      setOutlookStatusLoading(false);
+    }
+  };
+
+  const handleDisconnectOutlook = async () => {
+    if (!confirm('Are you sure you want to disconnect Outlook? Your calendar events will no longer sync.')) return;
+    setOutlookDisconnecting(true);
+    try {
+      await outlookCalendarService.disconnect();
+      setOutlookConnected(false);
+    } catch {
+      alert('Failed to disconnect Outlook.');
+    } finally {
+      setOutlookDisconnecting(false);
+    }
+  };
 
   const fetchProfile = async () => {
     setProfileLoading(true);
@@ -467,6 +500,7 @@ export default function SettingsPage() {
               { key: 'shop', label: 'Shop Profile' },
               { key: 'widget', label: 'Website Widget' },
               { key: 'customfields', label: 'Custom Fields' },
+              { key: 'integrations', label: '🔗 Integrations' },
             ].map(item => (
               <button
                 key={item.key}
@@ -736,6 +770,84 @@ export default function SettingsPage() {
           </div>
         </form>
       </Modal>
+
+      {/* ── Integrations: Outlook Calendar ────────────────────────── */}
+      {mainTab === 'integrations' && (
+        <div className={styles.contentPanel}>
+          <div className={styles.contentHeader}>
+            <div><h2 className={styles.contentTitle}>Integrations</h2></div>
+          </div>
+          <div className={styles.contentBody}>
+            {/* Outlook Card */}
+            <div style={{
+              background: 'var(--color-bg)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '12px',
+              padding: '24px',
+              maxWidth: '560px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                {/* Microsoft Outlook icon */}
+                <div style={{
+                  width: 48, height: 48, borderRadius: 10,
+                  background: '#0078d4', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 7.387v13.227A1.39 1.39 0 0 1 22.609 22H9.65a1.39 1.39 0 0 1-1.391-1.386V18.5l7.696-2.155L24 18.5V7.387z" />
+                    <path d="M24 7.387L16.5 12 8.259 7.387" />
+                    <path d="M8.259 5H22.61A1.39 1.39 0 0 1 24 6.386v1.001L16.5 12 8.259 7.387V5z" opacity=".6" />
+                    <path d="M14 4.5C14 2.567 12.433 1 10.5 1S7 2.567 7 4.5v.5H0v13h7v.5a3.5 3.5 0 0 0 7 0V18h7V4.5H14z" />
+                    <circle cx="10.5" cy="10.5" r="3" fill="white" />
+                  </svg>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text)' }}>Microsoft Outlook Calendar</div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>Sync your personal Outlook calendar with the CRM Calendar view</div>
+                </div>
+                <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
+                  {outlookStatusLoading ? (
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>Checking...</span>
+                  ) : (
+                    <span style={{
+                      padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 600,
+                      background: outlookConnected ? '#d1fae5' : '#f3f4f6',
+                      color: outlookConnected ? '#065f46' : '#6b7280'
+                    }}>
+                      {outlookConnected ? '● Connected' : '○ Not Connected'}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <ul style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', paddingLeft: '1.2rem', marginBottom: '20px', lineHeight: '1.8' }}>
+                <li>Your Outlook events appear on the <strong>Calendar</strong> page alongside CRM activities</li>
+                <li>Outlook events are shown in <span style={{ color: '#0078d4', fontWeight: 600 }}>blue</span>, CRM activities in <span style={{ color: '#10b981', fontWeight: 600 }}>green</span></li>
+                <li>Click on an Outlook event to open it directly in Outlook</li>
+                <li>This connection is <strong>personal</strong> — only your calendar is synced</li>
+              </ul>
+
+              {!outlookConnected ? (
+                <Button
+                  variant="primary"
+                  onClick={() => outlookCalendarService.connect()}
+                  style={{ background: '#0078d4', borderColor: '#0078d4' }}
+                >
+                  🔗 Connect Outlook Calendar
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  onClick={handleDisconnectOutlook}
+                  isLoading={outlookDisconnecting}
+                >
+                  Disconnect Outlook
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
