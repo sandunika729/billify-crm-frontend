@@ -6,15 +6,15 @@ export default function usePermission() {
   const hasPermission = (permissionString) => {
     if (!user) return false;
     
-    
     if (Array.isArray(user.roles) && typeof user.roles[0] === 'string') {
-      if (user.roles.includes('super_admin')) return true;
-      return user.permissions?.includes(permissionString);
+      if (user.roles.includes('super_admin') || user.roles.includes('admin')) return true;
+      const [mod, act] = permissionString.split(':');
+      const dbPerm = `crm_${mod}_${act}`;
+      return user.permissions?.includes(dbPerm) || user.permissions?.includes(permissionString);
     }
     
-    
     if (Array.isArray(user.roles) && typeof user.roles[0] === 'object') {
-      const isSuper = user.roles.some(r => r.slug === 'super_admin');
+      const isSuper = user.roles.some(r => r.slug === 'super_admin' || r.slug === 'admin' || r.name === 'admin');
       if (isSuper) return true;
       
       const [mod, act] = permissionString.split(':');
