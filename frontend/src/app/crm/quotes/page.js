@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import quoteService from '../../../services/quoteService';
 import styles from './page.module.css';
-import { Plus, FileText, Calendar, Download, Upload, Send, ArrowRightLeft, LayoutGrid, List, Trash2, CheckCircle, XCircle, MessageSquare, ChevronRight, Phone, Copy } from 'lucide-react';
+import { Plus, FileText, Calendar, Download, Upload, Send, ArrowRightLeft, LayoutGrid, List, Trash2, CheckCircle, XCircle, MessageSquare, ChevronRight, Phone, Copy, Flag } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import SearchBar from '../../../components/ui/SearchBar';
@@ -89,6 +89,40 @@ export default function QuotesPage() {
     const matchesStatus = !filterStatus || q.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
+
+  const handleToggleFlag = async (e, quote) => {
+    e.stopPropagation();
+    try {
+      const currentStatus = quote.flag_status || 'none';
+      let newStatus = 'none';
+      if (currentStatus === 'none') newStatus = 'flagged';
+      else if (currentStatus === 'flagged') newStatus = 'completed';
+      else newStatus = 'none';
+
+      setQuotes(prev => prev.map(q => q.id === quote.id ? { ...q, flag_status: newStatus } : q));
+      await quoteService.updateQuote(quote.id, { flag_status: newStatus });
+    } catch (error) {
+      console.error('Failed to toggle flag:', error);
+      fetchQuotes();
+    }
+  };
+
+  const handleToggleFlag = async (e, quote) => {
+    e.stopPropagation();
+    try {
+      const currentStatus = quote.flag_status || 'none';
+      let newStatus = 'none';
+      if (currentStatus === 'none') newStatus = 'flagged';
+      else if (currentStatus === 'flagged') newStatus = 'completed';
+      else newStatus = 'none';
+
+      setQuotes(prev => prev.map(q => q.id === quote.id ? { ...q, flag_status: newStatus } : q));
+      await quoteService.updateQuote(quote.id, { flag_status: newStatus });
+    } catch (error) {
+      console.error('Failed to toggle flag:', error);
+      fetchQuotes();
+    }
+  };
 
   
   const handleDownloadPdf = async (quote) => {
@@ -548,6 +582,17 @@ export default function QuotesPage() {
                         </td>
                         <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                           <div className={styles.rowActions} style={{ gap: '8px' }}>
+                            <button 
+                              className={`${styles.actionBtn} ${quote.flag_status === 'flagged' ? styles.flagged : quote.flag_status === 'completed' ? styles.completed : ''}`}
+                              onClick={(e) => handleToggleFlag(e, quote)}
+                              title={quote.flag_status === 'flagged' ? 'Mark Completed' : quote.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                            >
+                              <Flag 
+                                size={12} 
+                                fill={quote.flag_status === 'flagged' ? '#ef4444' : quote.flag_status === 'completed' ? '#10b981' : 'none'} 
+                                color={quote.flag_status === 'flagged' ? '#ef4444' : quote.flag_status === 'completed' ? '#10b981' : '#64748b'} 
+                              />
+                            </button>
                             <button className={styles.actionBtn} title="Download PDF" onClick={() => handleDownloadPdf(quote)}>
                               <Download size={12} />
                             </button>

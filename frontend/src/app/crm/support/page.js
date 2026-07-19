@@ -9,7 +9,7 @@ import styles from './page.module.css';
 import {
   Search, Plus, LifeBuoy, AlertCircle, Clock, CheckCircle2,
   MessageSquare, X, Send, User, Edit2, Trash2, ArrowLeft,
-  Lock, RefreshCw
+  Lock, RefreshCw, Flag
 } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
@@ -170,6 +170,23 @@ export default function SupportTicketsPage() {
     
     const { downloadAndSaveExport } = await import('../../../utils/exportHelper');
     await downloadAndSaveExport(csv, `tickets-${new Date().toISOString().slice(0,10)}.csv`);
+  };
+
+  const handleToggleFlag = async (e, ticket) => {
+    e.stopPropagation();
+    try {
+      const currentStatus = ticket.flag_status || 'none';
+      let newStatus = 'none';
+      if (currentStatus === 'none') newStatus = 'flagged';
+      else if (currentStatus === 'flagged') newStatus = 'completed';
+      else newStatus = 'none';
+
+      setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, flag_status: newStatus } : t));
+      await ticketService.updateTicket(ticket.id, { flag_status: newStatus });
+    } catch (error) {
+      console.error('Failed to toggle flag:', error);
+      fetchTickets();
+    }
   };
 
   const getStatusCfg   = (s) => TICKET_STATUSES.find(x => x.value === s) || TICKET_STATUSES[0];
@@ -451,6 +468,17 @@ export default function SupportTicketsPage() {
                       </td>
                       <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                         <div className={styles.rowActions}>
+                          <button
+                            className={styles.actionBtn}
+                            title={ticket.flag_status === 'flagged' ? 'Mark Completed' : ticket.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                            onClick={(e) => handleToggleFlag(e, ticket)}
+                          >
+                            <Flag
+                              size={12}
+                              fill={ticket.flag_status === 'flagged' ? '#ef4444' : ticket.flag_status === 'completed' ? '#10b981' : 'none'}
+                              color={ticket.flag_status === 'flagged' ? '#ef4444' : ticket.flag_status === 'completed' ? '#10b981' : '#64748b'}
+                            />
+                          </button>
                           <button className={styles.actionBtn} title="Open Thread" onClick={() => handleOpenDetail(ticket)}><MessageSquare size={12} color="#3b82f6" /></button>
                           <button className={styles.actionBtn} title="Edit" onClick={() => { setEditFormData({ id: ticket.id, subject: ticket.subject, customer_id: ticket.customer_id || '', priority: ticket.priority, status: ticket.status, source: ticket.source }); setIsEditModalOpen(true); }}><Edit2 size={12} color="#94a3b8" /></button>
                           <button className={styles.actionBtn} title="Delete" onClick={() => handleDeleteTicket(ticket.id)}><Trash2 size={12} color="#ef4444" /></button>
