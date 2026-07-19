@@ -426,15 +426,15 @@
 
 .pinBtn:hover {
   color: #8b5cf6;
-  background: #dbeafe;
+
 }
 
 .pinBtnActive {
   color: #8b5cf6;
-  background: #dbeafe;
+
 }
 
 .pinBtnActive:hover {
   color: #8b5cf6;
-  background: #bfdbfe;
+
 }
