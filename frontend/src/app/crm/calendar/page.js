@@ -5,13 +5,11 @@ import { useAuth } from '../../../context/AuthContext';
 import calendarService from '../../../services/calendarService';
 import outlookCalendarService from '../../../services/outlookCalendarService';
 import styles from './page.module.css';
-import { ChevronLeft, ChevronRight, Link2, Link2Off, Loader } from 'lucide-react';
-import { format, eachMonthOfInterval, getDaysInMonth, startOfMonth, getDay, isSameDay } from 'date-fns';
+import { ChevronLeft, ChevronRight, Calendar, AlertCircle, X } from 'lucide-react';
+import { format, startOfYear, endOfYear, eachMonthOfInterval, getDaysInMonth, startOfMonth, getDay, isSameDay } from 'date-fns';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import Button from '../../../components/ui/Button';
-import { alert, confirm } from '@/utils/alertService';
-import { useSearchParams } from 'next/navigation';
 
 const activityColorMap = {
   call: '#3b82f6',
@@ -20,18 +18,18 @@ const activityColorMap = {
   follow_up: '#f59e0b',
   note: '#8b5cf6',
   system: '#64748b',
-  outlook: '#0078d4', // Microsoft blue for Outlook events
+  outlook: '#0078d4', // Outlook blue
 };
 
 export default function CalendarPage() {
   const { user } = useAuth();
-  const searchParams = useSearchParams();
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [activities, setActivities] = useState([]);
   const [outlookEvents, setOutlookEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [outlookConnected, setOutlookConnected] = useState(false);
-  const [outlookLoading, setOutlookLoading] = useState(false);
+  const [showOutlook, setShowOutlook] = useState(true);
+  const [outlookConnected, setOutlookConnected] = useState(null); // null = unknown, true/false
+  const [outlookSyncBanner, setOutlookSyncBanner] = useState(false);
 
   const [hoveredDate, setHoveredDate] = useState(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
@@ -48,84 +46,55 @@ export default function CalendarPage() {
     due_at_time: '12:00'
   });
 
-  // On mount: check for ?outlook_connected=true or ?outlook_error= in URL
+  // Check Outlook connection status once on mount
   useEffect(() => {
-    const connected = searchParams.get('outlook_connected');
-    const error = searchParams.get('outlook_error');
-    if (connected === 'true') {
-      alert('✅ Outlook Calendar connected successfully!');
-    } else if (error) {
-      alert(`❌ Outlook connection failed: ${error.replace(/_/g, ' ')}`);
-    }
-  }, [searchParams]);
-
-  // Check Outlook connection status on mount
-  useEffect(() => {
+    const checkOutlookStatus = async () => {
+      try {
+        const res = await outlookCalendarService.getStatus();
+        const connected = res?.data?.connected === true;
+        setOutlookConnected(connected);
+        if (!connected) setOutlookSyncBanner(true);
+      } catch {
+        setOutlookConnected(false);
+        setOutlookSyncBanner(true);
+      }
+    };
     checkOutlookStatus();
   }, []);
 
   useEffect(() => {
-    fetchActivitiesForYear(currentYear);
-    if (outlookConnected) {
-      fetchOutlookEvents(currentYear);
-    }
+    fetchAllEvents(currentYear);
   }, [currentYear, outlookConnected]);
 
-  const checkOutlookStatus = async () => {
-    try {
-      const res = await outlookCalendarService.getStatus();
-      if (res.success) {
-        setOutlookConnected(res.data.connected);
-      }
-    } catch {
-      setOutlookConnected(false);
-    }
-  };
-
-  const fetchActivitiesForYear = async (year) => {
+  const fetchAllEvents = async (year) => {
     setLoading(true);
+    const start = new Date(year, 0, 1).toISOString();
+    const end = new Date(year, 11, 31, 23, 59, 59).toISOString();
+
     try {
-      const start = new Date(year, 0, 1).toISOString();
-      const end = new Date(year, 11, 31, 23, 59, 59).toISOString();
-      const res = await calendarService.getActivities(start, end);
-      if (res.success) {
-        setActivities(res.data || []);
+      // Always fetch CRM activities
+      const crmRes = await calendarService.getActivities(start, end);
+      if (crmRes.success) {
+        setActivities(crmRes.data || []);
+      }
+
+      // Fetch Outlook events only if connected
+      if (outlookConnected === true) {
+        try {
+          const outlookRes = await calendarService.getOutlookEvents(start, end);
+          if (outlookRes.success) {
+            setOutlookEvents(outlookRes.data || []);
+          }
+        } catch {
+          setOutlookEvents([]);
+        }
+      } else {
+        setOutlookEvents([]);
       }
     } catch (error) {
-      console.error('Failed to load activities:', error);
+      console.error('Failed to load calendar events:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchOutlookEvents = async (year) => {
-    setOutlookLoading(true);
-    try {
-      const start = new Date(year, 0, 1).toISOString();
-      const end = new Date(year, 11, 31, 23, 59, 59).toISOString();
-      const res = await outlookCalendarService.getEvents(start, end);
-      if (res.success) {
-        setOutlookEvents(res.data || []);
-      }
-    } catch (error) {
-      console.error('Failed to load Outlook events:', error);
-    } finally {
-      setOutlookLoading(false);
-    }
-  };
-
-  const handleConnectOutlook = () => {
-    outlookCalendarService.connect();
-  };
-
-  const handleDisconnectOutlook = async () => {
-    if (!confirm('Disconnect Outlook Calendar? Outlook events will no longer appear on the calendar.')) return;
-    try {
-      await outlookCalendarService.disconnect();
-      setOutlookConnected(false);
-      setOutlookEvents([]);
-    } catch {
-      alert('Failed to disconnect Outlook.');
     }
   };
 
@@ -138,27 +107,31 @@ export default function CalendarPage() {
     end: new Date(currentYear, 11, 31)
   });
 
-  const getAllEventsForDate = (date) => {
-    const crmEvents = activities.filter(act => {
+  const getActivitiesForDate = (date) => {
+    const crmItems = activities.filter(act => {
       if (!act.due_at) return false;
       return isSameDay(new Date(act.due_at), date);
     });
-    const olEvents = outlookEvents.filter(ev => {
-      if (!ev.due_at) return false;
-      return isSameDay(new Date(ev.due_at), date);
-    });
-    return [...crmEvents, ...olEvents];
+    const outlookItems = showOutlook
+      ? outlookEvents.filter(evt => {
+          if (!evt.due_at) return false;
+          return isSameDay(new Date(evt.due_at), date);
+        })
+      : [];
+    return [...crmItems, ...outlookItems];
   };
 
   const handleMouseEnter = (e, date, dayActivities) => {
     if (dayActivities.length === 0) return;
     if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+
     const rect = e.currentTarget.getBoundingClientRect();
     let xPos = rect.right + window.scrollX + 10;
     let yPos = rect.top + window.scrollY - 20;
     if (xPos + 300 > window.innerWidth) {
       xPos = rect.left + window.scrollX - 310;
     }
+
     setHoverPosition({ x: xPos, y: yPos });
     setHoveredDate({ date, activities: dayActivities });
   };
@@ -188,9 +161,9 @@ export default function CalendarPage() {
 
   const handleActivityClick = (e, act) => {
     e.stopPropagation();
-    // For Outlook events, open the event in Outlook directly
+    // Outlook events: open their web link instead of CRM modal
     if (act.source === 'outlook' && act.web_link) {
-      window.open(act.web_link, '_blank');
+      window.open(act.web_link, '_blank', 'noreferrer');
       return;
     }
     setSelectedActivity(act);
@@ -207,10 +180,11 @@ export default function CalendarPage() {
         description: formData.description,
         due_at: dueAtIso,
       };
+
       const res = await calendarService.createActivity(payload);
       if (res.success) {
         setIsModalOpen(false);
-        fetchActivitiesForYear(currentYear);
+        fetchAllEvents(currentYear);
       }
     } catch (err) {
       console.error('Failed to create:', err);
@@ -220,6 +194,23 @@ export default function CalendarPage() {
 
   return (
     <div className={styles.pageContainer}>
+      {/* Outlook not-connected banner */}
+      {outlookSyncBanner && outlookConnected === false && (
+        <div className={styles.syncBanner}>
+          <Calendar size={15} />
+          <span>
+            <strong>Outlook not connected.</strong> Connect your Outlook Calendar in{' '}
+            <a href="/crm/admin/settings" className={styles.syncBannerLink}>
+              Settings → Integrations
+            </a>{' '}
+            to see Outlook events here.
+          </span>
+          <button className={styles.syncBannerClose} onClick={() => setOutlookSyncBanner(false)}>
+            <X size={13} />
+          </button>
+        </div>
+      )}
+
       <div className={styles.topBar}>
         <button className={styles.todayBtn} onClick={handleToday}>Today</button>
         <div className={styles.yearNavigation}>
@@ -228,45 +219,17 @@ export default function CalendarPage() {
           <button className={styles.navBtn} onClick={handleNextYear}><ChevronRight size={12} /></button>
         </div>
 
-        {/* Outlook Connect Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-          {outlookLoading && <Loader size={14} style={{ animation: 'spin 1s linear infinite', color: '#0078d4' }} />}
-          {outlookConnected ? (
-            <button
-              onClick={handleDisconnectOutlook}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px',
-                background: '#e8f0fe', color: '#0078d4', border: '1px solid #0078d4',
-                borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: 'pointer'
-              }}
-            >
-              <Link2Off size={13} /> Disconnect Outlook
-            </button>
-          ) : (
-            <button
-              onClick={handleConnectOutlook}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px',
-                background: '#0078d4', color: '#fff', border: 'none',
-                borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: 'pointer'
-              }}
-            >
-              <Link2 size={13} /> Connect Outlook
-            </button>
-          )}
-
-          {/* Legend */}
-          {outlookConnected && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '8px', fontSize: '12px', color: '#64748b' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span> CRM
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#0078d4', display: 'inline-block' }}></span> Outlook
-              </span>
-            </div>
-          )}
-        </div>
+        {/* Outlook toggle — only show when connected */}
+        {outlookConnected === true && (
+          <button
+            className={`${styles.outlookToggleBtn} ${showOutlook ? styles.outlookToggleActive : ''}`}
+            onClick={() => setShowOutlook(v => !v)}
+            title={showOutlook ? 'Hide Outlook events' : 'Show Outlook events'}
+          >
+            <Calendar size={14} />
+            <span>Outlook {showOutlook ? 'On' : 'Off'}</span>
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -277,6 +240,7 @@ export default function CalendarPage() {
             const daysInMonth = getDaysInMonth(monthDate);
             const firstDay = getDay(startOfMonth(monthDate));
             const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+
             const daysArray = Array.from({ length: daysInMonth }, (_, i) => new Date(currentYear, monthDate.getMonth(), i + 1));
             const blanks = Array.from({ length: adjustedFirstDay }, () => null);
 
@@ -289,13 +253,15 @@ export default function CalendarPage() {
                 <div className={styles.daysGrid}>
                   {blanks.map((_, i) => <div key={`blank-${i}`} className={styles.dayCell}></div>)}
                   {daysArray.map((date, i) => {
-                    const dayActivities = getAllEventsForDate(date);
+                    const dayActivities = getActivitiesForDate(date);
                     const hasTasks = dayActivities.length > 0;
                     const hasOutlook = dayActivities.some(a => a.source === 'outlook');
                     const hasCrm = dayActivities.some(a => a.source !== 'outlook');
-                    const firstTask = hasTasks ? dayActivities[0] : null;
-                    const ringColor = firstTask
-                      ? (firstTask.source === 'outlook' ? '#0078d4' : (activityColorMap[firstTask.activity_type] || '#3b82f6'))
+                    const firstCrmType = hasCrm ? dayActivities.find(a => a.source !== 'outlook')?.activity_type : null;
+                    const ringColor = hasOutlook && !hasCrm
+                      ? '#0078d4'
+                      : firstCrmType
+                      ? (activityColorMap[firstCrmType] || '#3b82f6')
                       : 'transparent';
 
                     return (
@@ -312,12 +278,9 @@ export default function CalendarPage() {
                         >
                           {format(date, 'd')}
                         </div>
-                        {/* Dots for event types */}
-                        {hasTasks && (
-                          <div style={{ display: 'flex', gap: '2px', justifyContent: 'center', marginTop: '2px' }}>
-                            {hasCrm && <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>}
-                            {hasOutlook && <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#0078d4', display: 'inline-block' }}></span>}
-                          </div>
+                        {/* Small Outlook dot indicator */}
+                        {hasOutlook && showOutlook && (
+                          <span className={styles.outlookDot} title="Has Outlook events" />
                         )}
                       </div>
                     );
@@ -342,20 +305,33 @@ export default function CalendarPage() {
             return (
               <div
                 key={act.id || idx}
-                className={styles.hoverTask}
+                className={`${styles.hoverTask} ${isOutlook ? styles.outlookEvent : ''}`}
                 style={{ borderColor: actColor, cursor: 'pointer' }}
                 onClick={(e) => handleActivityClick(e, act)}
               >
                 <div className={styles.taskTime} style={{ backgroundColor: actColor, color: '#fff' }}>
-                  {format(new Date(act.due_at), 'HH:mm')}
+                  {act.due_at ? format(new Date(act.due_at), 'HH:mm') : '--:--'}
                 </div>
                 <div className={styles.taskDetails}>
-                  <div className={styles.taskTitle}>
-                    {isOutlook && <span style={{ fontSize: '10px', background: '#e8f0fe', color: '#0078d4', borderRadius: '3px', padding: '1px 4px', marginRight: '4px' }}>Outlook</span>}
-                    {act.title}
-                  </div>
-                  {act.description && <div className={styles.taskDesc}>{act.description.substring(0, 40)}...</div>}
-                  {act.location && <div className={styles.taskDesc}>📍 {act.location}</div>}
+                  <div className={styles.taskTitle}>{act.title}</div>
+                  {isOutlook && (
+                    <div className={styles.outlookLabel}>
+                      <Calendar size={10} /> Outlook
+                    </div>
+                  )}
+                  {act.description && (
+                    <div className={styles.taskDesc}>{act.description.substring(0, 40)}...</div>
+                  )}
+                  {act.location && (
+                    <div className={styles.taskDesc}>📍 {act.location}</div>
+                  )}
+                </div>
+                <div className={styles.avatars}>
+                  {user && !isOutlook && (
+                    <div className={styles.avatar}>
+                      {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -390,7 +366,7 @@ export default function CalendarPage() {
         </form>
       </Modal>
 
-      {/* View CRM Activity Modal */}
+      {/* View Activity Modal */}
       <Modal
         isOpen={viewActivityModalOpen}
         onClose={() => setViewActivityModalOpen(false)}
@@ -400,25 +376,23 @@ export default function CalendarPage() {
         }
       >
         {selectedActivity && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className={styles.activityDetails} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
               <strong style={{ fontSize: '0.85rem', color: '#64748b' }}>Title</strong>
               <p style={{ fontWeight: 600, marginTop: '0.25rem' }}>{selectedActivity.title}</p>
             </div>
             <div>
               <strong style={{ fontSize: '0.85rem', color: '#64748b' }}>Type</strong>
-              <p style={{ marginTop: '0.25rem', textTransform: 'capitalize' }}>{selectedActivity.activity_type?.replace('_', ' ')}</p>
+              <p style={{ marginTop: '0.25rem', textTransform: 'capitalize' }}>{selectedActivity.activity_type.replace('_', ' ')}</p>
             </div>
             <div>
               <strong style={{ fontSize: '0.85rem', color: '#64748b' }}>Date & Time</strong>
               <p style={{ marginTop: '0.25rem' }}>{new Date(selectedActivity.due_at).toLocaleString()}</p>
             </div>
-            {selectedActivity.status && (
-              <div>
-                <strong style={{ fontSize: '0.85rem', color: '#64748b' }}>Status</strong>
-                <p style={{ marginTop: '0.25rem', textTransform: 'capitalize' }}>{selectedActivity.status}</p>
-              </div>
-            )}
+            <div>
+              <strong style={{ fontSize: '0.85rem', color: '#64748b' }}>Status</strong>
+              <p style={{ marginTop: '0.25rem', textTransform: 'capitalize' }}>{selectedActivity.status}</p>
+            </div>
             {selectedActivity.description && (
               <div>
                 <strong style={{ fontSize: '0.85rem', color: '#64748b' }}>Description</strong>

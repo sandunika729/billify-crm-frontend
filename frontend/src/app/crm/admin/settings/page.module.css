@@ -738,6 +738,201 @@
   background: #fffbeb;
   border: 1px solid #fde68a;
   border-radius: var(--radius-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.suggestedFieldType {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.widgetSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.widgetInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.widgetInfoTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.widgetInfoText {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.widgetSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.widgetStep {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.widgetStepNum {
+  width: 20px;
+  height: 20px;
+  background: #8b5cf6;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.apiKeyBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.apiKeyLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.apiKeyRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.apiKeyInput {
+  flex: 1;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  color: var(--color-text-secondary);
+  background: #f8fafc;
+  outline: none;
+  letter-spacing: 0.03em;
+}
+
+.copyBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.copyBtn:hover {
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+}
+
+.copyBtnSuccess {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.regenBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1px solid #fee2e2;
+  border-radius: 4px;
+  background: #fff;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.regenBtn:hover {
+  background: #fee2e2;
+}
+
+.snippetBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.snippetLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.snippetCode {
+  background: #1e1e2e;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  font-size: 0.72rem;
+  font-family: 'Courier New', monospace;
+  color: #a6e3a1;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.6;
+  border: 1px solid #313145;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.snippetFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.warningBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-md);
   font-size: 0.75rem;
   color: #92400e;
   line-height: 1.5;
@@ -757,3 +952,403 @@
   .headerActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
   .tableWrapper { overflow-x: auto; }
 }
+
+/* ════════════════════════════════════════
+   Integrations Tab — Outlook Calendar
+   ════════════════════════════════════════ */
+
+/* Nav badge for connected state */
+.navBadgeConnected {
+  font-size: 0.6rem;
+  color: #10b981;
+  margin-left: 0.25rem;
+}
+
+/* Integration card */
+.integrationCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 1.25rem;
+  transition: box-shadow 0.2s;
+}
+.integrationCard:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.integrationCardLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.integrationIcon {
+  width: 48px;
+  height: 48px;
+  background: #f0f7ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #bfdbfe;
+}
+
+.integrationInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.integrationTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.integrationDesc {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 480px;
+}
+
+.integrationMeta {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.1rem;
+}
+
+.integrationCardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Connected state */
+.integrationConnected {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.connectedBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #059669;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+}
+
+/* Connect button */
+.connectBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #0078d4, #005a9e);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,120,212,0.35);
+}
+.connectBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,120,212,0.45);
+}
+.connectBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Disconnect button */
+.disconnectBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #fca5a5;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.disconnectBtn:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+.disconnectBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Status loading */
+.integrationStatusLoading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+/* Spinner animation */
+.spinnerIcon {
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Outlook result banner */
+.outlookBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.outlookBannerSuccess {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+.outlookBannerError {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+.bannerClose {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  line-height: 1;
+  padding: 0 2px;
+  transition: opacity 0.15s;
+}
+.bannerClose:hover { opacity: 1; }
+
+/* Setup guide */
+.setupGuide {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.setupGuideTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 0.75rem;
+}
+
+.setupGuideList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-left: 1.25rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.setupGuideList a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.setupGuideList code {
+  background: #e2e8f0;
+  border-radius: 3px;
+  padding: 0.1rem 0.35rem;
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #0f172a;
+}
+
+/* ----------------------------------------
+   Integrations Tab � Outlook Calendar
+   ---------------------------------------- */
+
+.navBadgeConnected {
+  font-size: 0.6rem;
+  color: #10b981;
+  margin-left: 0.25rem;
+}
+
+.integrationCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 1.25rem;
+  transition: box-shadow 0.2s;
+}
+.integrationCard:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+.integrationCardLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.integrationIcon {
+  width: 48px;
+  height: 48px;
+  background: #f0f7ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #bfdbfe;
+}
+
+.integrationInfo { display: flex; flex-direction: column; gap: 0.35rem; }
+.integrationTitle { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+.integrationDesc { font-size: 0.8rem; color: #64748b; line-height: 1.5; max-width: 480px; }
+.integrationMeta { font-size: 0.72rem; color: #94a3b8; margin-top: 0.1rem; }
+
+.integrationCardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.integrationConnected { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+
+.connectedBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #059669;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+}
+
+.connectBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #0078d4, #005a9e);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,120,212,0.35);
+}
+.connectBtn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,120,212,0.45); }
+.connectBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.disconnectBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #fca5a5;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.disconnectBtn:hover:not(:disabled) { background: #fee2e2; border-color: #ef4444; }
+.disconnectBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.integrationStatusLoading { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #94a3b8; }
+
+.spinnerIcon { animation: spin 0.9s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.outlookBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.outlookBannerSuccess { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.outlookBannerError { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+
+.bannerClose {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  line-height: 1;
+  padding: 0 2px;
+  transition: opacity 0.15s;
+}
+.bannerClose:hover { opacity: 1; }
+
+.setupGuide { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; }
+.setupGuideTitle { font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.75rem; }
+.setupGuideList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-left: 1.25rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+.setupGuideList a { color: #2563eb; text-decoration: underline; text-underline-offset: 2px; }
+.setupGuideList code { background: #e2e8f0; border-radius: 3px; padding: 0.1rem 0.35rem; font-family: monospace; font-size: 0.78rem; color: #0f172a; }

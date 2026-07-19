@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import todoService from '../../../services/todoService';
 import styles from '../activities/page.module.css';
-import { CheckSquare, Globe, Lock, Trash2, CheckCircle, Edit2, Plus } from 'lucide-react';
+import { CheckSquare, Globe, Lock, Trash2, CheckCircle, Edit2, Plus, Pin } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
@@ -113,6 +113,18 @@ export default function TodosPage() {
     }
   };
 
+  const handlePin = async (todo) => {
+    try {
+      const is_pinned = !todo.is_pinned;
+      const res = await todoService.updateTodo(todo.id, { is_pinned });
+      if (res.success || res.data) {
+        setTodos(prev => prev.map(t => t.id === todo.id ? { ...t, is_pinned } : t));
+      }
+    } catch (err) {
+      console.error('Failed to pin todo:', err);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!await confirm('Delete this to-do?')) return;
     try {
@@ -133,6 +145,10 @@ export default function TodosPage() {
     if (filterVisibility === 'private' && t.is_public) return false;
     if (searchTerm && !t.title?.toLowerCase().includes(searchTerm.toLowerCase()) && !t.description?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
+  }).sort((a, b) => {
+    if (a.is_pinned && !b.is_pinned) return -1;
+    if (!a.is_pinned && b.is_pinned) return 1;
+    return new Date(b.createdAt || 0) > new Date(a.createdAt || 0) ? 1 : -1;
   });
 
   return (
@@ -200,7 +216,7 @@ export default function TodosPage() {
             return (
               <div
                 key={todo.id}
-                className={`${styles.activityCard} ${done ? styles.doneCard : ''}`}
+                className={`${styles.activityCard} ${done ? styles.doneCard : ''} ${todo.is_pinned ? styles.pinnedCard : ''}`}
               >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardAvatar} style={{ background: `${color}18`, color }}>
@@ -229,6 +245,13 @@ export default function TodosPage() {
                       Done
                     </div>
                   )}
+                  <button
+                    className={`${styles.iconBtn} ${todo.is_pinned ? styles.pinBtnActive : styles.pinBtn}`}
+                    title={todo.is_pinned ? "Unpin To-Do" : "Pin To-Do"}
+                    onClick={() => handlePin(todo)}
+                  >
+                    <Pin size={14} fill={todo.is_pinned ? 'currentColor' : 'none'} />
+                  </button>
                 </div>
 
                 <div className={styles.cardBody}>

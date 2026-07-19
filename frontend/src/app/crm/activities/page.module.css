@@ -367,3 +367,29 @@
   .headerActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
   .tableWrapper { overflow-x: auto; }
 }
+
+/* ----------------------------------------
+   Pinning UI Styles
+   ---------------------------------------- */
+
+.pinnedCard {
+  border-left: 4px solid #f59e0b; /* Amber border for pinned items */
+  background: linear-gradient(to right, #fffbeb, #ffffff);
+}
+
+.pinBtn {
+  color: #94a3b8;
+}
+.pinBtn:hover {
+  color: #f59e0b;
+  background: #fef3c7;
+}
+
+.pinBtnActive {
+  color: #f59e0b;
+  background: #fef3c7;
+}
+.pinBtnActive:hover {
+  color: #d97706;
+  background: #fde68a;
+}
