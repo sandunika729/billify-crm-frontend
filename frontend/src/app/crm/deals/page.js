@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import dealService from '../../../services/dealService';
 import styles from './page.module.css';
-import { Plus, Search, Filter, Briefcase, MoreHorizontal, Clock, DollarSign, Calendar, X, Zap, Trash2, Package, LayoutGrid, List, Eye, Edit2, Download, Upload, Phone, Mail, MoreVertical, FileText } from 'lucide-react';
+import { Plus, Search, Filter, Briefcase, MoreHorizontal, Clock, DollarSign, Calendar, X, Zap, Trash2, Package, LayoutGrid, List, Eye, Edit2, Download, Upload, Phone, Mail, MoreVertical, FileText, Flag } from 'lucide-react';
 import Badge from '../../../components/ui/Badge';
 import ActivityPanel from '../../../components/crm/ActivityPanel';
 
@@ -282,6 +282,23 @@ export default function DealsPage() {
       alert('Error deleting deal.');
     }
     setOpenMenuId(null);
+  };
+
+  const handleToggleFlag = async (e, deal) => {
+    e.stopPropagation();
+    try {
+      const currentStatus = deal.flag_status || 'none';
+      let newStatus = 'none';
+      if (currentStatus === 'none') newStatus = 'flagged';
+      else if (currentStatus === 'flagged') newStatus = 'completed';
+      else newStatus = 'none';
+
+      setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, flag_status: newStatus } : d));
+      await dealService.updateDeal(deal.id, { flag_status: newStatus });
+    } catch (error) {
+      console.error('Failed to toggle flag:', error);
+      fetchDeals();
+    }
   };
 
   const filteredDeals = deals.filter(deal => {
@@ -748,6 +765,17 @@ export default function DealsPage() {
                             </td>
                             <td className={styles.actionsCol}>
                               <div className={styles.tableActions}>
+                                <button 
+                                  className={`${styles.actionBtn} ${deal.flag_status === 'flagged' ? styles.flagged : deal.flag_status === 'completed' ? styles.completed : ''}`}
+                                  onClick={(e) => handleToggleFlag(e, deal)}
+                                  title={deal.flag_status === 'flagged' ? 'Mark Completed' : deal.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                                >
+                                  <Flag 
+                                    size={12} 
+                                    fill={deal.flag_status === 'flagged' ? '#ef4444' : deal.flag_status === 'completed' ? '#10b981' : 'none'} 
+                                    color={deal.flag_status === 'flagged' ? '#ef4444' : deal.flag_status === 'completed' ? '#10b981' : '#64748b'} 
+                                  />
+                                </button>
                                 <button className={styles.actionBtnPrimary} onClick={() => { setViewDeal(deal); setIsDetailModalOpen(true); }} title="View Details">
                                   <Eye size={12} />
                                 </button>

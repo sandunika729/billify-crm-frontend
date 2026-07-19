@@ -10,7 +10,7 @@ import formStyles from '../../../components/forms/FormField.module.css';
 import Badge from '../../../components/ui/Badge';
 import SearchBar from '../../../components/ui/SearchBar';
 import FilterSelect from '../../../components/ui/FilterSelect';
-import { Search, Plus, Building2, User, Phone, Mail, X, Upload, Download, Eye, Edit2, Trash2 } from 'lucide-react';
+import { Search, Plus, Building2, User, Phone, Mail, X, Upload, Download, Eye, Edit2, Trash2, Flag } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import customFieldService from '../../../services/customFieldService';
@@ -217,6 +217,23 @@ export default function CustomersPage() {
     }
   };
 
+  const handleToggleFlag = async (e, customer) => {
+    e.stopPropagation();
+    try {
+      const currentStatus = customer.flag_status || 'none';
+      let newStatus = 'none';
+      if (currentStatus === 'none') newStatus = 'flagged';
+      else if (currentStatus === 'flagged') newStatus = 'completed';
+      else newStatus = 'none';
+
+      setCustomers(prev => prev.map(c => c.id === customer.id ? { ...c, flag_status: newStatus } : c));
+      await customerService.updateCustomer(customer.id, { flag_status: newStatus });
+    } catch (error) {
+      console.error('Failed to toggle flag:', error);
+      fetchCustomers();
+    }
+  };
+
   const handleImportCustomers = async (e) => {
     e.preventDefault();
     if (!importFile) return;
@@ -374,6 +391,17 @@ export default function CustomersPage() {
                     </td>
                     <td className={styles.actionsCol}>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button 
+                          className={`${styles.actionBtn} ${customer.flag_status === 'flagged' ? styles.flagged : customer.flag_status === 'completed' ? styles.completed : ''}`}
+                          onClick={(e) => handleToggleFlag(e, customer)}
+                          title={customer.flag_status === 'flagged' ? 'Mark Completed' : customer.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                        >
+                          <Flag 
+                            size={12} 
+                            fill={customer.flag_status === 'flagged' ? '#ef4444' : customer.flag_status === 'completed' ? '#10b981' : 'none'} 
+                            color={customer.flag_status === 'flagged' ? '#ef4444' : customer.flag_status === 'completed' ? '#10b981' : '#64748b'} 
+                          />
+                        </button>
                         <Link href={`/crm/customers/${customer.id}`} className={styles.actionBtnPrimary} title="View Details">
                           <Eye size={12} />
                         </Link>
