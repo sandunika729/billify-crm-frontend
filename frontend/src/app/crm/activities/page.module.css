@@ -373,23 +373,23 @@
    ---------------------------------------- */
 
 .pinnedCard {
-  border-left: 4px solid #f59e0b; /* Amber border for pinned items */
-  background: linear-gradient(to right, #fffbeb, #ffffff);
+  border-left: 4px solid #3b82f6; /* Blue border for pinned items */
+  background: linear-gradient(to right, #eff6ff, #ffffff);
 }
 
 .pinBtn {
   color: #94a3b8;
 }
 .pinBtn:hover {
-  color: #f59e0b;
-  background: #fef3c7;
+  color: #3b82f6;
+  background: #dbeafe;
 }
 
 .pinBtnActive {
-  color: #f59e0b;
-  background: #fef3c7;
+  color: #3b82f6;
+  background: #dbeafe;
 }
 .pinBtnActive:hover {
-  color: #d97706;
-  background: #fde68a;
+  color: #2563eb;
+  background: #bfdbfe;
 }
