@@ -19,14 +19,7 @@ const calendarService = {
     return response.data;
   },
 
-  /**
-   * Fetch Outlook calendar events for the given date range.
-   * Returns [] if Outlook is not connected (no error thrown).
-   */
-  getOutlookEvents: async (start, end) => {
-    const response = await api.get('/crm/outlook/events', { params: { start, end } });
-    return response.data;
-  },
+
 };
 
 export default calendarService;

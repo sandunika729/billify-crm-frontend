@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Upload, X, Plus, Trash2, CheckCircle, ImageIcon,
-  Copy, RefreshCw, AlertTriangle, Code2, Calendar, Link2, LogOut, Loader2
+  Copy, RefreshCw, AlertTriangle, Code2
 } from 'lucide-react';
 import styles from './page.module.css';
 import Button from '../../../../components/ui/Button';
@@ -11,7 +11,6 @@ import Modal from '../../../../components/modals/Modal';
 import FormField from '../../../../components/forms/FormField';
 import shopProfileService from '../../../../services/shopProfileService';
 import customFieldService from '../../../../services/customFieldService';
-import outlookCalendarService from '../../../../services/outlookCalendarService';
 
 const CF_TABS = [
   { key: 'customer', label: 'Customers' },
@@ -300,57 +299,15 @@ export default function SettingsPage() {
   const [isCfModalOpen, setIsCfModalOpen] = useState(false);
   const [cfForm, setCfForm] = useState({ field_name: '', field_label: '', field_type: 'text', options: '', is_required: false });
 
-  // Outlook integration state
-  const [outlookStatus, setOutlookStatus] = useState({ connected: false, expires_at: null });
-  const [outlookLoading, setOutlookLoading] = useState(false);
-  const [outlookStatusLoading, setOutlookStatusLoading] = useState(true);
-  const [outlookBanner, setOutlookBanner] = useState(null); // { type: 'success'|'error', message: string }
 
-  const fetchOutlookStatus = useCallback(async () => {
-    setOutlookStatusLoading(true);
-    try {
-      const res = await outlookCalendarService.getStatus();
-      if (res.success) setOutlookStatus(res.data);
-    } catch {
-      // Not connected or config missing — treat as disconnected
-      setOutlookStatus({ connected: false, expires_at: null });
-    } finally {
-      setOutlookStatusLoading(false);
-    }
-  }, []);
-
-  // Handle OAuth redirect result (?outlook_connected=true or ?outlook_error=...)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('outlook_connected') === 'true') {
-      setOutlookBanner({ type: 'success', message: '✓ Outlook Calendar connected successfully!' });
-      setMainTab('integrations');
-      window.history.replaceState({}, '', window.location.pathname);
-    } else if (params.get('outlook_error')) {
-      const errCode = params.get('outlook_error');
-      const messages = {
-        config: 'Outlook is not configured on the server. Please set MICROSOFT_CLIENT_ID and related variables in your .env file.',
-        token_exchange_failed: 'Failed to exchange authorization code with Microsoft. Please try again.',
-        user_not_found: 'User not found. Please log out and log back in, then try again.',
-        missing_params: 'Microsoft did not return the expected parameters. Please try again.',
-        invalid_state: 'Invalid security state. Please try connecting again.',
-      };
-      setOutlookBanner({ type: 'error', message: messages[errCode] || `Connection failed: ${errCode}` });
-      setMainTab('integrations');
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }, []);
 
   useEffect(() => {
     if (mainTab === 'shop' || mainTab === 'widget') {
       fetchProfile();
     } else if (mainTab === 'customfields') {
       fetchCfFields();
-    } else if (mainTab === 'integrations') {
-      fetchOutlookStatus();
     }
-  }, [mainTab, cfTab, fetchOutlookStatus]);
+  }, [mainTab, cfTab]);
 
   const fetchProfile = async () => {
     setProfileLoading(true);
@@ -474,24 +431,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleOutlookConnect = () => {
-    setOutlookLoading(true);
-    outlookCalendarService.connect(); // triggers full-page redirect to Microsoft
-  };
 
-  const handleOutlookDisconnect = async () => {
-    if (!confirm('Disconnect your Outlook Calendar? Outlook events will no longer appear in the CRM calendar.')) return;
-    setOutlookLoading(true);
-    try {
-      await outlookCalendarService.disconnect();
-      setOutlookStatus({ connected: false, expires_at: null });
-      setOutlookBanner({ type: 'success', message: 'Outlook Calendar disconnected.' });
-    } catch {
-      setOutlookBanner({ type: 'error', message: 'Failed to disconnect Outlook. Please try again.' });
-    } finally {
-      setOutlookLoading(false);
-    }
-  };
 
   const handleTogglePredefinedField = async (predefField, isChecked) => {
     try {
@@ -531,7 +471,6 @@ export default function SettingsPage() {
               { key: 'shop', label: 'Shop Profile' },
               { key: 'widget', label: 'Website Widget' },
               { key: 'customfields', label: 'Custom Fields' },
-              { key: 'integrations', label: 'Integrations' },
             ].map(item => (
               <button
                 key={item.key}
@@ -540,9 +479,6 @@ export default function SettingsPage() {
               >
                 <div className={styles.navItemInfo}>
                   <div className={styles.navItemLabel}>{item.label}</div>
-                  {item.key === 'integrations' && outlookStatus.connected && (
-                    <span className={styles.navBadgeConnected}>●</span>
-                  )}
                 </div>
               </button>
             ))}
@@ -767,100 +703,6 @@ export default function SettingsPage() {
             </>
           )}
 
-          {/* ── Integrations Tab ── */}
-          {mainTab === 'integrations' && (
-            <>
-              <div className={styles.contentHeader}>
-                <div>
-                  <h2 className={styles.contentTitle}>Integrations</h2>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-                    Connect third-party services to enhance your CRM workflow.
-                  </p>
-                </div>
-              </div>
-
-              {/* Outlook banner */}
-              {outlookBanner && (
-                <div className={`${styles.outlookBanner} ${outlookBanner.type === 'success' ? styles.outlookBannerSuccess : styles.outlookBannerError}`}>
-                  {outlookBanner.type === 'success' ? <CheckCircle size={15} /> : <AlertTriangle size={15} />}
-                  <span>{outlookBanner.message}</span>
-                  <button className={styles.bannerClose} onClick={() => setOutlookBanner(null)}>×</button>
-                </div>
-              )}
-
-              {/* Outlook Calendar card */}
-              <div className={styles.integrationCard}>
-                <div className={styles.integrationCardLeft}>
-                  <div className={styles.integrationIcon}>
-                    <Calendar size={24} color="#0078d4" />
-                  </div>
-                  <div className={styles.integrationInfo}>
-                    <div className={styles.integrationTitle}>Microsoft Outlook Calendar</div>
-                    <div className={styles.integrationDesc}>
-                      Sync your Outlook calendar events with the CRM Activities calendar view.
-                      New CRM meetings will also be pushed to your Outlook calendar automatically.
-                    </div>
-                    {outlookStatus.connected && outlookStatus.expires_at && (
-                      <div className={styles.integrationMeta}>
-                        Token expires: {new Date(outlookStatus.expires_at).toLocaleDateString()}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className={styles.integrationCardRight}>
-                  {outlookStatusLoading ? (
-                    <div className={styles.integrationStatusLoading}>
-                      <Loader2 size={16} className={styles.spinnerIcon} /> Checking...
-                    </div>
-                  ) : outlookStatus.connected ? (
-                    <div className={styles.integrationConnected}>
-                      <div className={styles.connectedBadge}>
-                        <CheckCircle size={14} />
-                        <span>Connected</span>
-                      </div>
-                      <button
-                        className={styles.disconnectBtn}
-                        onClick={handleOutlookDisconnect}
-                        disabled={outlookLoading}
-                      >
-                        {outlookLoading ? <Loader2 size={13} className={styles.spinnerIcon} /> : <LogOut size={13} />}
-                        {outlookLoading ? 'Disconnecting...' : 'Disconnect'}
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      className={styles.connectBtn}
-                      onClick={handleOutlookConnect}
-                      disabled={outlookLoading}
-                    >
-                      {outlookLoading ? (
-                        <><Loader2 size={14} className={styles.spinnerIcon} /> Redirecting...</>
-                      ) : (
-                        <><Link2 size={14} /> Connect Outlook</>
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Setup guide */}
-              {!outlookStatus.connected && (
-                <div className={styles.setupGuide}>
-                  <h4 className={styles.setupGuideTitle}>How to set up Outlook sync</h4>
-                  <ol className={styles.setupGuideList}>
-                    <li>Go to <a href="https://portal.azure.com" target="_blank" rel="noreferrer">portal.azure.com</a> and sign in with your Microsoft account.</li>
-                    <li>Navigate to <strong>Azure Active Directory → App registrations → New registration</strong>.</li>
-                    <li>Set a redirect URI of: <code>{typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_API_URL || '') : ''}/auth/outlook/callback</code></li>
-                    <li>Under <strong>API permissions</strong>, add: <code>User.Read</code>, <code>Calendars.ReadWrite</code>, <code>offline_access</code>.</li>
-                    <li>Copy the <strong>Application (client) ID</strong> and create a <strong>Client secret</strong>.</li>
-                    <li>Set <code>MICROSOFT_CLIENT_ID</code>, <code>MICROSOFT_CLIENT_SECRET</code>, and <code>MICROSOFT_REDIRECT_URI</code> in your backend <code>.env</code> file.</li>
-                    <li>Restart the backend server, then click <strong>Connect Outlook</strong> above.</li>
-                  </ol>
-                </div>
-              )}
-            </>
-          )}
         </div>
       </div>
 
