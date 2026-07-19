@@ -3,7 +3,11 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import { getAccessToken } from '../services/api';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+// Derive socket URL from API URL if NEXT_PUBLIC_SOCKET_URL is not explicitly set
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL ||
+  (process.env.NEXT_PUBLIC_API_URL
+    ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api$/, '')
+    : 'http://localhost:5000');
 
 export default function useSocket() {
   const { user, isAuthenticated } = useAuth();
