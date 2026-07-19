@@ -107,22 +107,6 @@ export default function QuotesPage() {
     }
   };
 
-  const handleToggleFlag = async (e, quote) => {
-    e.stopPropagation();
-    try {
-      const currentStatus = quote.flag_status || 'none';
-      let newStatus = 'none';
-      if (currentStatus === 'none') newStatus = 'flagged';
-      else if (currentStatus === 'flagged') newStatus = 'completed';
-      else newStatus = 'none';
-
-      setQuotes(prev => prev.map(q => q.id === quote.id ? { ...q, flag_status: newStatus } : q));
-      await quoteService.updateQuote(quote.id, { flag_status: newStatus });
-    } catch (error) {
-      console.error('Failed to toggle flag:', error);
-      fetchQuotes();
-    }
-  };
 
   
   const handleDownloadPdf = async (quote) => {
