@@ -18,6 +18,7 @@ const CF_TABS = [
   { key: 'deal', label: 'Deals' },
   { key: 'ticket', label: 'Tickets' },
   { key: 'quote', label: 'Quotes' },
+  { key: 'todo', label: 'Todos / Tasks' },
 ];
 
 const PREDEFINED_FIELDS = {
@@ -47,6 +48,11 @@ const PREDEFINED_FIELDS = {
     { field_name: 'payment_terms', field_label: 'Payment Terms', field_type: 'select', options: ['Net 15', 'Net 30', 'Net 60', 'Due on Receipt'] },
     { field_name: 'delivery_method', field_label: 'Delivery Method', field_type: 'text' },
     { field_name: 'project_timeline', field_label: 'Project Timeline (Weeks)', field_type: 'number' }
+  ],
+  todo: [
+    { field_name: 'project_code', field_label: 'Project Code', field_type: 'text' },
+    { field_name: 'billable_hours', field_label: 'Billable Hours', field_type: 'number' },
+    { field_name: 'department', field_label: 'Department', field_type: 'select', options: ['Sales', 'Support', 'Marketing', 'Development'] }
   ]
 };
 

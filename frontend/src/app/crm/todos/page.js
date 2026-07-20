@@ -7,6 +7,7 @@ import { CheckSquare, Globe, Lock, Trash2, CheckCircle, Edit2, Plus, Pin } from 
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
+import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import SearchBar from '../../../components/ui/SearchBar';
 import FilterSelect from '../../../components/ui/FilterSelect';
 import { alert, confirm } from '@/utils/alertService';
@@ -26,6 +27,7 @@ export default function TodosPage() {
     title: '',
     description: '',
     is_public: false,
+    custom_fields: {},
   });
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export default function TodosPage() {
 
   const resetForm = () => {
     setEditingId(null);
-    setFormData({ title: '', description: '', is_public: false });
+    setFormData({ title: '', description: '', is_public: false, custom_fields: {} });
   };
 
   const handleSave = async () => {
@@ -69,6 +71,7 @@ export default function TodosPage() {
           title: formData.title,
           description: formData.description,
           is_public: formData.is_public,
+          custom_fields: formData.custom_fields,
         });
         if (res.success || res.data) {
           setTodos(prev => prev.map(t => t.id === editingId ? { ...t, ...formData } : t));
@@ -97,6 +100,7 @@ export default function TodosPage() {
       title: todo.title,
       description: todo.description || '',
       is_public: !!todo.is_public,
+      custom_fields: todo.custom_fields || {},
     });
     setIsModalOpen(true);
   };
@@ -371,6 +375,12 @@ export default function TodosPage() {
               </label>
             </div>
           </div>
+
+          <CustomFieldsSection 
+            entityType="todo" 
+            values={formData.custom_fields || {}} 
+            onChange={(newVals) => setFormData(prev => ({ ...prev, custom_fields: newVals }))}
+          />
         </div>
       </Modal>
     </div>
