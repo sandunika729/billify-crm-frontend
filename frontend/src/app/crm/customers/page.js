@@ -115,6 +115,11 @@ export default function CustomersPage() {
   const handleSaveCustomer = async (e) => {
     e.preventDefault();
 
+    if (!formData.name || !formData.name.trim()) {
+      alert("Full Name is required.");
+      return;
+    }
+
     if (formData.phone) {
       const sanitized = formData.phone.trim();
       if (!/^[+]?[\d\s-]+$/.test(sanitized)) {
