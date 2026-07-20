@@ -25,6 +25,7 @@ export default function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -96,8 +97,9 @@ export default function CustomersPage() {
     
     const matchesType = !filterType || c.type === filterType;
     const matchesStatus = !filterStatus || c.status === filterStatus;
+    const matchesFlag = !showFlaggedOnly || c.flag_status === 'flagged';
     
-    return matchesSearch && matchesType && matchesStatus;
+    return matchesSearch && matchesType && matchesStatus && matchesFlag;
   });
 
   const getTypeVariant = (type) => {
@@ -331,6 +333,15 @@ export default function CustomersPage() {
           placeholder="All Statuses"
           label=""
         />
+
+        <div className={styles.filterGroup}>
+          <button
+            onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
+          >
+            <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
+          </button>
+        </div>
       </div>
 
       <div className={styles.tableCard}>

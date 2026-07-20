@@ -41,6 +41,7 @@ export default function SupportTicketsPage() {
   const [searchTerm, setSearchTerm]         = useState('');
   const [filterStatus, setFilterStatus]     = useState('');
   const [filterPriority, setFilterPriority] = useState('');
+  const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [customers, setCustomers]           = useState([]);
 
   const [isModalOpen, setIsModalOpen]         = useState(false);
@@ -208,7 +209,8 @@ export default function SupportTicketsPage() {
   const filteredTickets = tickets.filter(t => {
     const s = searchTerm.toLowerCase();
     const match = !s || t.ticket_no?.toLowerCase().includes(s) || t.subject?.toLowerCase().includes(s) || t.customer?.name?.toLowerCase().includes(s);
-    return match && (!filterStatus || t.status === filterStatus) && (!filterPriority || t.priority === filterPriority);
+    const matchesFlag = !showFlaggedOnly || t.flag_status === 'flagged';
+    return match && (!filterStatus || t.status === filterStatus) && (!filterPriority || t.priority === filterPriority) && matchesFlag;
   });
 
   
@@ -427,6 +429,14 @@ export default function SupportTicketsPage() {
               <option value="">All Priorities</option>
               {TICKET_PRIORITIES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
+          </div>
+          <div className={styles.filterGroup}>
+            <button
+              onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
+            >
+              <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
+            </button>
           </div>
         </div>
       </div>

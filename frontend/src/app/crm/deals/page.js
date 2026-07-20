@@ -62,6 +62,7 @@ export default function DealsPage() {
   const [filterOwner, setFilterOwner] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCloseDate, setFilterCloseDate] = useState('all');
+  const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [users, setUsers] = useState([]);
 
   const [isAutomationModalOpen, setIsAutomationModalOpen] = useState(false);
@@ -302,6 +303,7 @@ export default function DealsPage() {
   };
 
   const filteredDeals = deals.filter(deal => {
+    if (showFlaggedOnly && deal.flag_status !== 'flagged') return false;
     if (filterOwner && deal.owner_id !== parseInt(filterOwner, 10)) return false;
 
     if (filterStatus !== 'all') {
@@ -606,6 +608,14 @@ export default function DealsPage() {
                 <option key={u.id} value={u.id}>{u.first_name} {u.last_name}</option>
               ))}
             </select>
+          </div>
+          <div className={styles.filterGroup} style={{ flex: 'none' }}>
+            <button
+              onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
+            >
+              <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
+            </button>
           </div>
         </div>
 

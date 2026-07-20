@@ -556,11 +556,10 @@ export default function LeadsPage() {
 
           <div className={styles.filterGroup}>
             <button
-              className={`${styles.viewToggleBtn}`}
               onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
-              style={{ display: 'flex', alignItems: 'center', gap: '4px', background: showFlaggedOnly ? '#fee2e2' : 'white', color: showFlaggedOnly ? '#ef4444' : '#64748b', borderColor: showFlaggedOnly ? '#fca5a5' : '#e2e8f0', cursor: 'pointer', padding: '4px 8px', borderRadius: '4px', border: '1px solid' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
             >
-              <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} /> Flagged
+              <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
             </button>
           </div>
 
@@ -647,6 +646,17 @@ export default function LeadsPage() {
                       <td>{lead.updatedAt ? new Date(lead.updatedAt).toLocaleDateString() : '—'}</td>
                       <td className={styles.actionsCol}>
                         <div className={styles.tableActions}>
+                          <button
+                            className={styles.actionBtn}
+                            title={lead.flag_status === 'flagged' ? 'Mark Completed' : lead.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                            onClick={(e) => handleToggleFlag(e, lead)}
+                          >
+                            <Flag
+                              size={12}
+                              fill={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : 'none'}
+                              color={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : '#64748b'}
+                            />
+                          </button>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
                             <Eye size={12} />
                           </button>
@@ -690,8 +700,8 @@ export default function LeadsPage() {
                   <th>Estimated Value</th>
                   <th>Status</th>
                   <th>Temperature</th>
-                  <th>Assigned To</th>
                   <th>Follow Up</th>
+                  <th>Assigned To</th>
                   <th className={styles.actionsCol}>Actions</th>
                 </tr>
               </thead>
@@ -724,15 +734,6 @@ export default function LeadsPage() {
                           </div>
                           <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
                             {lead.name}
-                            <button 
-                              onClick={(e) => handleToggleFlag(e, lead)} 
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '4px' }}
-                              title={lead.flag_status === 'completed' ? 'Completed' : lead.flag_status === 'flagged' ? 'Flagged' : 'Mark for Follow-up'}
-                            >
-                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={12} color="#cbd5e1" fill="none" />}
-                              {lead.flag_status === 'flagged' && <Flag size={12} color="#ef4444" fill="#ef4444" />}
-                              {lead.flag_status === 'completed' && <CheckCircle2 size={12} color="#10b981" />}
-                            </button>
                           </span>
                         </div>
                       </td>
