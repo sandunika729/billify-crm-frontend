@@ -363,6 +363,21 @@ export default function SettingsPage() {
     }
   };
 
+  const handleDeleteCompany = async (e, id, name) => {
+    e.stopPropagation(); // prevent card click
+    if (!confirm(`Are you sure you want to delete the company "${name}"? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await api.delete(`/tenants/${id}`);
+      await fetchAvailableCompanies();
+      // If we deleted the active one, maybe it defaults back via useAuth, or we should switch to another?
+      // but if the backend handles it, the next fetch might switch automatically if we handle it in context
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete company');
+    }
+  };
+
   const fetchProfile = async () => {
     setProfileLoading(true);
     setProfileError('');
@@ -786,6 +801,15 @@ export default function SettingsPage() {
                             </span>
                           </div>
                         </div>
+                        {!isActive && (
+                          <button 
+                            className={styles.deleteBtn} 
+                            onClick={(e) => handleDeleteCompany(e, company.id, company.name)} 
+                            title="Delete company"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        )}
                       </div>
                     );
                   })}
