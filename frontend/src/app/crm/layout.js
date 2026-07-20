@@ -49,7 +49,7 @@ export default function CrmLayout({ children }) {
   const navItems = [
     { label: 'Dashboard', path: '/crm/dashboard', icon: LayoutDashboard, permission: 'dashboard:view' },
     { label: 'Inbox', path: '/crm/inbox', icon: Inbox, permission: 'dashboard:view' },
-    { label: 'Company', path: '/crm/customers', icon: Users, permission: 'customers:view' },
+    { label: 'Customers', path: '/crm/customers', icon: Users, permission: 'customers:view' },
     { label: 'Leads', path: '/crm/leads', icon: UserPlus, permission: 'leads:view' },
     { label: 'Deals', path: '/crm/deals', icon: Briefcase, permission: 'deals:view' },
     { label: 'Quotes', path: '/crm/quotes', icon: FileText, permission: 'quotes:view' },
