@@ -11,6 +11,8 @@ import Modal from '../../../../components/modals/Modal';
 import FormField from '../../../../components/forms/FormField';
 import shopProfileService from '../../../../services/shopProfileService';
 import customFieldService from '../../../../services/customFieldService';
+import { useAuth } from '../../../../context/AuthContext';
+import api from '../../../../services/api';
 
 const CF_TABS = [
   { key: 'customer', label: 'Customers' },
@@ -294,6 +296,9 @@ function buildSnippet(apiKey) {
 }
 
 export default function SettingsPage() {
+  const { user, availableCompanies, fetchAvailableCompanies, switchCompany } = useAuth();
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  
   const [mainTab, setMainTab] = useState('shop');
 
   // Shop profile state
@@ -317,7 +322,11 @@ export default function SettingsPage() {
   const [isCfModalOpen, setIsCfModalOpen] = useState(false);
   const [cfForm, setCfForm] = useState({ field_name: '', field_label: '', field_type: 'text', options: '', is_required: false });
 
-
+  // Companies state
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [newCompanyName, setNewCompanyName] = useState('');
+  const [companyCreating, setCompanyCreating] = useState(false);
+  const [companyError, setCompanyError] = useState('');
 
   useEffect(() => {
     if (mainTab === 'shop' || mainTab === 'widget') {
@@ -326,6 +335,30 @@ export default function SettingsPage() {
       fetchCfFields();
     }
   }, [mainTab, cfTab]);
+
+  const handleCreateCompany = async (e) => {
+    e.preventDefault();
+    if (!newCompanyName.trim()) {
+      setCompanyError('Company name is required');
+      return;
+    }
+    setCompanyCreating(true);
+    setCompanyError('');
+    try {
+      const res = await api.post('/tenants', { name: newCompanyName });
+      if (res.data.success) {
+        setIsCompanyModalOpen(false);
+        setNewCompanyName('');
+        await fetchAvailableCompanies();
+        // Automatically switch to the newly created company
+        await switchCompany(res.data.data.id);
+      }
+    } catch (err) {
+      setCompanyError(err.response?.data?.message || 'Failed to create company');
+    } finally {
+      setCompanyCreating(false);
+    }
+  };
 
   const fetchProfile = async () => {
     setProfileLoading(true);
@@ -489,6 +522,7 @@ export default function SettingsPage() {
               { key: 'shop', label: 'Shop Profile' },
               { key: 'widget', label: 'Website Widget' },
               { key: 'customfields', label: 'Custom Fields' },
+              ...(isAdmin ? [{ key: 'companies', label: 'Companies' }] : []),
             ].map(item => (
               <button
                 key={item.key}
@@ -721,8 +755,65 @@ export default function SettingsPage() {
             </>
           )}
 
+          {mainTab === 'companies' && isAdmin && (
+            <>
+              <div className={styles.contentHeader}>
+                <div><h2 className={styles.contentTitle}>Manage Companies</h2></div>
+                <Button variant="primary" icon={Plus} onClick={() => setIsCompanyModalOpen(true)}>Create Company</Button>
+              </div>
+              <div className={styles.contentBody}>
+                <div className={styles.infoBox}>
+                  <p>You can create multiple companies and easily switch between them using the sidebar dropdown. Each company has its own isolated data, users, and settings.</p>
+                </div>
+                
+                <div className={styles.fieldList}>
+                  {availableCompanies.map(company => (
+                    <div key={company.id} className={styles.fieldCard}>
+                      <div className={styles.fieldInfo}>
+                        <span className={styles.fieldLabel}>{company.name}</span>
+                        <div className={styles.fieldMeta}>
+                          <span className={styles.badge}>Role: {company.role}</span>
+                          <span>ID: {company.id}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
         </div>
       </div>
+
+      <Modal
+        isOpen={isCompanyModalOpen}
+        onClose={() => setIsCompanyModalOpen(false)}
+        maxWidth="400px"
+        title="Create New Company"
+        footer={
+          <>
+            <Button variant="primary" onClick={handleCreateCompany} disabled={companyCreating}>
+              {companyCreating ? 'Creating...' : 'Create Company'}
+            </Button>
+          </>
+        }
+      >
+        <form onSubmit={handleCreateCompany}>
+          {companyError && <div className={styles.errorMsg}>{companyError}</div>}
+          <FormField 
+            label="Company Name" 
+            name="companyName" 
+            value={newCompanyName} 
+            onChange={e => setNewCompanyName(e.target.value)} 
+            required 
+            placeholder="e.g. Acme Corp" 
+          />
+          <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '10px' }}>
+            You will automatically become the super_admin of this new company and be switched to it.
+          </p>
+        </form>
+      </Modal>
 
       {}
       <Modal
