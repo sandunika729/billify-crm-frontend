@@ -6,6 +6,7 @@ import styles from './CreateQuoteModal.module.css';
 import { X, Save, Plus, Trash2 } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import FormField from '../../../components/forms/FormField';
+import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import Modal from '../../../components/modals/Modal';
 import { alert, confirm } from '@/utils/alertService';
 
@@ -19,7 +20,8 @@ export default function CreateQuoteModal({ isOpen, onClose, onSave }) {
     deal_id: '',
     valid_until: '',
     notes: '',
-    status: 'draft'
+    status: 'draft',
+    custom_fields: {}
   });
 
   const [items, setItems] = useState([
@@ -356,6 +358,14 @@ export default function CreateQuoteModal({ isOpen, onClose, onSave }) {
                     onChange={handleInputChange}
                   ></textarea>
                 </div>
+              </div>
+
+              <div className={styles.card}>
+                <CustomFieldsSection 
+                  entityType="quote" 
+                  values={formData.custom_fields || {}} 
+                  onChange={(newVals) => setFormData({ ...formData, custom_fields: newVals })}
+                />
               </div>
             </div>
       </div>

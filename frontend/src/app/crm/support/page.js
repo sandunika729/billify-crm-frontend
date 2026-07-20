@@ -14,6 +14,7 @@ import {
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
+import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import SearchBar from '../../../components/ui/SearchBar';
 import { alert, confirm } from '@/utils/alertService';
 
@@ -47,7 +48,7 @@ export default function SupportTicketsPage() {
   const [isModalOpen, setIsModalOpen]         = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting]       = useState(false);
-  const [formData, setFormData]   = useState({ subject: '', customer_id: '', priority: 'medium', source: 'phone', description: '' });
+  const [formData, setFormData]   = useState({ subject: '', customer_id: '', priority: 'medium', source: 'phone', description: '', custom_fields: {} });
   const [editFormData, setEditFormData]       = useState(null);
 
   
@@ -516,6 +517,11 @@ export default function SupportTicketsPage() {
             <FormField label="Source" type="select" name="source" value={formData.source} onChange={e => setFormData({...formData, source: e.target.value})}
               options={[{ value:'phone', label:'Phone' }, { value:'email', label:'Email' }, { value:'web', label:'Web' }, { value:'walk_in', label:'Walk-in' }, { value:'whatsapp', label:'WhatsApp' }]} />
           </div>
+          <CustomFieldsSection 
+            entityType="ticket" 
+            values={formData.custom_fields || {}} 
+            onChange={(newVals) => setFormData({...formData, custom_fields: newVals})}
+          />
         </form>
       </Modal>
 

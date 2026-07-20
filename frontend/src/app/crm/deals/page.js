@@ -10,7 +10,7 @@ import ActivityPanel from '../../../components/crm/ActivityPanel';
 
 import customerService from '../../../services/customerService';
 import leadService from '../../../services/leadService';
-import customFieldService from '../../../services/customFieldService';
+import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import api from '../../../services/api';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
@@ -39,7 +39,6 @@ export default function DealsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [leadsList, setLeadsList] = useState([]);
-  const [customFields, setCustomFields] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
@@ -81,7 +80,6 @@ export default function DealsPage() {
     fetchStages();
     fetchDeals();
     fetchCustomersAndLeads();
-    fetchCustomFields();
   }, []);
 
   const fetchStages = async () => {
@@ -99,16 +97,7 @@ export default function DealsPage() {
     }
   };
 
-  const fetchCustomFields = async () => {
-    try {
-      const res = await customFieldService.getFields('deal');
-      if (res.success) {
-        setCustomFields(res.data || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch custom fields:', error);
-    }
-  };
+
 
   const fetchCustomersAndLeads = async () => {
     try {
@@ -937,67 +926,11 @@ export default function DealsPage() {
 
           <FormField label="Notes / Description" type="textarea" name="notes" value={formData.notes} onChange={handleInputChange} rows={3} placeholder="Add any details, context, or next steps here..." />
 
-          {customFields.length > 0 && (
-            <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid var(--color-border)' }}>
-              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: 'var(--color-text-primary)' }}>Custom Fields</h4>
-              {customFields.map(field => {
-                const value = formData.custom_fields?.[field.field_name] ?? '';
-                return (
-                  <div key={field.id} className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                    <label className={styles.label}>
-                      {field.field_label} {field.is_required && '*'}
-                    </label>
-                    
-                    {field.field_type === 'text' && (
-                      <input 
-                        type="text" 
-                        className={styles.input}
-                        value={value} 
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        placeholder={`Enter ${field.field_label.toLowerCase()}`}
-                      />
-                    )}
-
-                    {field.field_type === 'number' && (
-                      <input 
-                        type="number" 
-                        className={styles.input}
-                        value={value} 
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        placeholder={`Enter ${field.field_label.toLowerCase()}`}
-                      />
-                    )}
-
-                    {field.field_type === 'select' && (
-                      <select
-                        className={styles.input}
-                        value={value}
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                      >
-                        <option value="">Select option...</option>
-                        {field.options && field.options.split(',').map(opt => {
-                          const o = opt.trim();
-                          return o ? <option key={o} value={o}>{o}</option> : null;
-                        })}
-                      </select>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <CustomFieldsSection 
+            entityType="deal" 
+            values={formData.custom_fields || {}} 
+            onChange={(newVals) => setFormData({ ...formData, custom_fields: newVals })}
+          />
         </form>
       </Modal>
       {}
@@ -1230,23 +1163,13 @@ export default function DealsPage() {
               return null;
             })()}
 
-            {customFields.length > 0 && viewDeal.custom_fields && Object.keys(viewDeal.custom_fields).length > 0 && (
-              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)' }}>
-                <label>Custom Fields</label>
-                <div className={styles.detailGrid} style={{ marginTop: '0.5rem' }}>
-                  {customFields.map(field => {
-                    const val = viewDeal.custom_fields?.[field.field_name];
-                    if (!val && val !== 0) return null;
-                    return (
-                      <div className={styles.detailItem} key={field.id}>
-                        <label>{field.field_label}</label>
-                        <p>{val}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)' }}>
+              <CustomFieldsSection 
+                entityType="deal" 
+                values={viewDeal.custom_fields || {}} 
+                readOnly={true}
+              />
+            </div>
 
             <ActivityPanel relatedType="deal" relatedId={viewDeal.id} tenantId={user.tenantId} />
 

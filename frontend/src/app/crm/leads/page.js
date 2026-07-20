@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import leadService from '../../../services/leadService';
 import customerService from '../../../services/customerService';
-import customFieldService from '../../../services/customFieldService';
+import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import api from '../../../services/api';
 import styles from './page.module.css';
 import { Search, Plus, Filter, MoreVertical, Flame, Target, Banknote, Calendar, X, Eye, Mail, Phone, Building2, Edit, Edit2, Trash2, ArrowRightCircle, Download, Upload, Users, UserCheck, LayoutGrid, List, Package, CheckCircle2, ExternalLink, Flag } from 'lucide-react';
@@ -25,7 +25,6 @@ export default function LeadsPage() {
   const [convertedLeads, setConvertedLeads] = useState([]);
   const [convertedLoaded, setConvertedLoaded] = useState(false);
   const [customers, setCustomers] = useState([]);
-  const [customFields, setCustomFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -77,7 +76,6 @@ export default function LeadsPage() {
     fetchCustomers();
     fetchDealStages();
     fetchUsers();
-    fetchCustomFields();
   }, []);
 
   const fetchDealStages = async () => {
@@ -102,16 +100,6 @@ export default function LeadsPage() {
     }
   };
 
-  const fetchCustomFields = async () => {
-    try {
-      const res = await customFieldService.getFields('lead');
-      if (res.success) {
-        setCustomFields(res.data || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch custom fields:', error);
-    }
-  };
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -1103,67 +1091,11 @@ export default function LeadsPage() {
             />
           </div>
 
-          {customFields.length > 0 && (
-            <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid var(--color-border)' }}>
-              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: 'var(--color-text-primary)' }}>Custom Fields</h4>
-              {customFields.map(field => {
-                const value = formData.custom_fields?.[field.field_name] ?? '';
-                return (
-                  <div key={field.id} className={styles.formGroup} style={{ marginBottom: '15px' }}>
-                    <label className={styles.label}>
-                      {field.field_label} {field.is_required && '*'}
-                    </label>
-                    
-                    {field.field_type === 'text' && (
-                      <input 
-                        type="text" 
-                        className={styles.input}
-                        value={value} 
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        placeholder={`Enter ${field.field_label.toLowerCase()}`}
-                      />
-                    )}
-
-                    {field.field_type === 'number' && (
-                      <input 
-                        type="number" 
-                        className={styles.input}
-                        value={value} 
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        placeholder={`Enter ${field.field_label.toLowerCase()}`}
-                      />
-                    )}
-
-                    {field.field_type === 'select' && (
-                      <select
-                        className={styles.input}
-                        value={value}
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                      >
-                        <option value="">Select option...</option>
-                        {field.options && field.options.split(',').map(opt => {
-                          const o = opt.trim();
-                          return o ? <option key={o} value={o}>{o}</option> : null;
-                        })}
-                      </select>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <CustomFieldsSection 
+            entityType="lead" 
+            values={formData.custom_fields || {}} 
+            onChange={(newVals) => setFormData({ ...formData, custom_fields: newVals })}
+          />
 
           {}
           {users.length > 0 && (
@@ -1407,23 +1339,13 @@ export default function LeadsPage() {
               </div>
             )}
 
-            {customFields.length > 0 && viewLead.custom_fields && Object.keys(viewLead.custom_fields).length > 0 && (
-              <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--color-border)' }}>
-                <p className={styles.detailLabel} style={{ marginBottom: '8px', fontWeight: 600 }}>Custom Fields</p>
-                <div className={styles.detailsGrid}>
-                  {customFields.map(field => {
-                    const val = viewLead.custom_fields?.[field.field_name];
-                    if (!val && val !== 0) return null;
-                    return (
-                      <div key={field.id}>
-                        <p className={styles.detailLabel}>{field.field_label}</p>
-                        <p className={styles.detailValueNormal}>{val}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--color-border)' }}>
+              <CustomFieldsSection 
+                entityType="lead" 
+                values={viewLead.custom_fields || {}} 
+                readOnly={true}
+              />
+            </div>
 
             <ActivityPanel relatedType="lead" relatedId={viewLead.id} />
           </div>

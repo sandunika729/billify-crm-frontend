@@ -13,14 +13,13 @@ import FilterSelect from '../../../components/ui/FilterSelect';
 import { Search, Plus, Building2, User, Phone, Mail, X, Upload, Download, Eye, Edit2, Trash2, Flag } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
-import customFieldService from '../../../services/customFieldService';
+import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import { alert, confirm } from '@/utils/alertService';
 
 export default function CustomersPage() {
   const { user } = useAuth();
   const [customers, setCustomers] = useState([]);
   const [posCustomers, setPosCustomers] = useState([]);
-  const [customFields, setCustomFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
@@ -50,19 +49,7 @@ export default function CustomersPage() {
   useEffect(() => {
     fetchCustomers();
     fetchPosCustomers();
-    fetchCustomFields();
   }, []);
-
-  const fetchCustomFields = async () => {
-    try {
-      const res = await customFieldService.getFields('customer');
-      if (res.success) {
-        setCustomFields(res.data || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch custom fields:', error);
-    }
-  };
 
   const fetchCustomers = async () => {
     setLoading(true);
@@ -538,104 +525,11 @@ export default function CustomersPage() {
             ]}
           />
 
-          {customFields.length > 0 && (
-            <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid var(--color-border)' }}>
-              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: 'var(--color-text-primary)' }}>Custom Fields</h4>
-              {customFields.map(field => {
-                const value = formData.custom_fields?.[field.field_name] ?? '';
-                return (
-                  <div key={field.id} style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, marginBottom: '6px' }}>
-                      {field.field_label} {field.is_required && '*'}
-                    </label>
-                    
-                    {field.field_type === 'text' && (
-                      <input 
-                        type="text" 
-                        className={formStyles.input}
-                        value={value} 
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit' }}
-                      />
-                    )}
-
-                    {field.field_type === 'number' && (
-                      <input 
-                        type="number" 
-                        className={formStyles.input}
-                        value={value} 
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit' }}
-                      />
-                    )}
-
-                    {field.field_type === 'date' && (
-                      <input 
-                        type="date" 
-                        className={formStyles.input}
-                        value={value} 
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit' }}
-                      />
-                    )}
-
-                    {field.field_type === 'select' && (
-                      <select 
-                        value={value} 
-                        className={formStyles.input}
-                        required={field.is_required}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.value }
-                        })}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', fontFamily: 'inherit', backgroundColor: 'var(--color-background)' }}
-                      >
-                        <option value="">-- Select --</option>
-                        {field.options && field.options.map((opt, i) => (
-                          <option key={i} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                    )}
-
-                    {field.field_type === 'checkbox' && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                        <input 
-                          type="checkbox" 
-                          checked={!!value} 
-                          required={field.is_required}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            custom_fields: { ...formData.custom_fields, [field.field_name]: e.target.checked }
-                          })}
-                          style={{ width: '16px', height: '16px', cursor: 'pointer' }}
-                        />
-                        <span style={{ fontSize: '14px', cursor: 'pointer' }} onClick={() => {
-                          setFormData({
-                            ...formData,
-                            custom_fields: { ...formData.custom_fields, [field.field_name]: !value }
-                          })
-                        }}>
-                          {field.field_label}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <CustomFieldsSection 
+            entityType="customer" 
+            values={formData.custom_fields || {}} 
+            onChange={(newVals) => setFormData({ ...formData, custom_fields: newVals })}
+          />
         </form>
       </Modal>
 
