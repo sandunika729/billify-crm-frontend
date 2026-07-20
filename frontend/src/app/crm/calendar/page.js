@@ -3,8 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import calendarService from '../../../services/calendarService';
+import outlookService from '../../../services/outlookService';
 import styles from './page.module.css';
-import { ChevronLeft, ChevronRight, Calendar, AlertCircle, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, AlertCircle, X, RefreshCw, Unplug } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { format, startOfYear, endOfYear, eachMonthOfInterval, getDaysInMonth, startOfMonth, getDay, isSameDay } from 'date-fns';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
@@ -17,13 +19,17 @@ const activityColorMap = {
   follow_up: '#f59e0b',
   note: '#8b5cf6',
   system: '#64748b',
+  outlook: '#0078d4',
 };
 
 export default function CalendarPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [outlookConnected, setOutlookConnected] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const [hoveredDate, setHoveredDate] = useState(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
@@ -42,7 +48,64 @@ export default function CalendarPage() {
 
   useEffect(() => {
     fetchAllEvents(currentYear);
-  }, [currentYear]);
+    checkOutlookStatus();
+    
+    const outlookSync = searchParams.get('outlook_sync');
+    if (outlookSync === 'success') {
+      alert('Successfully connected to Outlook Calendar!');
+      // clean up url
+      window.history.replaceState(null, '', window.location.pathname);
+    } else if (outlookSync === 'error') {
+      alert('Failed to connect to Outlook. Please try again.');
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, [currentYear, searchParams]);
+
+  const checkOutlookStatus = async () => {
+    const res = await outlookService.getStatus();
+    if (res && res.success) {
+      setOutlookConnected(res.data.connected);
+    }
+  };
+
+  const handleConnectOutlook = async () => {
+    const res = await outlookService.getAuthUrl();
+    if (res && res.success && res.url) {
+      window.location.href = res.url;
+    } else {
+      alert('Failed to connect to Outlook');
+    }
+  };
+
+  const handleDisconnectOutlook = async () => {
+    if (!confirm('Are you sure you want to disconnect Outlook?')) return;
+    const res = await outlookService.disconnect();
+    if (res && res.success) {
+      setOutlookConnected(false);
+      fetchAllEvents(currentYear);
+    }
+  };
+
+  const handleSyncOutlook = async () => {
+    setSyncing(true);
+    try {
+      const start = new Date(currentYear, 0, 1).toISOString();
+      const end = new Date(currentYear, 11, 31, 23, 59, 59).toISOString();
+      const res = await outlookService.syncEvents(start, end);
+      if (res && res.success && res.data) {
+        // Assume res.data contains the outlook events
+        const outlookEvents = res.data;
+        // Merge with existing CRM events (filtering out old outlook events first)
+        setActivities(prev => {
+          const crmOnly = prev.filter(a => !a.isOutlook);
+          return [...crmOnly, ...outlookEvents];
+        });
+      }
+    } catch (err) {
+      console.error('Failed to sync', err);
+    }
+    setSyncing(false);
+  };
 
   const fetchAllEvents = async (year) => {
     setLoading(true);
@@ -52,7 +115,18 @@ export default function CalendarPage() {
     try {
       const crmRes = await calendarService.getActivities(start, end);
       if (crmRes.success) {
-        setActivities(crmRes.data || []);
+        const crmEvents = crmRes.data || [];
+        
+        // Also fetch outlook events if connected
+        let outlookEvents = [];
+        if (outlookConnected) {
+          const outRes = await outlookService.syncEvents(start, end);
+          if (outRes && outRes.success && outRes.data) {
+            outlookEvents = outRes.data;
+          }
+        }
+        
+        setActivities([...crmEvents, ...outlookEvents]);
       }
     } catch (error) {
       console.error('Failed to load calendar events:', error);
@@ -146,7 +220,28 @@ export default function CalendarPage() {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.topBar}>
-        <button className={styles.todayBtn} onClick={handleToday}>Today</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button className={styles.todayBtn} onClick={handleToday}>Today</button>
+          
+          {outlookConnected ? (
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 'bold' }}>✓ Outlook Connected</span>
+              <Button variant="secondary" size="sm" onClick={handleSyncOutlook} disabled={syncing}>
+                <RefreshCw size={14} style={{ marginRight: 4 }} />
+                {syncing ? 'Syncing...' : 'Sync'}
+              </Button>
+              <Button variant="danger" size="sm" onClick={handleDisconnectOutlook}>
+                <Unplug size={14} style={{ marginRight: 4 }} />
+                Disconnect
+              </Button>
+            </div>
+          ) : (
+            <Button variant="primary" size="sm" onClick={handleConnectOutlook} style={{ background: '#0078d4' }}>
+              Connect Outlook
+            </Button>
+          )}
+        </div>
+
         <div className={styles.yearNavigation}>
           <button className={styles.navBtn} onClick={handlePrevYear}><ChevronLeft size={16} /></button>
           <span className={styles.yearLabel}>{currentYear}</span>
@@ -224,7 +319,10 @@ export default function CalendarPage() {
                   {act.due_at ? format(new Date(act.due_at), 'HH:mm') : '--:--'}
                 </div>
                 <div className={styles.taskDetails}>
-                  <div className={styles.taskTitle}>{act.title}</div>
+                  <div className={styles.taskTitle}>
+                    {act.isOutlook && <span style={{ fontSize: '0.7rem', color: '#0078d4', border: '1px solid #0078d4', padding: '1px 4px', borderRadius: '4px', marginRight: '4px' }}>Outlook</span>}
+                    {act.title}
+                  </div>
                   {act.description && (
                     <div className={styles.taskDesc}>{act.description.substring(0, 40)}...</div>
                   )}
