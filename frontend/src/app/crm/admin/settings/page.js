@@ -765,22 +765,30 @@ export default function SettingsPage() {
                 <Button variant="primary" icon={Plus} onClick={() => setIsCompanyModalOpen(true)}>Create Company</Button>
               </div>
               <div className={styles.contentBody}>
-                <div className={styles.infoBox}>
-                  <p>You can create multiple companies and easily switch between them using the sidebar dropdown. Each company has its own isolated data, users, and settings.</p>
+                <div className={styles.infoBox} style={{ fontSize: '0.8rem' }}>
+                  <p>You can create multiple companies and switch between them by clicking on a company card below. Each company has its own isolated data, users, and settings.</p>
                 </div>
                 
                 <div className={styles.fieldList}>
-                  {availableCompanies.map(company => (
-                    <div key={company.id} className={styles.fieldCard}>
-                      <div className={styles.fieldInfo}>
-                        <span className={styles.fieldLabel}>{company.name}</span>
-                        <div className={styles.fieldMeta}>
-                          <span className={styles.badge}>Role: {company.role}</span>
-                          <span>ID: {company.id}</span>
+                  {availableCompanies.map(company => {
+                    const isActive = activeTenant?.id === company.id;
+                    return (
+                      <div 
+                        key={company.id} 
+                        className={`${styles.fieldCard} ${isActive ? styles.activeCompanyCard : styles.clickableCompanyCard}`}
+                        onClick={() => !isActive && switchCompany(company.id)}
+                      >
+                        <div className={styles.fieldInfo}>
+                          <span className={styles.fieldLabel}>{company.name}</span>
+                          <div className={styles.fieldMeta}>
+                            <span className={`${styles.badge} ${isActive ? styles.badgeActive : styles.badgeInactive}`}>
+                              {isActive ? 'ACTIVE' : 'INACTIVE'}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </>
@@ -818,7 +826,6 @@ export default function SettingsPage() {
         </form>
       </Modal>
 
-      {}
       <Modal
         isOpen={isCfModalOpen}
         onClose={() => setIsCfModalOpen(false)}

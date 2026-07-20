@@ -116,25 +116,7 @@ export default function CrmLayout({ children }) {
             </button>
           </div>
 
-          {availableCompanies && availableCompanies.length > 0 && (
-            <div className={styles.companySwitcher}>
-              <p className={styles.companySwitcherLabel}>Companies</p>
-              {availableCompanies.map(company => {
-                const isActive = activeTenant?.id === company.id;
-                return (
-                  <button
-                    key={company.id}
-                    className={`${styles.companyCard} ${isActive ? styles.companyCardActive : ''}`}
-                    onClick={() => !isActive && switchCompany(company.id)}
-                    title={`Switch to ${company.name}`}
-                  >
-                    <span className={styles.companyCardName}>{company.name}</span>
-                    {isActive && <span className={styles.companyCardBadge}>Active</span>}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+
 
           <nav className={styles.navigation}>
             <ul>

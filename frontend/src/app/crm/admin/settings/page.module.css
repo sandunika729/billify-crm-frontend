@@ -1,4 +1,4 @@
-﻿.pageContainer {
+.pageContainer {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -951,4 +951,32 @@
   .kpiGrid { grid-template-columns: 1fr !important; }
   .headerActions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
   .tableWrapper { overflow-x: auto; }
+}
+
+.clickableCompanyCard {
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.clickableCompanyCard:hover {
+  border-color: #6d28d9;
+  background: #1a1030;
+}
+
+.activeCompanyCard {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.05);
+  cursor: default;
+}
+
+.badgeActive {
+  background: rgba(124, 58, 237, 0.2);
+  color: #a78bfa;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+}
+
+.badgeInactive {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.4);
 }
