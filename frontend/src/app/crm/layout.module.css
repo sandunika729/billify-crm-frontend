@@ -76,6 +76,31 @@
   letter-spacing: 1px;
 }
 
+.companySwitcher {
+  margin: 1.25rem 1.25rem 0.25rem;
+}
+
+.companySelect {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #1a1b26;
+  color: #e2e8f0;
+  border: 1px solid #2d3748;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+.companySelect:focus {
+  border-color: #3b82f6;
+}
+
+.companySelect option {
+  background-color: #1a1b26;
+}
+
 .tenantBadge {
   margin: 1.25rem 1.25rem 0.25rem;
   padding: 0.4rem 0.75rem;

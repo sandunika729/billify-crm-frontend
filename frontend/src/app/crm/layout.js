@@ -35,7 +35,7 @@ import OverdueBell from '../../components/crm/OverdueBell';
 import NotificationBell from '../../components/crm/NotificationBell';
 
 export default function CrmLayout({ children }) {
-  const { user, logout } = useAuth();
+  const { user, logout, activeTenant, availableCompanies, switchCompany } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -115,6 +115,22 @@ export default function CrmLayout({ children }) {
               <X size={24} />
             </button>
           </div>
+
+          {availableCompanies && availableCompanies.length > 0 && (
+            <div className={styles.companySwitcher}>
+              <select 
+                className={styles.companySelect}
+                value={activeTenant?.id || ''}
+                onChange={(e) => switchCompany(e.target.value)}
+              >
+                {availableCompanies.map(company => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <nav className={styles.navigation}>
             <ul>
