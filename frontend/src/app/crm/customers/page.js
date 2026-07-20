@@ -339,7 +339,7 @@ export default function CustomersPage() {
             onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
           >
-            <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
+            <Flag size={12} strokeWidth={1.5} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
           </button>
         </div>
       </div>

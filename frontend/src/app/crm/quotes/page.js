@@ -363,7 +363,6 @@ export default function QuotesPage() {
       <div className={styles.pageHeader}>
         <div>
           <h1>Quotations</h1>
-          <p className={styles.pageSubtitle}>Create, send, and track customer quotes through acceptance to invoice.</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <Button variant="outline" icon={Download} iconSize={14} onClick={handleExport}>Export</Button>
@@ -477,8 +476,8 @@ export default function QuotesPage() {
       </Modal>
 
       {}
-      <div className={styles.filtersBar}>
-        <div className={styles.filtersLeft}>
+      <div className={styles.filtersBar} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
@@ -488,26 +487,28 @@ export default function QuotesPage() {
           />
         </div>
 
-        <div className={styles.filterGroup}>
-          <select
-            className={styles.filterSelect}
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="">All Statuses</option>
-            {QUOTE_STATUSES.map(s => (
-              <option key={s.value} value={s.value}>{s.label}</option>
-            ))}
-          </select>
-        </div>
-        
-        <div className={styles.filterGroup}>
-          <button
-            onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
-          >
-            <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', flexShrink: 0 }}>
+          <div className={styles.filterGroup}>
+            <select
+              className={styles.filterSelect}
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option value="">All Statuses</option>
+              {QUOTE_STATUSES.map(s => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className={styles.filterGroup}>
+            <button
+              onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
+            >
+              <Flag size={12} strokeWidth={1.5} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
+            </button>
+          </div>
         </div>
       </div>
 

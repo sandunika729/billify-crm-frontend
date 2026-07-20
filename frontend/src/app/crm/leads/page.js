@@ -559,7 +559,7 @@ export default function LeadsPage() {
               onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
               style={{ display: 'flex', alignItems: 'center', gap: '6px', background: showFlaggedOnly ? '#fee2e2' : 'var(--color-bg-card)', color: showFlaggedOnly ? '#ef4444' : 'var(--color-text-primary)', borderColor: showFlaggedOnly ? '#fca5a5' : 'var(--color-border)', cursor: 'pointer', padding: '0.55rem 0.875rem', borderRadius: 'var(--radius-md)', border: '1px solid', fontSize: '0.7rem', fontWeight: 500 }}
             >
-              <Flag size={12} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
+              <Flag size={12} strokeWidth={1.5} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
             </button>
           </div>
 
@@ -779,6 +779,18 @@ export default function LeadsPage() {
                       </td>
                       <td className={styles.actionsCol}>
                         <div className={styles.tableActions}>
+                          <button
+                            className={styles.actionBtn}
+                            title={lead.flag_status === 'flagged' ? 'Mark Completed' : lead.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                            onClick={(e) => handleToggleFlag(e, lead)}
+                          >
+                            <Flag
+                              size={12}
+                              strokeWidth={1.5}
+                              fill={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : 'none'}
+                              color={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : '#64748b'}
+                            />
+                          </button>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
                             <Eye size={12} />
                           </button>
