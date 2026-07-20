@@ -28,6 +28,11 @@ const quoteService = {
     return response.data;
   },
 
+  updateQuote: async (id, data) => {
+    const response = await api.put(`/crm/quotes/${id}`, data);
+    return response.data;
+  },
+
   updateQuoteStatus: async (id, status) => {
     const response = await api.patch(`/crm/quotes/${id}/status`, { status });
     return response.data;
