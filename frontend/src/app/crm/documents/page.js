@@ -245,7 +245,7 @@ export default function DocumentsPage() {
             </select>
           </div>
 
-          {/* ── Group By ── */}
+          {}
           <div className={styles.filterGroup} style={{ flex: 'none' }}>
             <div className={styles.groupByWrapper}>
               <Layers size={12} className={styles.groupByIcon} />
@@ -285,10 +285,10 @@ export default function DocumentsPage() {
               ) : filteredDocs.length === 0 ? (
                 <tr><td colSpan="6" className={styles.emptyState}>No documents found. Click "Upload Document" to add files.</td></tr>
               ) : groupedDocs ? (
-                // ── Grouped rendering ──
+                
                 groupedDocs.map(([groupLabel, docs]) => (
                   <React.Fragment key={groupLabel}>
-                    {/* Group header row */}
+                    {}
                     <tr
                       className={styles.groupHeaderRow}
                       onClick={() => toggleGroup(groupLabel)}
@@ -338,7 +338,7 @@ export default function DocumentsPage() {
                   </React.Fragment>
                 ))
               ) : (
-                // ── Flat rendering (no grouping) ──
+                
                 filteredDocs.map(doc => (
                   <tr key={doc.id}>
                     <td>

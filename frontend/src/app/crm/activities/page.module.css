@@ -410,13 +410,11 @@
   }
 }
 
-/* ----------------------------------------
-   Pinning UI Styles
-   ---------------------------------------- */
+
 
 .pinnedCard {
   border-left: 4px solid #8b5cf6;
-  /* Blue border for pinned items */
+  
   background: linear-gradient(to right, #eff6ff, #ffffff);
 }
 

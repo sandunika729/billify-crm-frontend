@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import { getAccessToken } from '../services/api';
 
-// Derive socket URL from NEXT_PUBLIC_API_URL by stripping /api from the end
+
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL ||
   (process.env.NEXT_PUBLIC_API_URL
     ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api$/, '')

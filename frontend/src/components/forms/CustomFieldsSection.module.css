@@ -69,7 +69,6 @@
   margin: 0;
 }
 
-/* Checkbox specific styles */
 .checkboxField {
   display: flex;
   align-items: center;
@@ -92,7 +91,6 @@
   cursor: pointer;
 }
 
-/* Read-only styles */
 .readOnlyField {
   display: flex;
   flex-direction: column;

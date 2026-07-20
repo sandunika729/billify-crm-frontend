@@ -103,7 +103,7 @@ export function AuthProvider({ children }) {
       setUser({ ...userData, tenant });
       setActiveTenant(tenant);
       
-      // Force reload to clear any cached data in state for the old company
+      
       window.location.href = '/crm/dashboard';
       return { success: true };
     } catch (error) {

@@ -53,7 +53,7 @@ export default function CalendarPage() {
     const outlookSync = searchParams.get('outlook_sync');
     if (outlookSync === 'success') {
       alert('Successfully connected to Outlook Calendar!');
-      // clean up url
+      
       window.history.replaceState(null, '', window.location.pathname);
     } else if (outlookSync === 'error') {
       alert('Failed to connect to Outlook. Please try again.');
@@ -93,9 +93,9 @@ export default function CalendarPage() {
       const end = new Date(currentYear, 11, 31, 23, 59, 59).toISOString();
       const res = await outlookService.syncEvents(start, end);
       if (res && res.success && res.data) {
-        // Assume res.data contains the outlook events
+        
         const outlookEvents = res.data;
-        // Merge with existing CRM events (filtering out old outlook events first)
+        
         setActivities(prev => {
           const crmOnly = prev.filter(a => !a.isOutlook);
           return [...crmOnly, ...outlookEvents];
@@ -117,7 +117,7 @@ export default function CalendarPage() {
       if (crmRes.success) {
         const crmEvents = crmRes.data || [];
         
-        // Also fetch outlook events if connected
+        
         let outlookEvents = [];
         if (outlookConnected) {
           const outRes = await outlookService.syncEvents(start, end);
@@ -343,7 +343,7 @@ export default function CalendarPage() {
         </div>
       )}
 
-      {/* Create Activity Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -370,7 +370,7 @@ export default function CalendarPage() {
         </form>
       </Modal>
 
-      {/* View Activity Modal */}
+      {}
       <Modal
         isOpen={viewActivityModalOpen}
         onClose={() => setViewActivityModalOpen(false)}
