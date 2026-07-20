@@ -18,7 +18,7 @@ const CF_TABS = [
   { key: 'deal', label: 'Deals' },
   { key: 'ticket', label: 'Tickets' },
   { key: 'quote', label: 'Quotes' },
-  { key: 'todo', label: 'Todos / Tasks' },
+  { key: 'todo', label: 'Todos ' },
 ];
 
 const PREDEFINED_FIELDS = {
