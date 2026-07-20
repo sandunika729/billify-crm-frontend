@@ -80,7 +80,7 @@ export default function LoginPage() {
     <div className={styles.loginContainer}>
       <div className={styles.glassPanel}>
         <div className={styles.brandHeader}>
-          <h1>Billify CRM</h1>
+          <h1>CRM System</h1>
         </div>
 
         {error && <div className={styles.errorMessage}>{error}</div>}

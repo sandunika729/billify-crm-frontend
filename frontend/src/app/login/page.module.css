@@ -93,9 +93,9 @@
 
 .inputGroup label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #64748b;
+  color: #0f172a;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -110,11 +110,11 @@
 .inputWrapper input {
   width: 100%;
   padding: 0.75rem 1rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #1e293b;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 3px;
   transition: all var(--transition-normal);
   font-family: inherit;
 }
@@ -122,6 +122,7 @@
 .inputWrapper input::placeholder {
   color: #cbd5e1;
   font-weight: 400;
+  font-size: 0.78rem;
 }
 
 .inputWrapper input:hover {
@@ -137,7 +138,6 @@
 
 .inputError {
   border-color: var(--color-danger) !important;
-  background: #fef2f2 !important;
 }
 
 .inputError:focus {
@@ -159,7 +159,7 @@
   background: #8b5cf6;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 3px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
