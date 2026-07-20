@@ -296,7 +296,7 @@ function buildSnippet(apiKey) {
 }
 
 export default function SettingsPage() {
-  const { user, availableCompanies, fetchAvailableCompanies, switchCompany } = useAuth();
+  const { user, activeTenant, availableCompanies, fetchAvailableCompanies, switchCompany } = useAuth();
   const adminRoles = ['admin', 'super_admin'];
   // /auth/me returns roles as array; login sets role as string — handle both
   const isAdmin = adminRoles.includes(user?.role) ||
