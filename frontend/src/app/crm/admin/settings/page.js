@@ -16,6 +16,8 @@ const CF_TABS = [
   { key: 'customer', label: 'Customers' },
   { key: 'lead', label: 'Leads' },
   { key: 'deal', label: 'Deals' },
+  { key: 'ticket', label: 'Tickets' },
+  { key: 'quote', label: 'Quotes' },
 ];
 
 const PREDEFINED_FIELDS = {
@@ -35,13 +37,23 @@ const PREDEFINED_FIELDS = {
     { field_name: 'competitors', field_label: 'Competitors', field_type: 'text' },
     { field_name: 'loss_reason', field_label: 'Loss Reason', field_type: 'select', options: ['Price', 'Competitor', 'Timing', 'Features'] },
     { field_name: 'contract_length', field_label: 'Contract Length (Months)', field_type: 'number' }
+  ],
+  ticket: [
+    { field_name: 'operating_system', field_label: 'Operating System', field_type: 'select', options: ['Windows', 'macOS', 'Linux', 'iOS', 'Android'] },
+    { field_name: 'browser_version', field_label: 'Browser / Version', field_type: 'text' },
+    { field_name: 'issue_type', field_label: 'Issue Type', field_type: 'select', options: ['Bug', 'Feature Request', 'Billing', 'General Inquiry'] }
+  ],
+  quote: [
+    { field_name: 'payment_terms', field_label: 'Payment Terms', field_type: 'select', options: ['Net 15', 'Net 30', 'Net 60', 'Due on Receipt'] },
+    { field_name: 'delivery_method', field_label: 'Delivery Method', field_type: 'text' },
+    { field_name: 'project_timeline', field_label: 'Project Timeline (Weeks)', field_type: 'number' }
   ]
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 function buildSnippet(apiKey) {
-  const API_BASE_CONST = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const API_BASE_CONST = process.env.NEXT_PUBLIC_API_URL;
   const snippet = `<!-- Billify CRM Support Widget -->
 <!-- Paste this anywhere in your website's HTML -->
 <div id="crm-support-widget"></div>
