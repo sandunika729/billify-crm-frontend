@@ -297,7 +297,10 @@ function buildSnippet(apiKey) {
 
 export default function SettingsPage() {
   const { user, availableCompanies, fetchAvailableCompanies, switchCompany } = useAuth();
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const adminRoles = ['admin', 'super_admin'];
+  // /auth/me returns roles as array; login sets role as string — handle both
+  const isAdmin = adminRoles.includes(user?.role) ||
+    (Array.isArray(user?.roles) && user.roles.some(r => adminRoles.includes(r)));
   
   const [mainTab, setMainTab] = useState('shop');
 

@@ -77,29 +77,71 @@
 }
 
 .companySwitcher {
-  margin: 1.25rem 1.25rem 0.25rem;
+  margin: 0.75rem 1rem 0.5rem;
+  border-bottom: 1px solid #1e2030;
+  padding-bottom: 0.75rem;
 }
 
-.companySelect {
+.companySwitcherLabel {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 0.5rem 0.25rem;
+}
+
+.companyCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  padding: 0.5rem;
-  background-color: #1a1b26;
-  color: #e2e8f0;
-  border: 1px solid #2d3748;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.35rem;
+  background: #13131e;
+  border: 1px solid #1e2030;
   border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  outline: none;
   cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
 }
 
-.companySelect:focus {
-  border-color: #3b82f6;
+.companyCard:hover {
+  border-color: #6d28d9;
+  background: #1a1030;
 }
 
-.companySelect option {
-  background-color: #1a1b26;
+.companyCardActive {
+  border-color: #7c3aed !important;
+  background: rgba(124, 58, 237, 0.12) !important;
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.4);
+  cursor: default;
 }
+
+.companyCardName {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.companyCardBadge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #a78bfa;
+  background: rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: 99px;
+  padding: 1px 7px;
+  flex-shrink: 0;
+  margin-left: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 
 .tenantBadge {
   margin: 1.25rem 1.25rem 0.25rem;
