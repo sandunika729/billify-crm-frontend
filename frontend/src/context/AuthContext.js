@@ -126,23 +126,39 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const fetchAvailableCompanies = async () => {
+    try {
+      const companiesRes = await api.get('/auth/my-companies');
+      setAvailableCompanies(companiesRes.data.data);
+    } catch (error) {
+      console.error('Failed to fetch companies:', error);
+    }
+  };
+
   const value = {
     user,
     activeTenant,
     availableCompanies,
     loading,
+    isAuthenticated: !!user,
     login,
     selectCompany,
     switchCompany,
+    fetchAvailableCompanies,
     logout,
-    isAuthenticated: !!user,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading ? children : <div className="loading-screen">Loading CRM...</div>}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
