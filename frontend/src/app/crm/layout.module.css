@@ -16,8 +16,8 @@
 
 .sidebar {
   width: 240px;
-  background-color: #1B3A6B;
-  border-right: 1px solid #1e4180;
+  background-color: #08080e;
+  border-right: 1px solid #25262f;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -27,7 +27,9 @@
   z-index: 40;
   transition: transform 0.3s ease;
   scrollbar-width: none;
+  
   -ms-overflow-style: none;
+  
 }
 
 .sidebar::-webkit-scrollbar {
@@ -41,7 +43,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 1.25rem;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid #161f30;
 }
 
 .logo {
@@ -70,7 +72,7 @@
 .logoSubtext {
   font-weight: 600;
   font-size: 0.65rem;
-  color: #a78bfa;
+  color: #a72bdd;
   letter-spacing: 1px;
 }
 
@@ -80,9 +82,9 @@
 .tenantBadge {
   margin: 1.25rem 1.25rem 0.25rem;
   padding: 0.4rem 0.75rem;
-  background: rgba(167, 139, 250, 0.15);
-  color: #c4b5fd;
-  border: 1px solid rgba(167, 139, 250, 0.25);
+  background: rgba(48, 188, 237, 0.1);
+  color: #30bced;
+  border: 1px solid rgba(48, 188, 237, 0.2);
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -134,13 +136,13 @@
 }
 
 .navItem.active {
-  background-color: #7C3AED;
+  background-color: #a72bdd;
   color: #ffffff;
 }
 
 .sidebarFooter {
   padding: 1.25rem 1rem;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid #161f30;
 }
 
 .logoutBtn {
@@ -177,7 +179,7 @@
 .topHeader {
   height: 70px;
   background-color: #ffffff;
-  border-bottom: 1px solid #BFDBFE;
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
