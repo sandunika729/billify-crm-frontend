@@ -140,9 +140,19 @@ export default function DocumentsPage() {
     }
   };
 
-  const handleViewDocument = (id) => {
-    const url = documentService.getDownloadUrl(id);
-    window.open(url, '_blank');
+  const handleViewDocument = async (id, mimeType) => {
+    try {
+      const response = await documentService.downloadDocument(id);
+      const mime = mimeType || response.headers?.['content-type'] || 'application/octet-stream';
+      const blob = new Blob([response.data], { type: mime });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      // Revoke after a short delay to allow the new tab to load
+      setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    } catch (error) {
+      console.error('View error:', error);
+      alert('Failed to open document. The file may no longer exist on the server.');
+    }
   };
 
   const handleDownload = async (id, originalName) => {
@@ -334,7 +344,7 @@ export default function DocumentsPage() {
                         </td>
                         <td className={styles.actionsCol}>
                           <div className={styles.rowActions}>
-                            <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id)}><Eye size={12} /></button>
+                            <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id, doc.mime_type || doc.mimetype)}><Eye size={12} /></button>
                             <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id, doc.original_name)}><Download size={12} /></button>
                             <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                           </div>
@@ -370,7 +380,7 @@ export default function DocumentsPage() {
                     </td>
                     <td className={styles.actionsCol}>
                       <div className={styles.rowActions}>
-                        <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id)}><Eye size={12} /></button>
+                        <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id, doc.mime_type || doc.mimetype)}><Eye size={12} /></button>
                         <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id, doc.original_name)}><Download size={12} /></button>
                         <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                       </div>
