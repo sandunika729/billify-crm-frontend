@@ -682,18 +682,16 @@ export default function ReportsPage() {
         {}
         <div className={styles.reportsList}>
           {displayedReports.map(report => (
-            <div key={report.id} className={styles.reportCard}>
+            <div
+              key={report.id}
+              className={styles.reportCard}
+              onClick={() => setSelectedReport(report)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className={styles.reportInfo}>
                 <h3>{report.title}</h3>
                 <p>{report.description}</p>
               </div>
-              <button
-                className={styles.actionBtnPrimary}
-                onClick={() => setSelectedReport(report)}
-                title="View Report"
-              >
-                <Eye size={12} />
-              </button>
             </div>
           ))}
           

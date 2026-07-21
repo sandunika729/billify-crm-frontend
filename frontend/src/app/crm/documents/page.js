@@ -140,6 +140,11 @@ export default function DocumentsPage() {
     }
   };
 
+  const handleViewDocument = (id) => {
+    const url = documentService.getDownloadUrl(id);
+    window.open(url, '_blank');
+  };
+
   const handleDownload = async (id, originalName) => {
     try {
       const response = await documentService.downloadDocument(id);
@@ -329,6 +334,7 @@ export default function DocumentsPage() {
                         </td>
                         <td className={styles.actionsCol}>
                           <div className={styles.rowActions}>
+                            <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id)}><Eye size={12} /></button>
                             <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id, doc.original_name)}><Download size={12} /></button>
                             <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                           </div>
@@ -364,6 +370,7 @@ export default function DocumentsPage() {
                     </td>
                     <td className={styles.actionsCol}>
                       <div className={styles.rowActions}>
+                        <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id)}><Eye size={12} /></button>
                         <button className={`${styles.actionBtn} ${styles.downloadBtn}`} title="Download" onClick={() => handleDownload(doc.id, doc.original_name)}><Download size={12} /></button>
                         <button className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete" onClick={() => handleDeleteDoc(doc.id)}><Trash2 size={12} /></button>
                       </div>

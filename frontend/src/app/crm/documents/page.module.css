@@ -143,6 +143,9 @@
 .deleteBtn { color: #ef4444; }
 .deleteBtn:hover { background: rgba(239, 68, 68, 0.08); color: #dc2626; }
 
+.viewBtn { color: #10b981; }
+.viewBtn:hover { background: rgba(16, 185, 129, 0.08); color: #059669; }
+
 .emptyState { text-align: center; padding: 3rem !important; color: var(--color-text-muted); font-style: italic; }
 
 .modalOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
