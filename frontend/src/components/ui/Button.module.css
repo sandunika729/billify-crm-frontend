@@ -18,12 +18,12 @@
 }
 
 .primary {
-  background-color: var(--color-outline, #a72bdd);
+  background-color: var(--color-outline, #8b9be2);
   color: white;
 }
 
 .primary:hover:not(:disabled) {
-  background-color: var(--color-primary-dark, #9012d4);
+  background-color: var(--color-primary-dark, #7384d9);
 }
 
 .secondary {
@@ -48,12 +48,12 @@
 
 .outline {
   background-color: transparent;
-  border-color: var(--color-outline, #a72bdd);
-  color: var(--color-outline, #a72bdd);
+  border-color: var(--color-outline, #8b9be2);
+  color: var(--color-outline, #8b9be2);
 }
 
 .outline:hover:not(:disabled) {
-  background-color: var(--color-outline-hover, #f8f1fa);
+  background-color: var(--color-outline-hover, rgba(139, 155, 226, 0.1));
 }
 
 .ghost {

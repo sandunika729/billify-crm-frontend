@@ -15,7 +15,7 @@ import { alert, confirm } from '@/utils/alertService';
 const QUOTE_STATUSES = [
   { value: 'draft',     label: 'Draft',     color: '#64748b' },
   { value: 'sent',      label: 'Sent',      color: '#3b82f6' },
-  { value: 'viewed',    label: 'Viewed',    color: '#8b5cf6' },
+  { value: 'viewed',    label: 'Viewed',    color: '#8b9be2' },
   { value: 'accepted',  label: 'Accepted',  color: '#10b981' },
   { value: 'rejected',  label: 'Rejected',  color: '#ef4444' },
   { value: 'expired',   label: 'Expired',   color: '#f59e0b' },

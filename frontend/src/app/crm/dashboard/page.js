@@ -66,7 +66,7 @@ export default function CRMDashboard() {
     );
   }
 
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b9be2'];
   const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#64748b'];
   const PASTEL_COLORS = [
     '#a5b4fc', 

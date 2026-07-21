@@ -91,7 +91,7 @@
 }
 
 .tabBtn.active {
-  color: #8b5cf6;
+  color: var(--color-secondary, #8b9be2);
   background: rgba(139, 92, 246, 0.05);
 }
 

@@ -70,18 +70,18 @@ function buildSnippet(apiKey) {
   #crm-support-widget { max-width: 520px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
   .crm-tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
   .crm-tab-btn { padding: 10px 20px; background: none; border: none; font-size: 14px; font-weight: 600; cursor: pointer; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-  .crm-tab-btn.active { color: #8b5cf6; border-bottom-color: #8b5cf6; }
+  .crm-tab-btn.active { color: #8b9be2; border-bottom-color: #8b9be2; }
   .crm-tab-panel { display: none; }
   .crm-tab-panel.active { display: block; }
   #crm-support-widget form { display: flex; flex-direction: column; gap: 12px; }
   #crm-support-widget input, #crm-support-widget textarea { padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
-  #crm-support-widget button[type=submit], .crm-check-btn { padding: 10px 20px; background: #8b5cf6; color: #fff; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600; }
+  #crm-support-widget button[type=submit], .crm-check-btn { padding: 10px 20px; background: #8b9be2; color: #fff; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600; }
   #crm-support-widget button:hover, .crm-check-btn:hover { background: #7c3aed; }
   .crm-success { padding: 12px 16px; background: #d1fae5; border-radius: 6px; color: #065f46; font-size: 14px; display: none; margin-bottom: 12px; }
   .crm-error { padding: 12px 16px; background: #fee2e2; border-radius: 6px; color: #991b1b; font-size: 14px; display: none; margin-bottom: 12px; }
   .crm-thread { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
   .crm-msg { padding: 12px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
-  .crm-msg.agent { background: #ede9fe; color: #3b0764; align-self: flex-start; max-width: 85%; border-left: 3px solid #8b5cf6; }
+  .crm-msg.agent { background: #ede9fe; color: #3b0764; align-self: flex-start; max-width: 85%; border-left: 3px solid #8b9be2; }
   .crm-msg.customer { background: #f3f4f6; color: #111827; align-self: flex-end; max-width: 85%; border-right: 3px solid #9ca3af; }
   .crm-msg .crm-msg-meta { font-size: 11px; color: #6b7280; margin-bottom: 4px; font-weight: 600; }
   .crm-status-badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; margin-left: 8px; }
@@ -240,7 +240,7 @@ function buildSnippet(apiKey) {
   }
 
   function renderTicket(ticket, container) {
-    var statusColors = { open:'#3b82f6', in_progress:'#f59e0b', waiting_customer:'#8b5cf6', resolved:'#10b981', closed:'#6b7280' };
+    var statusColors = { open:'#3b82f6', in_progress:'#f59e0b', waiting_customer:'#8b9be2', resolved:'#10b981', closed:'#6b7280' };
     var statusLabels = { open:'Open', in_progress:'In Progress', waiting_customer:'Waiting on Customer', resolved:'Resolved', closed:'Closed' };
     var color = statusColors[ticket.status] || '#6b7280';
     var label = statusLabels[ticket.status] || ticket.status;

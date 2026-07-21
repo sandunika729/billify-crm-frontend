@@ -149,7 +149,7 @@
 .blueIcon { background-color: #eff6ff; color: #3b82f6; }
 .greenIcon { background-color: #ecfdf5; color: #10b981; }
 .orangeIcon { background-color: #fff7ed; color: #f97316; }
-.purpleIcon { background-color: #f5f3ff; color: #8b5cf6; }
+.purpleIcon { background-color: #f5f3ff; color: var(--color-secondary, #8b9be2); }
 
 .kpiIcon {
   width: 24px;

@@ -31,7 +31,7 @@
 
 .input:focus, .textarea:focus, .select:focus {
   outline: none !important;
-  border-color: #8b5cf6 !important;
+  border-color: var(--color-secondary, #8b9be2) !important;
   box-shadow: none !important;
 }
 

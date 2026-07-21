@@ -17,7 +17,7 @@ const activityColorMap = {
   meeting: '#ef4444',
   task: '#10b981',
   follow_up: '#f59e0b',
-  note: '#8b5cf6',
+  note: '#8b9be2',
   system: '#64748b',
   outlook: '#0078d4',
 };

@@ -21,7 +21,7 @@ import { alert, confirm } from '@/utils/alertService';
 const TICKET_STATUSES = [
   { value: 'open',             label: 'Open',                color: '#3b82f6' },
   { value: 'in_progress',      label: 'In Progress',         color: '#f59e0b' },
-  { value: 'waiting_customer', label: 'Waiting on Customer', color: '#8b5cf6' },
+  { value: 'waiting_customer', label: 'Waiting on Customer', color: '#8b9be2' },
   { value: 'resolved',         label: 'Resolved',            color: '#10b981' },
   { value: 'closed',           label: 'Closed',              color: '#64748b' },
 ];

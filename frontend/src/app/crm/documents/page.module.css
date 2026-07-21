@@ -82,7 +82,7 @@
 }
 
 .filterSelect:focus {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
   box-shadow: none;
 }
 
@@ -112,7 +112,7 @@
 
 .fileNameCell { display: flex; align-items: center; gap: 0.75rem; }
 .iconPdf { color: #ef4444; }
-.iconImage { color: #8b5cf6; }
+.iconImage { color: var(--color-secondary, #8b9be2); }
 .iconFile { color: #3b82f6; }
 .primaryText { font-weight: 500; color: var(--color-text-primary); font-size: 0.78rem; }
 
@@ -126,9 +126,9 @@
   font-weight: 600;
   text-transform: capitalize;
   white-space: nowrap;
-  background-color: rgba(139, 92, 246, 0.08);
-  color: #8b5cf6;
-  border: 1px solid rgba(139, 92, 246, 0.18);
+  background-color: var(--color-secondary-light, rgba(139, 155, 226, 0.1));
+  color: var(--color-secondary, #8b9be2);
+  border: 1px solid rgba(139, 155, 226, 0.18);
 }
 
 .sizeText { font-size: 0.78rem; color: var(--color-text-primary); font-weight: 400; }

@@ -48,7 +48,7 @@
 }
 
 .filterSelect:focus {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
   box-shadow: none;
 }
 
@@ -139,7 +139,7 @@
 
 .statusOpen { background: rgba(59, 130, 246, 0.1); color: var(--color-primary); }
 .statusInProgress { background: rgba(245, 158, 11, 0.1); color: var(--color-warning); }
-.statusWaiting { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.statusWaiting { background: rgba(139, 92, 246, 0.1); color: var(--color-secondary, #8b9be2); }
 .statusResolved { background: rgba(52, 211, 153, 0.1); color: #059669; }
 .statusClosed { background: rgba(107, 114, 128, 0.1); color: var(--color-text-secondary); }
 

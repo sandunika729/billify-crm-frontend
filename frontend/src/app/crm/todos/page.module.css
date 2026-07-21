@@ -41,7 +41,7 @@
 }
 
 .addInput:focus {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
 }
 
 .visibilityToggle {
@@ -62,8 +62,8 @@
 }
 
 .visibilityToggle:hover {
-  border-color: #8b5cf6;
-  color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
+  color: var(--color-secondary, #8b9be2);
 }
 
 .visibilityToggle.public {
@@ -99,8 +99,8 @@
 }
 
 .tabActive {
-  color: #8b5cf6;
-  border-bottom-color: #8b5cf6;
+  color: var(--color-secondary, #8b9be2);
+  border-bottom-color: var(--color-secondary, #8b9be2);
   font-weight: 600;
 }
 
@@ -110,8 +110,8 @@
   justify-content: center;
   width: 18px;
   height: 18px;
-  background: #8b5cf620;
-  color: #8b5cf6;
+  background: var(--color-secondary-light, rgba(139, 155, 226, 0.15));
+  color: var(--color-secondary, #8b9be2);
   font-size: 0.65rem;
   font-weight: 700;
   border-radius: 50%;

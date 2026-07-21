@@ -18,7 +18,7 @@ import { alert, confirm } from '@/utils/alertService';
 
 const ACTIVITY_TYPES = [
   { value: 'call', label: 'Call', icon: Phone, color: '#3b82f6' },
-  { value: 'email', label: 'Email', icon: Mail, color: '#8b5cf6' },
+  { value: 'email', label: 'Email', icon: Mail, color: '#8b9be2' },
   { value: 'meeting', label: 'Meeting', icon: Users, color: '#f59e0b' },
   { value: 'note', label: 'Note', icon: FileText, color: '#64748b' },
   { value: 'task', label: 'Task', icon: CheckSquare, color: '#10b981' },

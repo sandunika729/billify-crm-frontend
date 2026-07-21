@@ -131,9 +131,9 @@
 
 .inputWrapper input:focus {
   outline: none;
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 0 3px var(--color-secondary-light, rgba(139, 155, 226, 0.1));
 }
 
 .inputError {
@@ -156,7 +156,7 @@
 .submitButton {
   width: 100%;
   padding: 0.85rem;
-  background: #8b5cf6;
+  background: var(--color-secondary, #8b9be2);
   color: white;
   border: none;
   border-radius: 3px;
@@ -167,14 +167,14 @@
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.25),
-    0 2px 4px -1px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(139, 155, 226, 0.25),
+    0 2px 4px -1px var(--color-secondary-light, rgba(139, 155, 226, 0.1));
 }
 
 .submitButton:hover:not(:disabled) {
-  background: #7c3aed;
+  background: var(--color-secondary-hover, #7384d9);
   transform: translateY(-1px);
-  box-shadow: 0 6px 12px -1px rgba(139, 92, 246, 0.35);
+  box-shadow: 0 6px 12px -1px rgba(139, 155, 226, 0.35);
 }
 
 .submitButton:active:not(:disabled) {
@@ -218,14 +218,14 @@
 }
 
 .footer a {
-  color: #8b5cf6;
+  color: var(--color-secondary, #8b9be2);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .footer a:hover {
-  color: #7c3aed;
+  color: var(--color-secondary-hover, #7384d9);
 }
 
 @media (max-width: 480px) {
@@ -273,8 +273,8 @@
   width: 100%;
 }
 .companyButton:hover {
-  border-color: #8b5cf6;
-  background: #faf5ff;
+  border-color: var(--color-secondary, #8b9be2);
+  background: #f5f6ff;
 }
 .companyName {
   font-weight: 600;

@@ -44,7 +44,7 @@
 }
 
 .dateInput:focus {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
 }
 
 .searchInput {
@@ -108,9 +108,9 @@
 }
 
 .navItemActive {
-  background: rgba(139, 92, 246, 0.05);
-  border-left-color: #8b5cf6;
-  color: #8b5cf6;
+  background: rgba(139, 155, 226, 0.05);
+  border-left-color: var(--color-secondary, #8b9be2);
+  color: var(--color-secondary, #8b9be2);
 }
 
 .badge {

@@ -4,8 +4,14 @@
   --color-primary-hover: #2563EB;
   --color-primary-light: #EFF6FF;
   
-  --color-secondary: #8B5CF6;
+  --color-secondary: #8b9be2;
+  --color-secondary-hover: #7384d9;
+  --color-secondary-light: rgba(139, 155, 226, 0.1);
   --color-accent: #10B981;
+  
+  --color-outline: #8b9be2;
+  --color-primary-dark: #7384d9;
+  --color-outline-hover: rgba(139, 155, 226, 0.1);
 
   
   --color-bg-main: #F8FAFC;

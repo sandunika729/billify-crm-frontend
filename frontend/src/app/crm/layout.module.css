@@ -72,7 +72,7 @@
 .logoSubtext {
   font-weight: 600;
   font-size: 0.65rem;
-  color: #a72bdd;
+  color: var(--color-outline, #8b9be2);
   letter-spacing: 1px;
 }
 
@@ -136,7 +136,7 @@
 }
 
 .navItem.active {
-  background-color: #a72bdd;
+  background-color: var(--color-outline, #8b9be2);
   color: #ffffff;
 }
 

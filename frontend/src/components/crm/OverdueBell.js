@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 const TYPE_ICONS = {
   call:     { icon: Phone,       color: '#3b82f6' },
-  email:    { icon: Mail,        color: '#8b5cf6' },
+  email:    { icon: Mail,        color: '#8b9be2' },
   meeting:  { icon: Users,       color: '#f59e0b' },
   note:     { icon: FileText,    color: '#64748b' },
   task:     { icon: CheckSquare, color: '#10b981' },

@@ -330,7 +330,7 @@ export default function CustomerProfilePage() {
                 { label: 'Total Deal Value', value: `Rs. ${totalDealValue.toLocaleString()}`, color: '#0ea5e9' },
                 { label: 'Open Deals', value: openDeals, color: '#f59e0b' },
                 { label: 'Won Deals', value: wonDeals, color: '#10b981' },
-                { label: 'Total Quotes', value: totalQuotes, color: '#8b5cf6' },
+                { label: 'Total Quotes', value: totalQuotes, color: '#8b9be2' },
               ].map(stat => (
                 <div key={stat.label} style={{ flex: '1', minWidth: '120px', padding: '0.6rem 1rem', background: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '1.2rem', fontWeight: 700, color: stat.color }}>{stat.value}</div>

@@ -390,7 +390,7 @@ export default function ReportsPage() {
       case 'quote_status': {
         const qs = reportsData.quoteStatusBreakdown || {};
         const { breakdown = [], totalQuotes = 0 } = qs;
-        const STATUS_COLORS = { draft: '#94a3b8', sent: '#3b82f6', viewed: '#8b5cf6', accepted: '#10b981', rejected: '#ef4444', expired: '#f59e0b', converted: '#06b6d4' };
+        const STATUS_COLORS = { draft: '#94a3b8', sent: '#3b82f6', viewed: '#8b9be2', accepted: '#10b981', rejected: '#ef4444', expired: '#f59e0b', converted: '#06b6d4' };
         return (
           <div>
             <div className={styles.statSection}>

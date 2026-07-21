@@ -86,7 +86,7 @@
 
 .navItemActive {
   background: rgba(139, 92, 246, 0.05);
-  border-left-color: #8b5cf6;
+  border-left-color: var(--color-secondary, #8b9be2);
 }
 
 .navItemIcon {
@@ -104,7 +104,7 @@
 
 .navItemActive .navItemIcon {
   background: rgba(139, 92, 246, 0.12);
-  color: #8b5cf6;
+  color: var(--color-secondary, #8b9be2);
 }
 
 .navItemInfo {
@@ -222,7 +222,7 @@
 }
 
 .formInput:focus {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
   box-shadow: none;
 }
 
@@ -261,7 +261,7 @@
 }
 
 .logoPreviewBox:hover {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
 }
 
 .logoPreviewBox img {
@@ -300,8 +300,8 @@
   padding: 0.35rem 0.8rem;
   font-size: 0.7rem;
   font-weight: 600;
-  border: 1px solid #8b5cf6;
-  color: #8b5cf6;
+  border: 1px solid var(--color-secondary, #8b9be2);
+  color: var(--color-secondary, #8b9be2);
   background: transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -309,7 +309,7 @@
 }
 
 .logoUploadBtn:hover {
-  background: #8b5cf6;
+  background: var(--color-secondary, #8b9be2);
   color: #fff;
 }
 
@@ -386,7 +386,7 @@
 
 .cfTabActive {
   background: #ffffff;
-  color: #8b5cf6;
+  color: var(--color-secondary, #8b9be2);
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
 }
@@ -410,7 +410,7 @@
 }
 
 .fieldCard:hover {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
 }
 
 .fieldInfo {
@@ -523,7 +523,7 @@
 }
 
 .suggestedFieldCard:hover {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
   box-shadow: 0 2px 4px rgba(139, 92, 246, 0.1);
 }
 
@@ -532,7 +532,7 @@
   cursor: pointer;
   width: 16px;
   height: 16px;
-  accent-color: #8b5cf6;
+  accent-color: var(--color-secondary, #8b9be2);
 }
 
 .suggestedFieldInfo {
@@ -602,7 +602,7 @@
 .widgetStepNum {
   width: 20px;
   height: 20px;
-  background: #8b5cf6;
+  background: var(--color-secondary, #8b9be2);
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -664,8 +664,8 @@
 }
 
 .copyBtn:hover {
-  border-color: #8b5cf6;
-  color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
+  color: var(--color-secondary, #8b9be2);
 }
 
 .copyBtnSuccess {
@@ -797,7 +797,7 @@
 .widgetStepNum {
   width: 20px;
   height: 20px;
-  background: #8b5cf6;
+  background: var(--color-secondary, #8b9be2);
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -859,8 +859,8 @@
 }
 
 .copyBtn:hover {
-  border-color: #8b5cf6;
-  color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
+  color: var(--color-secondary, #8b9be2);
 }
 
 .copyBtnSuccess {
@@ -992,7 +992,7 @@
 .widgetStepNum {
   width: 20px;
   height: 20px;
-  background: #8b5cf6;
+  background: var(--color-secondary, #8b9be2);
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -1054,8 +1054,8 @@
 }
 
 .copyBtn:hover {
-  border-color: #8b5cf6;
-  color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
+  color: var(--color-secondary, #8b9be2);
 }
 
 .copyBtnSuccess {

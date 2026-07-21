@@ -16,7 +16,7 @@
 
 .contacted { background: rgba(16, 185, 129, 0.08); color: #10b981; }
 
-.qualified { background: rgba(139, 92, 246, 0.08); color: #8b5cf6; }
+.qualified { background: var(--color-secondary-light, rgba(139, 155, 226, 0.1)); color: var(--color-secondary, #8b9be2); }
 
 .disqualified { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
 
@@ -32,7 +32,7 @@
 
 .sent { background: rgba(59, 130, 246, 0.08); color: #3b82f6; }
 
-.viewed { background: rgba(139, 92, 246, 0.08); color: #8b5cf6; }
+.viewed { background: var(--color-secondary-light, rgba(139, 155, 226, 0.1)); color: var(--color-secondary, #8b9be2); }
 
 .accepted { background: rgba(16, 185, 129, 0.08); color: #10b981; }
 

@@ -88,7 +88,7 @@
 }
 
 .filterSelect:focus {
-  border-color: #8b5cf6;
+  border-color: var(--color-secondary, #8b9be2);
   box-shadow: none;
 }
 

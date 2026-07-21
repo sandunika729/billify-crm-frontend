@@ -41,7 +41,7 @@ const getInitials = (firstName, lastName, email) => {
 };
 
 const AVATAR_COLORS = [
-  '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b',
+  '#3b82f6', '#8b9be2', '#10b981', '#f59e0b',
   '#ef4444', '#06b6d4', '#f97316', '#ec4899',
 ];
 const getAvatarColor = (str) => {
@@ -143,7 +143,7 @@ export default function TeamMembersPage() {
     filteredUsers.forEach(u => {
       counts[u.role] = (counts[u.role] || 0) + 1;
     });
-    const PIE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#0ea5e9', '#8b5cf6', '#f43f5e', '#14b8a6'];
+    const PIE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#0ea5e9', '#8b9be2', '#f43f5e', '#14b8a6'];
     return Object.keys(counts).map((role, index) => {
       const cfg = getRoleCfg(role);
       return {
@@ -496,7 +496,7 @@ export default function TeamMembersPage() {
                       dataKey="value"
                     >
                       {roleDistribution.map((entry, index) => {
-                        const PIE_COLORS = ['#6366f1', '#a735bdff', '#3d7f97ff', '#ec4899', '#0ea5e9', '#8b5cf6', '#44bec4ff', '#1427b8ff'];
+                        const PIE_COLORS = ['#6366f1', '#a735bdff', '#3d7f97ff', '#ec4899', '#0ea5e9', '#8b9be2', '#44bec4ff', '#1427b8ff'];
                         return <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="transparent" />
                       })}
                     </Pie>
