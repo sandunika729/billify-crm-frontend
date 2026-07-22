@@ -86,18 +86,7 @@ export default function DealsPage() {
   });
 
   const [customFields, setCustomFields] = useState([]);
-  const [visibleColumns, setVisibleColumns] = useState(() => {
-    try {
-      const saved = localStorage.getItem('crm_deals_columns');
-      return saved ? JSON.parse(saved) : ['title', 'value', 'stage', 'status', 'expected_close', 'owner'];
-    } catch {
-      return ['title', 'value', 'stage', 'status', 'expected_close', 'owner'];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem('crm_deals_columns', JSON.stringify(visibleColumns));
-  }, [visibleColumns]);
+  const [visibleColumns, setVisibleColumns] = useState(['title', 'value', 'stage', 'status', 'expected_close', 'owner']);
 
   const handleColumnToggle = (colId) => {
     setVisibleColumns(prev => 

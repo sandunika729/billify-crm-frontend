@@ -51,18 +51,7 @@ export default function CustomersPage() {
   const [contextMenu, setContextMenu] = useState(null);
 
   const [customFields, setCustomFields] = useState([]);
-  const [visibleColumns, setVisibleColumns] = useState(() => {
-    try {
-      const saved = localStorage.getItem('crm_customers_columns');
-      return saved ? JSON.parse(saved) : ['name', 'contact', 'type', 'status', 'added_on'];
-    } catch {
-      return ['name', 'contact', 'type', 'status', 'added_on'];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem('crm_customers_columns', JSON.stringify(visibleColumns));
-  }, [visibleColumns]);
+  const [visibleColumns, setVisibleColumns] = useState(['name', 'contact', 'type', 'status', 'added_on']);
 
   const handleColumnToggle = (colId) => {
     setVisibleColumns(prev => 

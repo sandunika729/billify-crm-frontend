@@ -79,18 +79,7 @@ export default function LeadsPage() {
   });
 
   const [customFields, setCustomFields] = useState([]);
-  const [visibleColumns, setVisibleColumns] = useState(() => {
-    try {
-      const saved = localStorage.getItem('crm_leads_columns');
-      return saved ? JSON.parse(saved) : ['name', 'interest', 'value', 'status', 'temperature', 'follow_up', 'assigned_to'];
-    } catch {
-      return ['name', 'interest', 'value', 'status', 'temperature', 'follow_up', 'assigned_to'];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem('crm_leads_columns', JSON.stringify(visibleColumns));
-  }, [visibleColumns]);
+  const [visibleColumns, setVisibleColumns] = useState(['name', 'interest', 'value', 'status', 'temperature', 'follow_up', 'assigned_to']);
 
   const handleColumnToggle = (colId) => {
     setVisibleColumns(prev => 
