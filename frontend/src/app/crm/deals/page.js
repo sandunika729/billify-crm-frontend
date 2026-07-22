@@ -10,6 +10,7 @@ import ActivityPanel from '../../../components/crm/ActivityPanel';
 
 import customerService from '../../../services/customerService';
 import leadService from '../../../services/leadService';
+import customFieldService from '../../../services/customFieldService';
 import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import api from '../../../services/api';
 import Button from '../../../components/ui/Button';
@@ -17,6 +18,7 @@ import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
 import ContextMenu from '../../../components/ui/ContextMenu';
+import ColumnManager from '../../../components/ui/ColumnManager';
 import { useRouter } from 'next/navigation';
 import { alert, confirm } from '@/utils/alertService';
 
@@ -83,11 +85,41 @@ export default function DealsPage() {
     config_notify_message: ''
   });
 
+  const [customFields, setCustomFields] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    try {
+      const saved = localStorage.getItem('crm_deals_columns');
+      return saved ? JSON.parse(saved) : ['title', 'value', 'stage', 'status', 'expected_close', 'owner'];
+    } catch {
+      return ['title', 'value', 'stage', 'status', 'expected_close', 'owner'];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('crm_deals_columns', JSON.stringify(visibleColumns));
+  }, [visibleColumns]);
+
+  const handleColumnToggle = (colId) => {
+    setVisibleColumns(prev => 
+      prev.includes(colId) ? prev.filter(id => id !== colId) : [...prev, colId]
+    );
+  };
+
   useEffect(() => {
     fetchStages();
     fetchDeals();
     fetchCustomersAndLeads();
+    fetchCustomFields();
   }, []);
+
+  const fetchCustomFields = async () => {
+    try {
+      const res = await customFieldService.getFields('deal');
+      if (res.success) {
+        setCustomFields(res.data || []);
+      }
+    } catch (e) { console.error('Failed to fetch custom fields', e); }
+  };
 
   const fetchStages = async () => {
     try {
@@ -615,8 +647,27 @@ export default function DealsPage() {
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: '200px' }}>
-          <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search deals or customers..." label="" />
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: 1, minWidth: '200px' }}>
+          <SearchBar 
+            value={searchTerm} 
+            onChange={setSearchTerm} 
+            placeholder="Search deals by title or customer..." 
+            label="" 
+          />
+          {viewMode === 'table' && (
+            <ColumnManager 
+              columns={[
+                { id: 'title', label: 'Title', required: true },
+                { id: 'customer', label: 'Customer / Lead', required: false },
+                { id: 'value', label: 'Value', required: false },
+                { id: 'stage', label: 'Stage', required: false },
+                { id: 'expected_close', label: 'Expected Close', required: false },
+                ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
+              ]}
+              visibleColumns={visibleColumns}
+              onColumnToggle={handleColumnToggle}
+            />
+          )}
         </div>
       </div>
 
@@ -718,11 +769,14 @@ export default function DealsPage() {
                 <table className={styles.dealsTable}>
                   <thead>
                     <tr>
-                      <th>Title</th>
-                      <th>Customer / Lead</th>
-                      <th>Value</th>
-                      <th>Stage</th>
-                      <th>Expected Close</th>
+                      {visibleColumns.includes('title') && <th>Title</th>}
+                      {visibleColumns.includes('customer') && <th>Customer / Lead</th>}
+                      {visibleColumns.includes('value') && <th>Value</th>}
+                      {visibleColumns.includes('stage') && <th>Stage</th>}
+                      {visibleColumns.includes('expected_close') && <th>Expected Close</th>}
+                      {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                        <th key={cf.id}>{cf.label}</th>
+                      ))}
                       <th style={{ width: '120px' }}>Actions</th>
                     </tr>
                   </thead>
@@ -742,37 +796,50 @@ export default function DealsPage() {
                             style={deal.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
                             onContextMenu={(e) => handleContextMenu(e, deal)}
                           >
-                            <td>
-                              <div className={styles.viewToggleContainer}>
-                                <div className={styles.avatar} style={{ width: '25px', height: '25px', minWidth: '25px', fontSize: '0.65rem', marginRight: '0.75rem', borderRadius: '50%', background: 'var(--color-primary-light, #e8f0fe)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>
-                                  {deal.title.substring(0, 2).toUpperCase()}
+                            {visibleColumns.includes('title') && (
+                              <td>
+                                <div className={styles.viewToggleContainer}>
+                                  <div className={styles.avatar} style={{ width: '25px', height: '25px', minWidth: '25px', fontSize: '0.65rem', marginRight: '0.75rem', borderRadius: '50%', background: 'var(--color-primary-light, #e8f0fe)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>
+                                    {deal.title.substring(0, 2).toUpperCase()}
+                                  </div>
+                                  <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>{deal.title}</span>
                                 </div>
-                                <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>{deal.title}</span>
-                              </div>
-                            </td>
-                            <td>
-                              {deal.customer?.name || deal.lead?.name || 'N/A'}
-                            </td>
-                            <td style={{ whiteSpace: 'nowrap' }}>
-                              {deal.value_lkr ? `Rs. ${Number(deal.value_lkr).toLocaleString()}` : '-'}
-                            </td>
-                            <td>
-                              {stage ? (
-                                <span 
-                                  className={styles.stageBadge}
-                                  style={{
-                                    backgroundColor: stage.color ? `${stage.color}1A` : undefined,
-                                    color: stage.color || undefined,
-                                    borderColor: stage.color ? `${stage.color}2E` : undefined,
-                                  }}
-                                >
-                                  {stage.name}
-                                </span>
-                              ) : '-'}
-                            </td>
-                            <td>
-                              {deal.expected_close_at ? new Date(deal.expected_close_at).toLocaleDateString() : 'N/A'}
-                            </td>
+                              </td>
+                            )}
+                            {visibleColumns.includes('customer') && (
+                              <td>
+                                {deal.customer?.name || deal.lead?.name || 'N/A'}
+                              </td>
+                            )}
+                            {visibleColumns.includes('value') && (
+                              <td style={{ whiteSpace: 'nowrap' }}>
+                                {deal.value_lkr ? `Rs. ${Number(deal.value_lkr).toLocaleString()}` : '-'}
+                              </td>
+                            )}
+                            {visibleColumns.includes('stage') && (
+                              <td>
+                                {stage ? (
+                                  <span 
+                                    className={styles.stageBadge}
+                                    style={{
+                                      backgroundColor: stage.color ? `${stage.color}1A` : undefined,
+                                      color: stage.color || undefined,
+                                      borderColor: stage.color ? `${stage.color}2E` : undefined,
+                                    }}
+                                  >
+                                    {stage.name}
+                                  </span>
+                                ) : '-'}
+                              </td>
+                            )}
+                            {visibleColumns.includes('expected_close') && (
+                              <td>
+                                {deal.expected_close_at ? new Date(deal.expected_close_at).toLocaleDateString() : 'N/A'}
+                              </td>
+                            )}
+                            {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                              <td key={cf.id}>{deal.custom_fields?.[cf.name] || '-'}</td>
+                            ))}
                             <td className={styles.actionsCol}>
                               <div className={styles.tableActions}>
                                 <button 

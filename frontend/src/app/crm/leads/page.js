@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import leadService from '../../../services/leadService';
 import customerService from '../../../services/customerService';
+import customFieldService from '../../../services/customFieldService';
 import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import api from '../../../services/api';
 import styles from './page.module.css';
@@ -18,6 +19,7 @@ import FormField from '../../../components/forms/FormField';
 import Badge from '../../../components/ui/Badge';
 import SearchBar from '@/components/ui/SearchBar';
 import ContextMenu from '../../../components/ui/ContextMenu';
+import ColumnManager from '../../../components/ui/ColumnManager';
 import { alert, confirm } from '@/utils/alertService';
 
 export default function LeadsPage() {
@@ -76,6 +78,26 @@ export default function LeadsPage() {
     custom_fields: {}
   });
 
+  const [customFields, setCustomFields] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    try {
+      const saved = localStorage.getItem('crm_leads_columns');
+      return saved ? JSON.parse(saved) : ['name', 'interest', 'value', 'status', 'temperature', 'follow_up', 'assigned_to'];
+    } catch {
+      return ['name', 'interest', 'value', 'status', 'temperature', 'follow_up', 'assigned_to'];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('crm_leads_columns', JSON.stringify(visibleColumns));
+  }, [visibleColumns]);
+
+  const handleColumnToggle = (colId) => {
+    setVisibleColumns(prev => 
+      prev.includes(colId) ? prev.filter(id => id !== colId) : [...prev, colId]
+    );
+  };
+
   const router = useRouter();
 
   useEffect(() => {
@@ -83,7 +105,17 @@ export default function LeadsPage() {
     fetchCustomers();
     fetchDealStages();
     fetchUsers();
+    fetchCustomFields();
   }, []);
+
+  const fetchCustomFields = async () => {
+    try {
+      const res = await customFieldService.getFields('lead');
+      if (res.success) {
+        setCustomFields(res.data || []);
+      }
+    } catch (e) { console.error('Failed to fetch custom fields', e); }
+  };
 
   const fetchDealStages = async () => {
     try {
@@ -585,8 +617,24 @@ export default function LeadsPage() {
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: '200px' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: 1, minWidth: '200px' }}>
           <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search leads..." label="" />
+          {viewMode === 'table' && (
+            <ColumnManager 
+              columns={[
+                { id: 'name', label: 'Contact Name', required: true },
+                { id: 'interest', label: 'Interest', required: false },
+                { id: 'value', label: 'Estimated Value', required: false },
+                { id: 'status', label: 'Status', required: false },
+                { id: 'temperature', label: 'Temperature', required: false },
+                { id: 'follow_up', label: 'Follow Up', required: false },
+                { id: 'assigned_to', label: 'Assigned To', required: false },
+                ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
+              ]}
+              visibleColumns={visibleColumns}
+              onColumnToggle={handleColumnToggle}
+            />
+          )}
         </div>
       </div>}
 
@@ -695,24 +743,27 @@ export default function LeadsPage() {
                       className={styles.checkboxInput}
                     />
                   </th>
-                  <th>Contact Name</th>
-                  <th>Interest</th>
-                  <th>Estimated Value</th>
-                  <th>Status</th>
-                  <th>Temperature</th>
-                  <th>Follow Up</th>
-                  <th>Assigned To</th>
+                  {visibleColumns.includes('name') && <th>Contact Name</th>}
+                  {visibleColumns.includes('interest') && <th>Interest</th>}
+                  {visibleColumns.includes('value') && <th>Estimated Value</th>}
+                  {visibleColumns.includes('status') && <th>Status</th>}
+                  {visibleColumns.includes('temperature') && <th>Temperature</th>}
+                  {visibleColumns.includes('follow_up') && <th>Follow Up</th>}
+                  {visibleColumns.includes('assigned_to') && <th>Assigned To</th>}
+                  {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                    <th key={cf.id}>{cf.label}</th>
+                  ))}
                   <th className={styles.actionsCol}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="9" className={styles.emptyState}>Loading leads...</td>
+                    <td colSpan="10" className={styles.emptyState}>Loading leads...</td>
                   </tr>
                 ) : filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan="9" className={styles.emptyState}>
+                    <td colSpan="10" className={styles.emptyState}>
                       No leads found. Click "New Lead" to add one.
                     </td>
                   </tr>
@@ -732,56 +783,73 @@ export default function LeadsPage() {
                           className={styles.checkboxInput}
                         />
                       </td>
-                      <td>
-                        <div className={styles.viewToggleContainer}>
-                          <div className={styles.avatar}>
-                            {lead.name.substring(0, 2).toUpperCase()}
+                      {visibleColumns.includes('name') && (
+                        <td>
+                          <div className={styles.viewToggleContainer}>
+                            <div className={styles.avatar}>
+                              {lead.name.substring(0, 2).toUpperCase()}
+                            </div>
+                            <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                              {lead.name}
+                            </span>
                           </div>
-                          <span style={{ fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
-                            {lead.name}
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        {lead.interest || 'Unknown'}
-                      </td>
-                      <td>
-                        {lead.estimated_value_lkr ? `Rs. ${Number(lead.estimated_value_lkr).toLocaleString()}` : '-'}
-                      </td>
-                      <td>
-                        <Badge variant={lead.status} hasDot={true}>{lead.status.replace('_', ' ')}</Badge>
-                      </td>
-                      <td>
-                        <Badge variant={lead.temperature || 'cold'} hasDot={true}>{lead.temperature || 'cold'}</Badge>
-                      </td>
-                      <td>
-                        {lead.next_follow_up_at ? new Date(lead.next_follow_up_at).toLocaleDateString() : 'Not Set'}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                          {(lead.assignees || []).slice(0, 3).map(a => (
-                            <div
-                              key={a.id}
-                              title={`${a.first_name} ${a.last_name}`}
-                              style={{
-                                width: '22px', height: '22px', borderRadius: '50%',
-                                background: '#e8f0fe', color: '#4f46e5',
-                                fontSize: '0.55rem', fontWeight: 700,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                border: '1.5px solid #fff', marginLeft: '-4px'
-                              }}
-                            >
-                              {a.first_name?.[0]}{a.last_name?.[0]}
-                            </div>
-                          ))}
-                          {(lead.assignees || []).length > 3 && (
-                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9', color: '#64748b', fontSize: '0.55rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-4px' }}>
-                              +{(lead.assignees || []).length - 3}
-                            </div>
-                          )}
-                          {(lead.assignees || []).length === 0 && <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>—</span>}
-                        </div>
-                      </td>
+                        </td>
+                      )}
+                      {visibleColumns.includes('interest') && (
+                        <td>
+                          {lead.interest || 'Unknown'}
+                        </td>
+                      )}
+                      {visibleColumns.includes('value') && (
+                        <td>
+                          {lead.estimated_value_lkr ? `Rs. ${Number(lead.estimated_value_lkr).toLocaleString()}` : '-'}
+                        </td>
+                      )}
+                      {visibleColumns.includes('status') && (
+                        <td>
+                          <Badge variant={lead.status} hasDot={true}>{lead.status.replace('_', ' ')}</Badge>
+                        </td>
+                      )}
+                      {visibleColumns.includes('temperature') && (
+                        <td>
+                          <Badge variant={lead.temperature || 'cold'} hasDot={true}>{lead.temperature || 'cold'}</Badge>
+                        </td>
+                      )}
+                      {visibleColumns.includes('follow_up') && (
+                        <td>
+                          {lead.next_follow_up_at ? new Date(lead.next_follow_up_at).toLocaleDateString() : 'Not Set'}
+                        </td>
+                      )}
+                      {visibleColumns.includes('assigned_to') && (
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                            {(lead.assignees || []).slice(0, 3).map(a => (
+                              <div
+                                key={a.id}
+                                title={`${a.first_name} ${a.last_name}`}
+                                style={{
+                                  width: '22px', height: '22px', borderRadius: '50%',
+                                  background: '#e8f0fe', color: '#4f46e5',
+                                  fontSize: '0.55rem', fontWeight: 700,
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  border: '1.5px solid #fff', marginLeft: '-4px'
+                                }}
+                              >
+                                {a.first_name?.[0]}{a.last_name?.[0]}
+                              </div>
+                            ))}
+                            {(lead.assignees || []).length > 3 && (
+                              <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9', color: '#64748b', fontSize: '0.55rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-4px' }}>
+                                +{(lead.assignees || []).length - 3}
+                              </div>
+                            )}
+                            {(lead.assignees || []).length === 0 && <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>—</span>}
+                          </div>
+                        </td>
+                      )}
+                      {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                        <td key={cf.id}>{lead.custom_fields?.[cf.name] || '-'}</td>
+                      ))}
                       <td className={styles.actionsCol}>
                         <div className={styles.tableActions}>
                           <button

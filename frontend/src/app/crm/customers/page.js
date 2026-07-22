@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import customerService from '../../../services/customerService';
+import customFieldService from '../../../services/customFieldService';
 import styles from './page.module.css';
 import Link from 'next/link';
 import FormField from '../../../components/forms/FormField';
@@ -15,6 +16,7 @@ import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import ContextMenu from '../../../components/ui/ContextMenu';
+import ColumnManager from '../../../components/ui/ColumnManager';
 import { alert, confirm } from '@/utils/alertService';
 
 export default function CustomersPage() {
@@ -48,6 +50,26 @@ export default function CustomersPage() {
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
 
+  const [customFields, setCustomFields] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    try {
+      const saved = localStorage.getItem('crm_customers_columns');
+      return saved ? JSON.parse(saved) : ['name', 'contact', 'type', 'status', 'added_on'];
+    } catch {
+      return ['name', 'contact', 'type', 'status', 'added_on'];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('crm_customers_columns', JSON.stringify(visibleColumns));
+  }, [visibleColumns]);
+
+  const handleColumnToggle = (colId) => {
+    setVisibleColumns(prev => 
+      prev.includes(colId) ? prev.filter(id => id !== colId) : [...prev, colId]
+    );
+  };
+
   const handleContextMenu = (e, customer) => {
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY, record: customer });
@@ -56,7 +78,17 @@ export default function CustomersPage() {
   useEffect(() => {
     fetchCustomers();
     fetchPosCustomers();
+    fetchCustomFields();
   }, []);
+
+  const fetchCustomFields = async () => {
+    try {
+      const res = await customFieldService.getFields('customer');
+      if (res.success) {
+        setCustomFields(res.data || []);
+      }
+    } catch (e) { console.error('Failed to fetch custom fields', e); }
+  };
 
   const fetchCustomers = async () => {
     setLoading(true);
@@ -302,6 +334,18 @@ export default function CustomersPage() {
             placeholder="Search by name, email..." 
             label=""
           />
+          <ColumnManager 
+            columns={[
+              { id: 'name', label: 'Name / Company', required: true },
+              { id: 'contact', label: 'Contact Info', required: false },
+              { id: 'type', label: 'Type', required: false },
+              { id: 'status', label: 'Status', required: false },
+              { id: 'added_on', label: 'Added On', required: false },
+              ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
+            ]}
+            visibleColumns={visibleColumns}
+            onColumnToggle={handleColumnToggle}
+          />
         </div>
         
         <FilterSelect
@@ -349,11 +393,14 @@ export default function CustomersPage() {
           <table className={styles.customerTable}>
             <thead>
               <tr>
-                <th>Name / Company</th>
-                <th>Contact Info</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Added On</th>
+                {visibleColumns.includes('name') && <th>Name / Company</th>}
+                {visibleColumns.includes('contact') && <th>Contact Info</th>}
+                {visibleColumns.includes('type') && <th>Type</th>}
+                {visibleColumns.includes('status') && <th>Status</th>}
+                {visibleColumns.includes('added_on') && <th>Added On</th>}
+                {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                  <th key={cf.id}>{cf.label}</th>
+                ))}
                 <th className={styles.actionsCol}>Actions</th>
               </tr>
             </thead>
@@ -375,34 +422,47 @@ export default function CustomersPage() {
                     onContextMenu={(e) => handleContextMenu(e, customer)}
                     style={customer.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
                   >
-                    <td>
-                      <div className={styles.viewToggleContainer}>
-                        <div className={styles.avatar}>
-                          {customer.name.substring(0, 2).toUpperCase()}
+                    {visibleColumns.includes('name') && (
+                      <td>
+                        <div className={styles.viewToggleContainer}>
+                          <div className={styles.avatar}>
+                            {customer.name.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <span className={styles.primaryTextLink}>
+                              {customer.name}
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <span className={styles.primaryTextLink}>
-                            {customer.name}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      {customer.phone || '-'}
-                    </td>
-                    <td>
-                      <Badge variant={getTypeVariant(customer.type || 'retail')}>
-                        {customer.type || 'retail'}
-                      </Badge>
-                    </td>
-                    <td>
-                      <Badge variant={statusVariant(customer.status || 'active')}>
-                        {customer.status || 'active'}
-                      </Badge>
-                    </td>
-                    <td>
-                      {customer.created_at ? new Date(customer.created_at).toLocaleDateString() : 'N/A'}
-                    </td>
+                      </td>
+                    )}
+                    {visibleColumns.includes('contact') && (
+                      <td>
+                        {customer.phone || '-'}
+                      </td>
+                    )}
+                    {visibleColumns.includes('type') && (
+                      <td>
+                        <Badge variant={getTypeVariant(customer.type || 'retail')}>
+                          {customer.type || 'retail'}
+                        </Badge>
+                      </td>
+                    )}
+                    {visibleColumns.includes('status') && (
+                      <td>
+                        <Badge variant={statusVariant(customer.status || 'active')}>
+                          {customer.status || 'active'}
+                        </Badge>
+                      </td>
+                    )}
+                    {visibleColumns.includes('added_on') && (
+                      <td>
+                        {customer.created_at ? new Date(customer.created_at).toLocaleDateString() : 'N/A'}
+                      </td>
+                    )}
+                    {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                      <td key={cf.id}>{customer.custom_fields?.[cf.name] || '-'}</td>
+                    ))}
                     <td className={styles.actionsCol}>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         <button 
