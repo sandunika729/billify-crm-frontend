@@ -314,26 +314,14 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <div className={styles.filtersBar}>
-        <div style={{ flex: 1, minWidth: '300px' }}>
+      <div className={styles.filtersBar} style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: '200px' }}>
           <SearchBar 
             id="customer-search"
             value={searchTerm} 
             onChange={setSearchTerm} 
             placeholder="Search by name, email..." 
             label=""
-          />
-          <ColumnManager 
-            columns={[
-              { id: 'name', label: 'Name / Company', required: true },
-              { id: 'contact', label: 'Contact Info', required: false },
-              { id: 'type', label: 'Type', required: false },
-              { id: 'status', label: 'Status', required: false },
-              { id: 'added_on', label: 'Added On', required: false },
-              ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
-            ]}
-            visibleColumns={visibleColumns}
-            onColumnToggle={handleColumnToggle}
           />
         </div>
         
@@ -374,6 +362,19 @@ export default function CustomersPage() {
             <Flag size={12} strokeWidth={1.5} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
           </button>
         </div>
+
+        <ColumnManager 
+          columns={[
+            { id: 'name', label: 'Name / Company', required: true },
+            { id: 'contact', label: 'Contact Info', required: false },
+            { id: 'type', label: 'Type', required: false },
+            { id: 'status', label: 'Status', required: false },
+            { id: 'added_on', label: 'Added On', required: false },
+            ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
+          ]}
+          visibleColumns={visibleColumns}
+          onColumnToggle={handleColumnToggle}
+        />
       </div>
 
       <div className={styles.tableCard}>
