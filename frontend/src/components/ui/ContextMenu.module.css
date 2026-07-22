@@ -1,42 +1,69 @@
-.menu {
+.backdrop {
   position: fixed;
-  z-index: 10000;
-  background: var(--color-bg-card, #ffffff);
+  inset: 0;
+  z-index: 9998;
+}
+
+.contextMenu {
+  position: fixed;
+  z-index: 9999;
+  background-color: var(--color-bg-card, #ffffff);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: var(--radius-md, 6px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  padding: 0.25rem;
   min-width: 160px;
+  padding: 0.35rem;
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.15rem;
+  animation: fadeIn 0.1s ease-out;
 }
 
 .menuItem {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
+  width: 100%;
   padding: 0.5rem 0.75rem;
   border: none;
   background: transparent;
-  border-radius: var(--radius-sm, 4px);
-  color: var(--color-text-primary, #0f172a);
-  font-size: 0.75rem;
+  color: var(--color-text-primary, #1e293b);
+  font-size: 0.8rem;
   font-weight: 500;
-  cursor: pointer;
-  width: 100%;
   text-align: left;
-  transition: background 0.15s;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast, 0.15s), color var(--transition-fast, 0.15s);
 }
 
-.menuItem:hover {
-  background: var(--color-bg-hover, #f8fafc);
+.menuItem:hover:not(:disabled) {
+  background-color: var(--color-bg-hover, #f1f5f9);
+}
+
+.menuItem:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .menuItem.danger {
   color: var(--color-danger, #ef4444);
 }
 
-.menuItem.danger:hover {
-  background: var(--color-danger-bg, #fee2e2);
+.menuItem.danger:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

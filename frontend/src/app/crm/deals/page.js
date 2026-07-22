@@ -16,16 +16,14 @@ import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
+import ContextMenu from '../../../components/ui/ContextMenu';
 import { useRouter } from 'next/navigation';
 import { alert, confirm } from '@/utils/alertService';
-import ContextMenu from '../../../components/ui/ContextMenu';
-import useContextMenu from '../../../hooks/useContextMenu';
 
 export default function DealsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [deals, setDeals] = useState([]);
-  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
   const [stages, setStages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [draggedDealId, setDraggedDealId] = useState(null);
@@ -56,6 +54,12 @@ export default function DealsPage() {
 
   const [dealToEdit, setDealToEdit] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const handleContextMenu = (e, deal) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, record: deal });
+  };
 
   const [viewDeal, setViewDeal] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -293,56 +297,6 @@ export default function DealsPage() {
       fetchDeals();
     }
   };
-
-  const handleEditClick = (deal) => {
-    setDealToEdit(deal);
-    setFormData({
-      title: deal.title || '',
-      customer_id: deal.customer_id || '',
-      lead_id: deal.lead_id || '',
-      value_lkr: deal.value_lkr || '',
-      stage_id: deal.stage_id || '',
-      expected_close_at: (deal.expected_close_at && !isNaN(new Date(deal.expected_close_at).getTime())) ? new Date(deal.expected_close_at).toISOString().split('T')[0] : '',
-      notes: deal.notes || ''
-    });
-    let parsedList = [];
-    if (typeof deal.products_interest === 'string') {
-      try { parsedList = JSON.parse(deal.products_interest); } catch (e) {}
-    } else if (Array.isArray(deal.products_interest)) {
-      parsedList = deal.products_interest;
-    }
-    setSelectedProducts(parsedList);
-    setIsModalOpen(true);
-  };
-
-  const getDealActions = (deal) => [
-    {
-      label: deal.flag_status === 'flagged' ? 'Mark Completed' : deal.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
-      icon: Flag,
-      onClick: () => handleToggleFlag({ stopPropagation: () => {} }, deal)
-    },
-    {
-      label: 'View Details',
-      icon: Eye,
-      onClick: () => { setViewDeal(deal); setIsDetailModalOpen(true); }
-    },
-    deal.status !== 'won' && deal.status !== 'lost' && {
-      label: 'Create Quote',
-      icon: FileText,
-      onClick: () => handleCreateQuoteFromDeal(deal)
-    },
-    {
-      label: 'Edit',
-      icon: Edit2,
-      onClick: () => handleEditClick(deal)
-    },
-    {
-      label: 'Delete',
-      icon: Trash2,
-      danger: true,
-      onClick: () => handleDeleteDeal(deal.id)
-    }
-  ];
 
   const filteredDeals = deals.filter(deal => {
     if (showFlaggedOnly && deal.flag_status !== 'flagged') return false;
@@ -785,8 +739,8 @@ export default function DealsPage() {
                         return (
                           <tr 
                             key={deal.id}
-                            style={deal.flag_status === 'flagged' ? { backgroundColor: '#fafafd' } : undefined}
-                            onContextMenu={(e) => showContextMenu(e, getDealActions(deal))}
+                            style={deal.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
+                            onContextMenu={(e) => handleContextMenu(e, deal)}
                           >
                             <td>
                               <div className={styles.viewToggleContainer}>
@@ -840,7 +794,26 @@ export default function DealsPage() {
                                     <FileText size={12} />
                                   </button>
                                 )}
-                                <button className={styles.actionBtn} onClick={() => handleEditClick(deal)} title="Edit">
+                                <button className={styles.actionBtn} onClick={() => {
+                                  setDealToEdit(deal);
+                                  setFormData({
+                                    title: deal.title || '',
+                                    customer_id: deal.customer_id || '',
+                                    lead_id: deal.lead_id || '',
+                                    value_lkr: deal.value_lkr || '',
+                                    stage_id: deal.stage_id || '',
+                                    expected_close_at: (deal.expected_close_at && !isNaN(new Date(deal.expected_close_at).getTime())) ? new Date(deal.expected_close_at).toISOString().split('T')[0] : '',
+                                    notes: deal.notes || ''
+                                  });
+                                  let parsedList = [];
+                                  if (typeof deal.products_interest === 'string') {
+                                    try { parsedList = JSON.parse(deal.products_interest); } catch (e) {}
+                                  } else if (Array.isArray(deal.products_interest)) {
+                                    parsedList = deal.products_interest;
+                                  }
+                                  setSelectedProducts(parsedList);
+                                  setIsModalOpen(true);
+                                }} title="Edit">
                                   <Edit2 size={12} />
                                 </button>
                                 <button className={styles.actionBtnDelete} onClick={() => handleDeleteDeal(deal.id)} title="Delete">
@@ -1246,12 +1219,42 @@ export default function DealsPage() {
           </div>
         </form>
       </Modal>
-      <ContextMenu
-        isOpen={contextMenu.isOpen}
-        position={contextMenu.position}
-        actions={contextMenu.actions}
-        onClose={closeContextMenu}
-      />
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          items={[
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: 'View Details', icon: Eye, onClick: () => { setViewDeal(contextMenu.record); setIsDetailModalOpen(true); } },
+            ...(contextMenu.record.status !== 'won' && contextMenu.record.status !== 'lost' ? [
+              { label: 'Create Quote', icon: FileText, onClick: () => handleCreateQuoteFromDeal(contextMenu.record) }
+            ] : []),
+            { label: 'Edit Deal', icon: Edit2, onClick: () => {
+              setDealToEdit(contextMenu.record);
+              setFormData({
+                title: contextMenu.record.title || '',
+                customer_id: contextMenu.record.customer_id || '',
+                lead_id: contextMenu.record.lead_id || '',
+                value_lkr: contextMenu.record.value_lkr || '',
+                stage_id: contextMenu.record.stage_id || '',
+                expected_close_at: (contextMenu.record.expected_close_at && !isNaN(new Date(contextMenu.record.expected_close_at).getTime())) ? new Date(contextMenu.record.expected_close_at).toISOString().split('T')[0] : '',
+                notes: contextMenu.record.notes || ''
+              });
+              let parsedList = [];
+              if (typeof contextMenu.record.products_interest === 'string') {
+                try { parsedList = JSON.parse(contextMenu.record.products_interest); } catch (e) {}
+              } else if (Array.isArray(contextMenu.record.products_interest)) {
+                parsedList = contextMenu.record.products_interest;
+              }
+              setSelectedProducts(parsedList);
+              setIsModalOpen(true);
+            }},
+            { label: 'Delete', icon: Trash2, onClick: () => handleDeleteDeal(contextMenu.record.id), variant: 'danger' }
+          ]}
+        />
+      )}
     </div>
   );
 }

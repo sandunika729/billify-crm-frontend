@@ -10,9 +10,8 @@ import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
-import { alert, confirm } from '@/utils/alertService';
 import ContextMenu from '../../../components/ui/ContextMenu';
-import useContextMenu from '../../../hooks/useContextMenu';
+import { alert, confirm } from '@/utils/alertService';
 
 export default function DocumentsPage() {
   const { user } = useAuth();
@@ -24,13 +23,18 @@ export default function DocumentsPage() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
 
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadCategory, setUploadCategory] = useState('internal');
   const [uploadVisibility, setUploadVisibility] = useState('internal');
   const [isUploading, setIsUploading] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const handleContextMenu = (e, doc) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, record: doc });
+  };
 
   useEffect(() => {
     fetchDocuments();
@@ -180,25 +184,6 @@ export default function DocumentsPage() {
     }
   };
 
-  const getDocumentActions = (doc) => [
-    {
-      label: 'View',
-      icon: Eye,
-      onClick: () => handleViewDocument(doc.id, doc.mime_type || doc.mimetype)
-    },
-    {
-      label: 'Download',
-      icon: Download,
-      onClick: () => handleDownload(doc.id, doc.original_name)
-    },
-    {
-      label: 'Delete',
-      icon: Trash2,
-      danger: true,
-      onClick: () => handleDeleteDoc(doc.id)
-    }
-  ];
-
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
@@ -342,7 +327,11 @@ export default function DocumentsPage() {
                     </tr>
                     {/* Group rows */}
                     {!collapsedGroups[groupLabel] && docs.map(doc => (
-                      <tr key={doc.id} onContextMenu={(e) => showContextMenu(e, getDocumentActions(doc))}>
+                      <tr 
+                        key={doc.id}
+                        onContextMenu={(e) => handleContextMenu(e, doc)}
+                        style={doc.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
+                      >
                         <td>
                           <div className={styles.fileNameCell}>
                             <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
@@ -378,7 +367,11 @@ export default function DocumentsPage() {
               ) : (
                 
                 filteredDocs.map(doc => (
-                  <tr key={doc.id} onContextMenu={(e) => showContextMenu(e, getDocumentActions(doc))}>
+                  <tr 
+                    key={doc.id}
+                    onContextMenu={(e) => handleContextMenu(e, doc)}
+                    style={doc.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
+                  >
                     <td>
                       <div className={styles.fileNameCell}>
                         <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
@@ -454,12 +447,19 @@ export default function DocumentsPage() {
           </div>
         </div>
       </Modal>
-      <ContextMenu
-        isOpen={contextMenu.isOpen}
-        position={contextMenu.position}
-        actions={contextMenu.actions}
-        onClose={closeContextMenu}
-      />
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          items={[
+            { label: 'View Document', icon: Eye, onClick: () => handleViewDocument(contextMenu.record.id, contextMenu.record.mime_type || contextMenu.record.mimetype) },
+            { label: 'Download', icon: Download, onClick: () => handleDownload(contextMenu.record.id, contextMenu.record.original_name) },
+            { label: 'Delete', icon: Trash2, onClick: () => handleDeleteDoc(contextMenu.record.id), variant: 'danger' }
+          ]}
+        />
+      )}
     </div>
   );
 }

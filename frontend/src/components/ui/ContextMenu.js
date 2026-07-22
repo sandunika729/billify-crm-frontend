@@ -1,65 +1,65 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './ContextMenu.module.css';
 
-export default function ContextMenu({ isOpen, position, actions, onClose }) {
+/**
+ * @param {Object} props
+ * @param {number} props.x - X coordinate for the menu
+ * @param {number} props.y - Y coordinate for the menu
+ * @param {Function} props.onClose - Callback to close the menu
+ * @param {Array} props.items - Array of objects { label, icon: Icon, onClick, variant, disabled }
+ */
+export default function ContextMenu({ x, y, onClose, items }) {
   const menuRef = useRef(null);
+  const [position, setPosition] = useState({ top: y, left: x });
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        onClose();
+    // Adjust position if it goes off-screen
+    if (menuRef.current) {
+      const rect = menuRef.current.getBoundingClientRect();
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      let newLeft = x;
+      let newTop = y;
+
+      if (x + rect.width > windowWidth) {
+        newLeft = windowWidth - rect.width - 10;
       }
-    }
-    
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
+      
+      if (y + rect.height > windowHeight) {
+        newTop = windowHeight - rect.height - 10;
+      }
 
-  if (!isOpen) return null;
-
-  const menuWidth = 160;
-  const menuHeight = actions.filter(Boolean).length * 32 + 8; // estimate height
-  
-  let posX = position.x;
-  let posY = position.y;
-  
-  if (typeof window !== 'undefined') {
-    if (posX + menuWidth > window.innerWidth) {
-      posX = window.innerWidth - menuWidth - 8;
+      setPosition({ left: newLeft, top: newTop });
     }
-    if (posY + menuHeight > window.innerHeight) {
-      posY = window.innerHeight - menuHeight - 8;
-    }
-  }
+  }, [x, y]);
 
   return (
-    <div 
-      ref={menuRef}
-      className={styles.menu} 
-      style={{ top: `${posY}px`, left: `${posX}px` }}
-    >
-      {actions.map((action, index) => {
-        if (!action) return null;
-        const Icon = action.icon;
-        return (
-          <button 
-            key={index} 
-            className={`${styles.menuItem} ${action.danger ? styles.danger : ''}`}
+    <>
+      <div className={styles.backdrop} onClick={onClose} onContextMenu={(e) => { e.preventDefault(); onClose(); }} />
+      <div 
+        ref={menuRef}
+        className={styles.contextMenu} 
+        style={{ top: `${position.top}px`, left: `${position.left}px` }}
+      >
+        {items.map((item, index) => (
+          <button
+            key={index}
+            className={`${styles.menuItem} ${item.variant === 'danger' ? styles.danger : ''}`}
             onClick={(e) => {
               e.stopPropagation();
-              action.onClick();
-              onClose();
+              if (!item.disabled) {
+                item.onClick(e);
+                onClose();
+              }
             }}
+            disabled={item.disabled}
           >
-            {Icon && <Icon size={14} />}
-            <span>{action.label}</span>
+            {item.icon && <item.icon size={14} className={styles.icon} />}
+            {item.label}
           </button>
-        );
-      })}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }

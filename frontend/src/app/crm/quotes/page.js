@@ -8,11 +8,11 @@ import { Plus, FileText, Calendar, Download, Upload, Send, ArrowRightLeft, Layou
 import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import SearchBar from '../../../components/ui/SearchBar';
+import ContextMenu from '../../../components/ui/ContextMenu';
 import Modal from '../../../components/modals/Modal';
 import CreateQuoteModal from './CreateQuoteModal';
 import { alert, confirm } from '@/utils/alertService';
-import ContextMenu from '../../../components/ui/ContextMenu';
-import useContextMenu from '../../../hooks/useContextMenu';
+
 const QUOTE_STATUSES = [
   { value: 'draft',     label: 'Draft',     color: '#64748b' },
   { value: 'sent',      label: 'Sent',      color: '#3b82f6' },
@@ -46,7 +46,12 @@ export default function QuotesPage() {
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [viewMode, setViewMode] = useState('table');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const handleContextMenu = (e, quote) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, record: quote });
+  };
 
   
   const [activeWorkflowQuote, setActiveWorkflowQuote] = useState(null);
@@ -305,45 +310,6 @@ export default function QuotesPage() {
     }
   };
 
-  const getQuoteActions = (quote) => [
-    {
-      label: quote.flag_status === 'flagged' ? 'Mark Completed' : quote.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
-      icon: Flag,
-      onClick: () => handleToggleFlag({ stopPropagation: () => {} }, quote)
-    },
-    {
-      label: 'Open Workflow',
-      icon: ChevronRight,
-      onClick: () => setActiveWorkflowQuote(quote)
-    },
-    {
-      label: 'Download PDF',
-      icon: Download,
-      onClick: () => handleDownloadPdf(quote)
-    },
-    {
-      label: 'Clone Quote',
-      icon: Copy,
-      onClick: () => handleCloneQuote(quote)
-    },
-    !['accepted', 'rejected', 'converted', 'expired'].includes(quote.status) && {
-      label: 'Send via Email',
-      icon: Send,
-      onClick: () => handleSendEmail(quote)
-    },
-    quote.status === 'accepted' && {
-      label: 'Convert to POS Invoice',
-      icon: ArrowRightLeft,
-      onClick: () => handleConvertToInvoice(quote)
-    },
-    {
-      label: 'Delete',
-      icon: Trash2,
-      danger: true,
-      onClick: () => handleDeleteQuote(quote)
-    }
-  ].filter(Boolean);
-
   const handleUpdateStatus = async (quote, newStatus) => {
     if (newStatus === quote.status) return;
     try {
@@ -582,11 +548,8 @@ export default function QuotesPage() {
                         key={quote.id}
                         className={isActive ? styles.activeRow : ''}
                         onClick={() => setActiveWorkflowQuote(quote)}
-                        style={{ 
-                          cursor: 'pointer',
-                          backgroundColor: quote.flag_status === 'flagged' ? '#fafafd' : undefined
-                        }}
-                        onContextMenu={(e) => showContextMenu(e, getQuoteActions(quote))}
+                        style={quote.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)', cursor: 'pointer' } : { cursor: 'pointer' }}
+                        onContextMenu={(e) => handleContextMenu(e, quote)}
                       >
                         <td>
                           <div className={styles.viewToggleContainer}>
@@ -892,12 +855,27 @@ export default function QuotesPage() {
           </div>
         </form>
       </Modal>
-      <ContextMenu
-        isOpen={contextMenu.isOpen}
-        position={contextMenu.position}
-        actions={contextMenu.actions}
-        onClose={closeContextMenu}
-      />
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          items={[
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: 'Download PDF', icon: Download, onClick: () => handleDownloadPdf(contextMenu.record) },
+            { label: 'Clone Quote', icon: Copy, onClick: () => handleCloneQuote(contextMenu.record) },
+            ...(!['accepted', 'rejected', 'converted', 'expired'].includes(contextMenu.record.status) ? [
+              { label: 'Send via Email', icon: Send, onClick: () => handleSendEmail(contextMenu.record) }
+            ] : []),
+            ...(contextMenu.record.status === 'accepted' ? [
+              { label: 'Convert to POS Invoice', icon: ArrowRightLeft, onClick: () => handleConvertToInvoice(contextMenu.record) }
+            ] : []),
+            { label: 'Open Workflow', icon: ChevronRight, onClick: () => setActiveWorkflowQuote(contextMenu.record) },
+            { label: 'Delete', icon: Trash2, onClick: () => handleDeleteQuote(contextMenu.record.id), variant: 'danger' }
+          ]}
+        />
+      )}
     </div>
   );
 }

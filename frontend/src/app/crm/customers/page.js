@@ -2,9 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { useRouter } from 'next/navigation';
-import ContextMenu from '../../../components/ui/ContextMenu';
-import useContextMenu from '../../../hooks/useContextMenu';
 import customerService from '../../../services/customerService';
 import styles from './page.module.css';
 import Link from 'next/link';
@@ -17,6 +14,7 @@ import { Search, Plus, Building2, User, Phone, Mail, X, Upload, Download, Eye, E
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
+import ContextMenu from '../../../components/ui/ContextMenu';
 import { alert, confirm } from '@/utils/alertService';
 
 export default function CustomersPage() {
@@ -24,8 +22,6 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState([]);
   const [posCustomers, setPosCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -50,6 +46,12 @@ export default function CustomersPage() {
     custom_fields: {}
   });
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const handleContextMenu = (e, customer) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, record: customer });
+  };
 
   useEffect(() => {
     fetchCustomers();
@@ -233,30 +235,6 @@ export default function CustomersPage() {
     }
   };
 
-  const getCustomerActions = (customer) => [
-    {
-      label: customer.flag_status === 'flagged' ? 'Mark Completed' : customer.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
-      icon: Flag,
-      onClick: () => handleToggleFlag({ stopPropagation: () => {} }, customer)
-    },
-    {
-      label: 'View Details',
-      icon: Eye,
-      onClick: () => router.push(`/crm/customers/${customer.id}`)
-    },
-    {
-      label: 'Edit',
-      icon: Edit2,
-      onClick: () => openEditCustomerModal(customer)
-    },
-    {
-      label: 'Delete',
-      icon: Trash2,
-      danger: true,
-      onClick: () => handleDeleteCustomer(customer.id)
-    }
-  ];
-
   const handleImportCustomers = async (e) => {
     e.preventDefault();
     if (!importFile) return;
@@ -394,8 +372,8 @@ export default function CustomersPage() {
                 filteredCustomers.map(customer => (
                   <tr 
                     key={customer.id}
-                    style={customer.flag_status === 'flagged' ? { backgroundColor: '#fafafd' } : undefined}
-                    onContextMenu={(e) => showContextMenu(e, getCustomerActions(customer))}
+                    onContextMenu={(e) => handleContextMenu(e, customer)}
+                    style={customer.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
                   >
                     <td>
                       <div className={styles.viewToggleContainer}>
@@ -603,12 +581,20 @@ export default function CustomersPage() {
           </div>
         </form>
       </Modal>
-      <ContextMenu
-        isOpen={contextMenu.isOpen}
-        position={contextMenu.position}
-        actions={contextMenu.actions}
-        onClose={closeContextMenu}
-      />
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          items={[
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: 'View Details', icon: Eye, onClick: () => window.location.href = `/crm/customers/${contextMenu.record.id}` },
+            { label: 'Edit Customer', icon: Edit2, onClick: () => openEditCustomerModal(contextMenu.record) },
+            { label: 'Delete', icon: Trash2, onClick: () => handleDeleteCustomer(contextMenu.record.id), variant: 'danger' }
+          ]}
+        />
+      )}
     </div>
   );
 }

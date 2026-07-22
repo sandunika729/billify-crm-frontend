@@ -9,27 +9,15 @@ import {
   Shield, Mail, Phone, Check, X, Eye, EyeOff,
   AlertTriangle, CheckCircle, Lock, MoreVertical,
   UserCheck, UserX, Key
-'use client';
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../../../context/AuthContext';
-import userService from '../../../../services/userService';
-import styles from './page.module.css';
-import {
-  Users, UserPlus, Edit2, Trash2, RefreshCw, Search,
-  Shield, Mail, Phone, Check, X, Eye, EyeOff,
-  AlertTriangle, CheckCircle, Lock, MoreVertical,
-  UserCheck, UserX, Key
 } from 'lucide-react';
 import Button from '../../../../components/ui/Button';
 import Modal from '../../../../components/modals/Modal';
 import FormField from '../../../../components/forms/FormField';
 import SearchBar from '../../../../components/ui/SearchBar';
+import ContextMenu from '../../../../components/ui/ContextMenu';
 import Badge from '../../../../components/ui/Badge';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
 import { alert, confirm } from '@/utils/alertService';
-import ContextMenu from '../../../../components/ui/ContextMenu';
-import useContextMenu from '../../../../hooks/useContextMenu';
 
 const CRM_ROLES = [
   { value: 'super_admin', label: 'Super Admin', color: '#7c3aed', desc: 'Full system access, all modules' },
@@ -85,7 +73,6 @@ export default function TeamMembersPage() {
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
 
 
   const [addForm, setAddForm] = useState(EMPTY_FORM);
@@ -100,6 +87,12 @@ export default function TeamMembersPage() {
 
 
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const handleContextMenu = (e, u) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, record: u });
+  };
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -274,33 +267,6 @@ export default function TeamMembersPage() {
     }
   };
 
-  const getUserActions = (u) => {
-    const isCurrentUser = u.id === currentUser?.id;
-    return [
-      {
-        label: 'View Details',
-        icon: Eye,
-        onClick: () => { setViewUser(u); setIsViewOpen(true); }
-      },
-      isSuperAdmin && {
-        label: 'Edit Details',
-        icon: Edit2,
-        onClick: () => openEditModal(u)
-      },
-      isSuperAdmin && {
-        label: 'Reset Password',
-        icon: Key,
-        onClick: () => openResetModal(u)
-      },
-      isSuperAdmin && !isCurrentUser && u.role !== 'super_admin' && {
-        label: u.is_active ? 'Deactivate' : 'Reactivate',
-        icon: u.is_active ? UserX : UserCheck,
-        danger: u.is_active,
-        onClick: () => handleToggleStatus(u)
-      }
-    ].filter(Boolean);
-  };
-
 
   const openResetModal = (u) => {
     setResetForm({ id: u.id, name: u.name || u.email, new_password: '', confirm_password: '' });
@@ -418,7 +384,7 @@ export default function TeamMembersPage() {
                       <tr 
                         key={u.id} 
                         className={`${styles.userRow} ${!u.is_active ? styles.inactiveRow : ''}`}
-                        onContextMenu={(e) => showContextMenu(e, getUserActions(u))}
+                        onContextMenu={(e) => handleContextMenu(e, u)}
                       >
                         { }
                         <td>
@@ -857,12 +823,22 @@ export default function TeamMembersPage() {
           </div>
         )}
       </Modal>
-      <ContextMenu
-        isOpen={contextMenu.isOpen}
-        position={contextMenu.position}
-        actions={contextMenu.actions}
-        onClose={closeContextMenu}
-      />
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          items={[
+            { label: 'View Details', icon: Eye, onClick: () => openViewDetailsModal(contextMenu.record) },
+            ...(isSuperAdmin ? [
+              { label: 'Edit Details', icon: Edit2, onClick: () => openEditModal(contextMenu.record) },
+              { label: 'Reset Password', icon: Key, onClick: () => openResetModal(contextMenu.record) },
+              { label: contextMenu.record.is_active ? 'Deactivate' : 'Activate', icon: contextMenu.record.is_active ? UserX : UserCheck, onClick: () => handleToggleStatus(contextMenu.record) },
+            ] : [])
+          ]}
+        />
+      )}
     </div>
   );
 }
