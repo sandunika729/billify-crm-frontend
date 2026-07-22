@@ -370,7 +370,7 @@ export default function CustomersPage() {
             { id: 'type', label: 'Type', required: false },
             { id: 'status', label: 'Status', required: false },
             { id: 'added_on', label: 'Added On', required: false },
-            ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
+            ...customFields.map(cf => ({ id: `cf_${cf.field_name}`, label: cf.field_label, required: false }))
           ]}
           visibleColumns={visibleColumns}
           onColumnToggle={handleColumnToggle}
@@ -388,8 +388,8 @@ export default function CustomersPage() {
                 {visibleColumns.includes('type') && <th>Type</th>}
                 {visibleColumns.includes('status') && <th>Status</th>}
                 {visibleColumns.includes('added_on') && <th>Added On</th>}
-                {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
-                  <th key={cf.id}>{cf.label}</th>
+                {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
+                  <th key={cf.id}>{cf.field_label}</th>
                 ))}
                 <th className={styles.actionsCol}>Actions</th>
               </tr>
@@ -450,8 +450,8 @@ export default function CustomersPage() {
                         {customer.created_at ? new Date(customer.created_at).toLocaleDateString() : 'N/A'}
                       </td>
                     )}
-                    {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
-                      <td key={cf.id}>{customer.custom_fields?.[cf.name] || '-'}</td>
+                    {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
+                      <td key={cf.id}>{customer.custom_fields?.[cf.field_name] || '-'}</td>
                     ))}
                     <td className={styles.actionsCol}>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
