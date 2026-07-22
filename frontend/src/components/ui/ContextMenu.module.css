@@ -1,0 +1,42 @@
+.menu {
+  position: fixed;
+  z-index: 10000;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-md, 6px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 0.25rem;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm, 4px);
+  color: var(--color-text-primary, #0f172a);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.menuItem:hover {
+  background: var(--color-bg-hover, #f8fafc);
+}
+
+.menuItem.danger {
+  color: var(--color-danger, #ef4444);
+}
+
+.menuItem.danger:hover {
+  background: var(--color-danger-bg, #fee2e2);
+}

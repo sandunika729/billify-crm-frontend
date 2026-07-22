@@ -11,6 +11,8 @@ import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
 import { alert, confirm } from '@/utils/alertService';
+import ContextMenu from '../../../components/ui/ContextMenu';
+import useContextMenu from '../../../hooks/useContextMenu';
 
 export default function DocumentsPage() {
   const { user } = useAuth();
@@ -22,6 +24,7 @@ export default function DocumentsPage() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
 
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -177,6 +180,25 @@ export default function DocumentsPage() {
     }
   };
 
+  const getDocumentActions = (doc) => [
+    {
+      label: 'View',
+      icon: Eye,
+      onClick: () => handleViewDocument(doc.id, doc.mime_type || doc.mimetype)
+    },
+    {
+      label: 'Download',
+      icon: Download,
+      onClick: () => handleDownload(doc.id, doc.original_name)
+    },
+    {
+      label: 'Delete',
+      icon: Trash2,
+      danger: true,
+      onClick: () => handleDeleteDoc(doc.id)
+    }
+  ];
+
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
@@ -320,7 +342,7 @@ export default function DocumentsPage() {
                     </tr>
                     {/* Group rows */}
                     {!collapsedGroups[groupLabel] && docs.map(doc => (
-                      <tr key={doc.id}>
+                      <tr key={doc.id} onContextMenu={(e) => showContextMenu(e, getDocumentActions(doc))}>
                         <td>
                           <div className={styles.fileNameCell}>
                             <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
@@ -356,7 +378,7 @@ export default function DocumentsPage() {
               ) : (
                 
                 filteredDocs.map(doc => (
-                  <tr key={doc.id}>
+                  <tr key={doc.id} onContextMenu={(e) => showContextMenu(e, getDocumentActions(doc))}>
                     <td>
                       <div className={styles.fileNameCell}>
                         <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
@@ -432,6 +454,12 @@ export default function DocumentsPage() {
           </div>
         </div>
       </Modal>
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        actions={contextMenu.actions}
+        onClose={closeContextMenu}
+      />
     </div>
   );
 }

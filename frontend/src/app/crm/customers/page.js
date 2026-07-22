@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
+import { useRouter } from 'next/navigation';
+import ContextMenu from '../../../components/ui/ContextMenu';
+import useContextMenu from '../../../hooks/useContextMenu';
 import customerService from '../../../services/customerService';
 import styles from './page.module.css';
 import Link from 'next/link';
@@ -21,6 +24,8 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState([]);
   const [posCustomers, setPosCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -228,6 +233,30 @@ export default function CustomersPage() {
     }
   };
 
+  const getCustomerActions = (customer) => [
+    {
+      label: customer.flag_status === 'flagged' ? 'Mark Completed' : customer.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
+      icon: Flag,
+      onClick: () => handleToggleFlag({ stopPropagation: () => {} }, customer)
+    },
+    {
+      label: 'View Details',
+      icon: Eye,
+      onClick: () => router.push(`/crm/customers/${customer.id}`)
+    },
+    {
+      label: 'Edit',
+      icon: Edit2,
+      onClick: () => openEditCustomerModal(customer)
+    },
+    {
+      label: 'Delete',
+      icon: Trash2,
+      danger: true,
+      onClick: () => handleDeleteCustomer(customer.id)
+    }
+  ];
+
   const handleImportCustomers = async (e) => {
     e.preventDefault();
     if (!importFile) return;
@@ -363,7 +392,11 @@ export default function CustomersPage() {
                 </tr>
               ) : (
                 filteredCustomers.map(customer => (
-                  <tr key={customer.id}>
+                  <tr 
+                    key={customer.id}
+                    style={customer.flag_status === 'flagged' ? { backgroundColor: '#fafafd' } : undefined}
+                    onContextMenu={(e) => showContextMenu(e, getCustomerActions(customer))}
+                  >
                     <td>
                       <div className={styles.viewToggleContainer}>
                         <div className={styles.avatar}>
@@ -570,6 +603,12 @@ export default function CustomersPage() {
           </div>
         </form>
       </Modal>
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        actions={contextMenu.actions}
+        onClose={closeContextMenu}
+      />
     </div>
   );
 }

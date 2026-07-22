@@ -17,6 +17,8 @@ import FormField from '../../../components/forms/FormField';
 import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import SearchBar from '../../../components/ui/SearchBar';
 import { alert, confirm } from '@/utils/alertService';
+import ContextMenu from '../../../components/ui/ContextMenu';
+import useContextMenu from '../../../hooks/useContextMenu';
 
 const TICKET_STATUSES = [
   { value: 'open',             label: 'Open',                color: '#3b82f6' },
@@ -39,6 +41,7 @@ export default function SupportTicketsPage() {
 
   const [tickets, setTickets]               = useState([]);
   const [loading, setLoading]               = useState(true);
+  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
   const [searchTerm, setSearchTerm]         = useState('');
   const [filterStatus, setFilterStatus]     = useState('');
   const [filterPriority, setFilterPriority] = useState('');
@@ -213,6 +216,42 @@ export default function SupportTicketsPage() {
     const matchesFlag = !showFlaggedOnly || t.flag_status === 'flagged';
     return match && (!filterStatus || t.status === filterStatus) && (!filterPriority || t.priority === filterPriority) && matchesFlag;
   });
+
+  const handleEditClick = (ticket) => {
+    setEditFormData({ 
+      id: ticket.id, 
+      subject: ticket.subject, 
+      customer_id: ticket.customer_id || '', 
+      priority: ticket.priority, 
+      status: ticket.status, 
+      source: ticket.source 
+    }); 
+    setIsEditModalOpen(true);
+  };
+
+  const getTicketActions = (ticket) => [
+    {
+      label: ticket.flag_status === 'flagged' ? 'Mark Completed' : ticket.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
+      icon: Flag,
+      onClick: () => handleToggleFlag({ stopPropagation: () => {} }, ticket)
+    },
+    {
+      label: 'Open Thread',
+      icon: MessageSquare,
+      onClick: () => handleOpenDetail(ticket)
+    },
+    {
+      label: 'Edit',
+      icon: Edit2,
+      onClick: () => handleEditClick(ticket)
+    },
+    {
+      label: 'Delete',
+      icon: Trash2,
+      danger: true,
+      onClick: () => handleDeleteTicket(ticket.id)
+    }
+  ];
 
   
   if (selectedTicket) {
@@ -461,7 +500,16 @@ export default function SupportTicketsPage() {
                   const sc = getStatusCfg(ticket.status);
                   const pc = getPriorityCfg(ticket.priority);
                   return (
-                    <tr key={ticket.id} className={styles.ticketRow} onClick={() => handleOpenDetail(ticket)} style={{ cursor:'pointer' }}>
+                    <tr 
+                      key={ticket.id} 
+                      className={styles.ticketRow} 
+                      onClick={() => handleOpenDetail(ticket)} 
+                      style={{ 
+                        cursor: 'pointer',
+                        backgroundColor: ticket.flag_status === 'flagged' ? '#fafafd' : undefined
+                      }}
+                      onContextMenu={(e) => showContextMenu(e, getTicketActions(ticket))}
+                    >
                       <td>
                         <div style={{ fontWeight:600, color:'#0f172a', fontSize:'0.875rem' }}>{ticket.subject}</div>
 
@@ -491,7 +539,7 @@ export default function SupportTicketsPage() {
                             />
                           </button>
                           <button className={styles.actionBtn} title="Open Thread" onClick={() => handleOpenDetail(ticket)}><MessageSquare size={12} color="#3b82f6" /></button>
-                          <button className={styles.actionBtn} title="Edit" onClick={() => { setEditFormData({ id: ticket.id, subject: ticket.subject, customer_id: ticket.customer_id || '', priority: ticket.priority, status: ticket.status, source: ticket.source }); setIsEditModalOpen(true); }}><Edit2 size={12} color="#94a3b8" /></button>
+                          <button className={styles.actionBtn} title="Edit" onClick={() => handleEditClick(ticket)}><Edit2 size={12} color="#94a3b8" /></button>
                           <button className={styles.actionBtn} title="Delete" onClick={() => handleDeleteTicket(ticket.id)}><Trash2 size={12} color="#ef4444" /></button>
                         </div>
                       </td>
@@ -537,6 +585,12 @@ export default function SupportTicketsPage() {
           </form>
         </Modal>
       )}
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        actions={contextMenu.actions}
+        onClose={closeContextMenu}
+      />
     </div>
   );
 }

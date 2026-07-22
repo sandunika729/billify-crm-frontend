@@ -18,11 +18,14 @@ import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
 import { useRouter } from 'next/navigation';
 import { alert, confirm } from '@/utils/alertService';
+import ContextMenu from '../../../components/ui/ContextMenu';
+import useContextMenu from '../../../hooks/useContextMenu';
 
 export default function DealsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [deals, setDeals] = useState([]);
+  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
   const [stages, setStages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [draggedDealId, setDraggedDealId] = useState(null);
@@ -290,6 +293,56 @@ export default function DealsPage() {
       fetchDeals();
     }
   };
+
+  const handleEditClick = (deal) => {
+    setDealToEdit(deal);
+    setFormData({
+      title: deal.title || '',
+      customer_id: deal.customer_id || '',
+      lead_id: deal.lead_id || '',
+      value_lkr: deal.value_lkr || '',
+      stage_id: deal.stage_id || '',
+      expected_close_at: (deal.expected_close_at && !isNaN(new Date(deal.expected_close_at).getTime())) ? new Date(deal.expected_close_at).toISOString().split('T')[0] : '',
+      notes: deal.notes || ''
+    });
+    let parsedList = [];
+    if (typeof deal.products_interest === 'string') {
+      try { parsedList = JSON.parse(deal.products_interest); } catch (e) {}
+    } else if (Array.isArray(deal.products_interest)) {
+      parsedList = deal.products_interest;
+    }
+    setSelectedProducts(parsedList);
+    setIsModalOpen(true);
+  };
+
+  const getDealActions = (deal) => [
+    {
+      label: deal.flag_status === 'flagged' ? 'Mark Completed' : deal.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
+      icon: Flag,
+      onClick: () => handleToggleFlag({ stopPropagation: () => {} }, deal)
+    },
+    {
+      label: 'View Details',
+      icon: Eye,
+      onClick: () => { setViewDeal(deal); setIsDetailModalOpen(true); }
+    },
+    deal.status !== 'won' && deal.status !== 'lost' && {
+      label: 'Create Quote',
+      icon: FileText,
+      onClick: () => handleCreateQuoteFromDeal(deal)
+    },
+    {
+      label: 'Edit',
+      icon: Edit2,
+      onClick: () => handleEditClick(deal)
+    },
+    {
+      label: 'Delete',
+      icon: Trash2,
+      danger: true,
+      onClick: () => handleDeleteDeal(deal.id)
+    }
+  ];
 
   const filteredDeals = deals.filter(deal => {
     if (showFlaggedOnly && deal.flag_status !== 'flagged') return false;
@@ -730,7 +783,11 @@ export default function DealsPage() {
                       filteredDeals.map(deal => {
                         const stage = stages.find(s => s.id === deal.stage_id);
                         return (
-                          <tr key={deal.id}>
+                          <tr 
+                            key={deal.id}
+                            style={deal.flag_status === 'flagged' ? { backgroundColor: '#fafafd' } : undefined}
+                            onContextMenu={(e) => showContextMenu(e, getDealActions(deal))}
+                          >
                             <td>
                               <div className={styles.viewToggleContainer}>
                                 <div className={styles.avatar} style={{ width: '25px', height: '25px', minWidth: '25px', fontSize: '0.65rem', marginRight: '0.75rem', borderRadius: '50%', background: 'var(--color-primary-light, #e8f0fe)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 500 }}>
@@ -783,26 +840,7 @@ export default function DealsPage() {
                                     <FileText size={12} />
                                   </button>
                                 )}
-                                <button className={styles.actionBtn} onClick={() => {
-                                  setDealToEdit(deal);
-                                  setFormData({
-                                    title: deal.title || '',
-                                    customer_id: deal.customer_id || '',
-                                    lead_id: deal.lead_id || '',
-                                    value_lkr: deal.value_lkr || '',
-                                    stage_id: deal.stage_id || '',
-                                    expected_close_at: (deal.expected_close_at && !isNaN(new Date(deal.expected_close_at).getTime())) ? new Date(deal.expected_close_at).toISOString().split('T')[0] : '',
-                                    notes: deal.notes || ''
-                                  });
-                                  let parsedList = [];
-                                  if (typeof deal.products_interest === 'string') {
-                                    try { parsedList = JSON.parse(deal.products_interest); } catch (e) {}
-                                  } else if (Array.isArray(deal.products_interest)) {
-                                    parsedList = deal.products_interest;
-                                  }
-                                  setSelectedProducts(parsedList);
-                                  setIsModalOpen(true);
-                                }} title="Edit">
+                                <button className={styles.actionBtn} onClick={() => handleEditClick(deal)} title="Edit">
                                   <Edit2 size={12} />
                                 </button>
                                 <button className={styles.actionBtnDelete} onClick={() => handleDeleteDeal(deal.id)} title="Delete">
@@ -1208,6 +1246,12 @@ export default function DealsPage() {
           </div>
         </form>
       </Modal>
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        actions={contextMenu.actions}
+        onClose={closeContextMenu}
+      />
     </div>
   );
 }

@@ -18,6 +18,8 @@ import FormField from '../../../components/forms/FormField';
 import Badge from '../../../components/ui/Badge';
 import SearchBar from '@/components/ui/SearchBar';
 import { alert, confirm } from '@/utils/alertService';
+import ContextMenu from '../../../components/ui/ContextMenu';
+import useContextMenu from '../../../hooks/useContextMenu';
 
 export default function LeadsPage() {
   const { user } = useAuth();
@@ -48,6 +50,7 @@ export default function LeadsPage() {
   const [viewLead, setViewLead] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
   const [leadToConvert, setLeadToConvert] = useState(null);
+  const { contextMenu, showContextMenu, closeContextMenu } = useContextMenu();
   const [leadToEdit, setLeadToEdit] = useState(null);
   const [dealStages, setDealStages] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -164,6 +167,57 @@ export default function LeadsPage() {
       console.error('Failed to toggle flag:', error);
       fetchLeads();
     }
+  };
+
+  const getLeadActions = (lead) => {
+    if (lead.status === 'converted') {
+      return [
+        {
+          label: lead.flag_status === 'flagged' ? 'Mark Completed' : lead.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
+          icon: Flag,
+          onClick: () => handleToggleFlag({ stopPropagation: () => {} }, lead)
+        },
+        {
+          label: 'View Details',
+          icon: Eye,
+          onClick: () => { setViewLead(lead); setIsDetailModalOpen(true); }
+        },
+        lead.deal_id && {
+          label: 'View Linked Deal',
+          icon: ExternalLink,
+          onClick: () => router.push(`/crm/deals`)
+        }
+      ].filter(Boolean);
+    }
+
+    return [
+      {
+        label: lead.flag_status === 'flagged' ? 'Mark Completed' : lead.flag_status === 'completed' ? 'Clear Flag' : 'Flag',
+        icon: Flag,
+        onClick: () => handleToggleFlag({ stopPropagation: () => {} }, lead)
+      },
+      {
+        label: 'View Details',
+        icon: Eye,
+        onClick: () => { setViewLead(lead); setIsDetailModalOpen(true); }
+      },
+      lead.status !== 'converted' && lead.status !== 'disqualified' && {
+        label: 'Convert to Deal',
+        icon: ArrowRightCircle,
+        onClick: () => handleOpenConvertModal(lead)
+      },
+      {
+        label: 'Edit',
+        icon: Edit2,
+        onClick: () => handleOpenEditModal(lead)
+      },
+      {
+        label: 'Delete',
+        icon: Trash2,
+        danger: true,
+        onClick: () => handleDeleteLead(lead.id)
+      }
+    ].filter(Boolean);
   };
 
   
@@ -615,7 +669,15 @@ export default function LeadsPage() {
                   </tr>
                 ) : (
                   filteredConvertedLeads.map(lead => (
-                    <tr key={lead.id} className={styles.convertedRow}>
+                    <tr 
+                      key={lead.id} 
+                      className={styles.convertedRow}
+                      style={{ 
+                        cursor: 'pointer',
+                        backgroundColor: lead.flag_status === 'flagged' ? '#fafafd' : undefined
+                      }}
+                      onContextMenu={(e) => showContextMenu(e, getLeadActions(lead))}
+                    >
                       <td>
                         <div className={styles.viewToggleContainer}>
                           <div className={`${styles.avatar} ${styles.avatarConverted}`}>
@@ -706,7 +768,15 @@ export default function LeadsPage() {
                   </tr>
                 ) : (
                   filteredLeads.map(lead => (
-                    <tr key={lead.id} className={selectedLeads.includes(lead.id) ? styles.selectedRow : ''}>
+                    <tr 
+                      key={lead.id} 
+                      className={selectedLeads.includes(lead.id) ? styles.selectedRow : ''}
+                      style={{ 
+                        cursor: 'pointer',
+                        backgroundColor: lead.flag_status === 'flagged' ? '#fafafd' : undefined
+                      }}
+                      onContextMenu={(e) => showContextMenu(e, getLeadActions(lead))}
+                    >
                       <td>
                         <input
                           type="checkbox"
@@ -1411,6 +1481,12 @@ export default function LeadsPage() {
           </select>
         </div>
       </Modal>
+      <ContextMenu
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        actions={contextMenu.actions}
+        onClose={closeContextMenu}
+      />
     </div>
   );
 }
