@@ -651,7 +651,7 @@ export default function DealsPage() {
                 { id: 'value', label: 'Value', required: false },
                 { id: 'stage', label: 'Stage', required: false },
                 { id: 'expected_close', label: 'Expected Close', required: false },
-                ...customFields.map(cf => ({ id: `cf_${cf.field_name}`, label: cf.field_label, required: false }))
+                ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
               ]}
               visibleColumns={visibleColumns}
               onColumnToggle={handleColumnToggle}
@@ -763,8 +763,8 @@ export default function DealsPage() {
                       {visibleColumns.includes('value') && <th>Value</th>}
                       {visibleColumns.includes('stage') && <th>Stage</th>}
                       {visibleColumns.includes('expected_close') && <th>Expected Close</th>}
-                      {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
-                        <th key={cf.id}>{cf.field_label}</th>
+                      {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                        <th key={cf.id}>{cf.label}</th>
                       ))}
                       <th style={{ width: '120px' }}>Actions</th>
                     </tr>
@@ -826,8 +826,8 @@ export default function DealsPage() {
                                 {deal.expected_close_at ? new Date(deal.expected_close_at).toLocaleDateString() : 'N/A'}
                               </td>
                             )}
-                            {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
-                              <td key={cf.id}>{deal.custom_fields?.[cf.field_name] || '-'}</td>
+                            {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                              <td key={cf.id}>{deal.custom_fields?.[cf.name] || '-'}</td>
                             ))}
                             <td className={styles.actionsCol}>
                               <div className={styles.tableActions}>

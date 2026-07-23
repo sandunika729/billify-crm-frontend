@@ -618,7 +618,7 @@ export default function LeadsPage() {
                 { id: 'temperature', label: 'Temperature', required: false },
                 { id: 'follow_up', label: 'Follow Up', required: false },
                 { id: 'assigned_to', label: 'Assigned To', required: false },
-                ...customFields.map(cf => ({ id: `cf_${cf.field_name}`, label: cf.field_label, required: false }))
+                ...customFields.map(cf => ({ id: `cf_${cf.name}`, label: cf.label, required: false }))
               ]}
               visibleColumns={visibleColumns}
               onColumnToggle={handleColumnToggle}
@@ -739,8 +739,8 @@ export default function LeadsPage() {
                   {visibleColumns.includes('temperature') && <th>Temperature</th>}
                   {visibleColumns.includes('follow_up') && <th>Follow Up</th>}
                   {visibleColumns.includes('assigned_to') && <th>Assigned To</th>}
-                  {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
-                    <th key={cf.id}>{cf.field_label}</th>
+                  {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                    <th key={cf.id}>{cf.label}</th>
                   ))}
                   <th className={styles.actionsCol}>Actions</th>
                 </tr>
@@ -836,8 +836,8 @@ export default function LeadsPage() {
                           </div>
                         </td>
                       )}
-                      {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
-                        <td key={cf.id}>{lead.custom_fields?.[cf.field_name] || '-'}</td>
+                      {customFields.filter(cf => visibleColumns.includes(`cf_${cf.name}`)).map(cf => (
+                        <td key={cf.id}>{lead.custom_fields?.[cf.name] || '-'}</td>
                       ))}
                       <td className={styles.actionsCol}>
                         <div className={styles.tableActions}>
