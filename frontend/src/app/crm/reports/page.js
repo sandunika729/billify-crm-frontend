@@ -50,6 +50,7 @@ export default function ReportsPage() {
   const [dateFrom, setDateFrom] = useState(today);
   const [dateTo, setDateTo] = useState(today);
 
+  const [activeTab, setActiveTab] = useState('sales');
   const [selectedReport, setSelectedReport] = useState(null);
 
   const [librarySearchTerm, setLibrarySearchTerm] = useState('');
@@ -631,11 +632,18 @@ export default function ReportsPage() {
     );
   }
 
-  const allFilteredReports = AVAILABLE_REPORTS.filter(r => 
-    r.title.toLowerCase().includes(librarySearchTerm.toLowerCase()) || 
-    r.description.toLowerCase().includes(librarySearchTerm.toLowerCase())
-  );
+  
+  // No longer filtering by active tab. We just filter out categories that don't match the search.
+  const groupedReports = REPORT_CATEGORIES.map(category => {
+    const categoryReports = AVAILABLE_REPORTS.filter(r => r.category === category.id)
+      .filter(r => 
+        r.title.toLowerCase().includes(librarySearchTerm.toLowerCase()) || 
+        r.description.toLowerCase().includes(librarySearchTerm.toLowerCase())
+      );
+    return { ...category, reports: categoryReports };
+  }).filter(group => group.reports.length > 0);
 
+  
   return (
     <div className={styles.pageContainer}>
       <div className={styles.pageHeader}>
@@ -653,42 +661,45 @@ export default function ReportsPage() {
         />
       </div>
 
-      <div className={styles.reportsLayout}>
-        {REPORT_CATEGORIES.map(category => {
-          const categoryReports = AVAILABLE_REPORTS.filter(r => {
-             const matchesCategory = r.category === category.id;
-             const matchesSearch = r.title.toLowerCase().includes(librarySearchTerm.toLowerCase()) || 
-                                   r.description.toLowerCase().includes(librarySearchTerm.toLowerCase());
-             return matchesCategory && matchesSearch;
-          });
-
-          if (categoryReports.length === 0) return null;
-
-          return (
-            <div key={category.id} className={styles.reportCategorySection}>
-              <h2 className={styles.categorySubheading}>{category.label}</h2>
-              <div className={styles.reportsGrid}>
-                {categoryReports.map(report => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', marginTop: '1.5rem' }}>
+        {groupedReports.length === 0 ? (
+          <div className={styles.emptyState}>
+            No reports found matching your criteria.
+          </div>
+        ) : (
+          groupedReports.map(group => (
+            <div key={group.id}>
+              <h2 style={{ 
+                fontSize: '1.1rem', 
+                fontWeight: '700', 
+                color: 'var(--color-secondary, #8b9be2)', 
+                marginBottom: '1rem', 
+                paddingBottom: '0.5rem', 
+                borderBottom: '2px solid #f1f5f9' 
+              }}>
+                {group.label}
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+                {group.reports.map(report => (
                   <div
                     key={report.id}
                     className={styles.reportCard}
                     onClick={() => setSelectedReport(report)}
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', border: '1px solid var(--color-border)' }}
                   >
+                    <div style={{ padding: '0.5rem', background: '#e8f0fe', color: 'var(--color-primary)', borderRadius: '8px', marginRight: '1rem' }}>
+                      <report.icon size={20} />
+                    </div>
                     <div className={styles.reportInfo}>
-                      <h3>{report.title}</h3>
-                      <p>{report.description}</p>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.35rem' }}>{report.title}</h3>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.4, margin: 0 }}>{report.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          );
-        })}
-
-        {allFilteredReports.length === 0 && (
-          <div className={styles.emptyState}>
-            No reports found matching your criteria.
-          </div>
+          ))
         )}
       </div>
     </div>

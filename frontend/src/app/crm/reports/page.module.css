@@ -157,53 +157,28 @@
     margin-bottom: 0.15rem;
 }
 
-.reportsLayout {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding-bottom: 2rem;
-}
-
-.reportCategorySection {
+.reportsList {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.categorySubheading {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-bg-hover);
-}
-
-.reportsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.25rem;
-}
-
 .reportCard {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1.25rem;
+  gap: 1.25rem;
+  padding: 1rem;
   background: #ffffff;
-  border: 1px solid var(--color-border);
+  border: none;
   border-radius: var(--radius-md);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all var(--transition-fast);
-  align-items: flex-start;
-  height: 100%;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  align-items: center;
 }
 
 .reportCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: var(--color-secondary, #8b9be2);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .reportInfo {
