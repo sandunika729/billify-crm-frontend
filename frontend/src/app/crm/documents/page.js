@@ -10,6 +10,7 @@ import Button from '../../../components/ui/Button';
 import Modal from '../../../components/modals/Modal';
 import FormField from '../../../components/forms/FormField';
 import SearchBar from '../../../components/ui/SearchBar';
+import ColumnManager from '../../../components/ui/ColumnManager';
 import ContextMenu from '../../../components/ui/ContextMenu';
 import { alert, confirm } from '@/utils/alertService';
 
@@ -24,12 +25,19 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [visibleColumns, setVisibleColumns] = useState(['name', 'linked_to', 'size', 'uploaded_by', 'date']);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadCategory, setUploadCategory] = useState('internal');
   const [uploadVisibility, setUploadVisibility] = useState('internal');
   const [isUploading, setIsUploading] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+
+  const handleColumnToggle = (colId) => {
+    setVisibleColumns(prev => 
+      prev.includes(colId) ? prev.filter(id => id !== colId) : [...prev, colId]
+    );
+  };
 
   const handleContextMenu = (e, doc) => {
     e.preventDefault();
@@ -154,7 +162,6 @@ export default function DocumentsPage() {
       const blob = new Blob([response.data], { type: mime });
       const url = window.URL.createObjectURL(blob);
       window.open(url, '_blank');
-      // Revoke after a short delay to allow the new tab to load
       setTimeout(() => window.URL.revokeObjectURL(url), 10000);
     } catch (error) {
       console.error('View error:', error);
@@ -267,7 +274,6 @@ export default function DocumentsPage() {
             </select>
           </div>
 
-          {}
           <div className={styles.filterGroup} style={{ flex: 'none' }}>
             <div className={styles.groupByWrapper}>
               <Layers size={12} className={styles.groupByIcon} />
@@ -285,6 +291,17 @@ export default function DocumentsPage() {
               </select>
             </div>
           </div>
+          <ColumnManager 
+            columns={[
+              { id: 'name', label: 'File Name', required: true },
+              { id: 'linked_to', label: 'Linked To', required: false },
+              { id: 'size', label: 'Size', required: false },
+              { id: 'uploaded_by', label: 'Uploaded By', required: false },
+              { id: 'date', label: 'Date', required: false }
+            ]}
+            visibleColumns={visibleColumns}
+            onColumnToggle={handleColumnToggle}
+          />
         </div>
       </div>
 
@@ -293,11 +310,11 @@ export default function DocumentsPage() {
           <table className={styles.docsTable}>
             <thead>
               <tr>
-                <th>File Name</th>
-                <th>Linked To</th>
-                <th>Size</th>
-                <th>Uploaded By</th>
-                <th>Date</th>
+                {visibleColumns.includes('name') && <th>File Name</th>}
+                {visibleColumns.includes('linked_to') && <th>Linked To</th>}
+                {visibleColumns.includes('size') && <th>Size</th>}
+                {visibleColumns.includes('uploaded_by') && <th>Uploaded By</th>}
+                {visibleColumns.includes('date') && <th>Date</th>}
                 <th className={styles.actionsCol}>Action</th>
               </tr>
             </thead>
@@ -310,12 +327,11 @@ export default function DocumentsPage() {
                 
                 groupedDocs.map(([groupLabel, docs]) => (
                   <React.Fragment key={groupLabel}>
-                    {}
                     <tr
                       className={styles.groupHeaderRow}
                       onClick={() => toggleGroup(groupLabel)}
                     >
-                      <td colSpan="6" className={styles.groupHeaderCell}>
+                      <td colSpan={visibleColumns.length + 1} className={styles.groupHeaderCell}>
                         <span className={styles.groupChevron}>
                           {collapsedGroups[groupLabel]
                             ? <ChevronRight size={12} />
@@ -325,34 +341,43 @@ export default function DocumentsPage() {
                         <span className={styles.groupCount}>{docs.length} file{docs.length !== 1 ? 's' : ''}</span>
                       </td>
                     </tr>
-                    {/* Group rows */}
                     {!collapsedGroups[groupLabel] && docs.map(doc => (
                       <tr 
                         key={doc.id}
                         onContextMenu={(e) => handleContextMenu(e, doc)}
                         style={doc.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
                       >
-                        <td>
-                          <div className={styles.fileNameCell}>
-                            <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className={styles.linkedBadge}>
-                            {doc.related_type === 'general' ? 'General' : doc.linked_name || doc.related_id || 'Internal'}
-                          </span>
-                        </td>
-                        <td><span className={styles.sizeText}>{formatFileSize(doc.size)}</span></td>
-                        <td>
-                          <div className={styles.uploaderCell}>
-                            <span>{doc.uploader ? `${doc.uploader.first_name || ''} ${doc.uploader.last_name || ''}`.trim() || 'Unknown' : doc.uploaded_by}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className={styles.dateCell}>
-                            <span>{new Date(doc.createdAt || doc.created_at).toLocaleDateString()}</span>
-                          </div>
-                        </td>
+                        {visibleColumns.includes('name') && (
+                          <td>
+                            <div className={styles.fileNameCell}>
+                              <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.includes('linked_to') && (
+                          <td>
+                            <span className={styles.linkedBadge}>
+                              {doc.related_type === 'general' ? 'General' : doc.linked_name || doc.related_id || 'Internal'}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('size') && (
+                          <td><span className={styles.sizeText}>{formatFileSize(doc.size)}</span></td>
+                        )}
+                        {visibleColumns.includes('uploaded_by') && (
+                          <td>
+                            <div className={styles.uploaderCell}>
+                              <span>{doc.uploader ? `${doc.uploader.first_name || ''} ${doc.uploader.last_name || ''}`.trim() || 'Unknown' : doc.uploaded_by}</span>
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.includes('date') && (
+                          <td>
+                            <div className={styles.dateCell}>
+                              <span>{new Date(doc.createdAt || doc.created_at).toLocaleDateString()}</span>
+                            </div>
+                          </td>
+                        )}
                         <td className={styles.actionsCol}>
                           <div className={styles.rowActions}>
                             <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id, doc.mime_type || doc.mimetype)}><Eye size={12} /></button>
@@ -372,27 +397,37 @@ export default function DocumentsPage() {
                     onContextMenu={(e) => handleContextMenu(e, doc)}
                     style={doc.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)' } : {}}
                   >
-                    <td>
-                      <div className={styles.fileNameCell}>
-                        <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={styles.linkedBadge}>
-                        {doc.related_type === 'general' ? 'General' : doc.linked_name || doc.related_id || 'Internal'}
-                      </span>
-                    </td>
-                    <td><span className={styles.sizeText}>{formatFileSize(doc.size)}</span></td>
-                    <td>
-                      <div className={styles.uploaderCell}>
-                        <span>{doc.uploader ? `${doc.uploader.first_name || ''} ${doc.uploader.last_name || ''}`.trim() || 'Unknown' : doc.uploaded_by}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className={styles.dateCell}>
-                        <span>{new Date(doc.createdAt || doc.created_at).toLocaleDateString()}</span>
-                      </div>
-                    </td>
+                    {visibleColumns.includes('name') && (
+                      <td>
+                        <div className={styles.fileNameCell}>
+                          <span className={styles.primaryText}>{doc.original_name || doc.file_name}</span>
+                        </div>
+                      </td>
+                    )}
+                    {visibleColumns.includes('linked_to') && (
+                      <td>
+                        <span className={styles.linkedBadge}>
+                          {doc.related_type === 'general' ? 'General' : doc.linked_name || doc.related_id || 'Internal'}
+                        </span>
+                      </td>
+                    )}
+                    {visibleColumns.includes('size') && (
+                      <td><span className={styles.sizeText}>{formatFileSize(doc.size)}</span></td>
+                    )}
+                    {visibleColumns.includes('uploaded_by') && (
+                      <td>
+                        <div className={styles.uploaderCell}>
+                          <span>{doc.uploader ? `${doc.uploader.first_name || ''} ${doc.uploader.last_name || ''}`.trim() || 'Unknown' : doc.uploaded_by}</span>
+                        </div>
+                      </td>
+                    )}
+                    {visibleColumns.includes('date') && (
+                      <td>
+                        <div className={styles.dateCell}>
+                          <span>{new Date(doc.createdAt || doc.created_at).toLocaleDateString()}</span>
+                        </div>
+                      </td>
+                    )}
                     <td className={styles.actionsCol}>
                       <div className={styles.rowActions}>
                         <button className={`${styles.actionBtn} ${styles.viewBtn}`} title="View" onClick={() => handleViewDocument(doc.id, doc.mime_type || doc.mimetype)}><Eye size={12} /></button>

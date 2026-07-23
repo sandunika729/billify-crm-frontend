@@ -17,6 +17,8 @@ import FormField from '../../../components/forms/FormField';
 import CustomFieldsSection from '../../../components/forms/CustomFieldsSection';
 import SearchBar from '../../../components/ui/SearchBar';
 import ContextMenu from '../../../components/ui/ContextMenu';
+import ColumnManager from '../../../components/ui/ColumnManager';
+import customFieldService from '../../../services/customFieldService';
 import { alert, confirm } from '@/utils/alertService';
 
 const TICKET_STATUSES = [
@@ -53,6 +55,15 @@ export default function SupportTicketsPage() {
   const [editFormData, setEditFormData]       = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
 
+  const [customFields, setCustomFields] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState(['subject', 'customer', 'priority', 'sla', 'status', 'updated']);
+
+  const handleColumnToggle = (colId) => {
+    setVisibleColumns(prev => 
+      prev.includes(colId) ? prev.filter(id => id !== colId) : [...prev, colId]
+    );
+  };
+
   const handleContextMenu = (e, ticket) => {
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY, record: ticket });
@@ -68,7 +79,11 @@ export default function SupportTicketsPage() {
   const [sendingMsg, setSendingMsg]         = useState(false);
   const threadRef = useRef(null);
 
-  useEffect(() => { fetchTickets(); fetchCustomers(); }, []);
+  useEffect(() => { 
+    fetchTickets(); 
+    fetchCustomers(); 
+    fetchCustomFields();
+  }, []);
 
   useEffect(() => {
     if (!socket) return;
@@ -103,6 +118,17 @@ export default function SupportTicketsPage() {
       const res = await customerService.getAllCustomers();
       if (res.success) setCustomers(Array.isArray(res.data) ? res.data : []);
     } catch (e) { console.error(e); }
+  };
+
+  const fetchCustomFields = async () => {
+    try {
+      const res = await customFieldService.getFields('ticket');
+      if (res.success) {
+        setCustomFields(res.data || []);
+      }
+    } catch (e) {
+      console.error('Failed to fetch custom fields for tickets:', e);
+    }
   };
 
   const openTicketDetail = async (ticketId) => {
@@ -443,6 +469,19 @@ export default function SupportTicketsPage() {
               <Flag size={12} strokeWidth={1.5} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
             </button>
           </div>
+          <ColumnManager 
+            columns={[
+              { id: 'subject', label: 'Ticket', required: true },
+              { id: 'customer', label: 'Customer', required: false },
+              { id: 'priority', label: 'Priority', required: false },
+              { id: 'sla', label: 'SLA', required: false },
+              { id: 'status', label: 'Status', required: false },
+              { id: 'updated', label: 'Updated', required: false },
+              ...customFields.map(cf => ({ id: `cf_${cf.field_name}`, label: cf.field_label, required: false }))
+            ]}
+            visibleColumns={visibleColumns}
+            onColumnToggle={handleColumnToggle}
+          />
         </div>
       </div>
 
@@ -451,7 +490,15 @@ export default function SupportTicketsPage() {
           <table className={styles.ticketsTable}>
             <thead>
               <tr>
-                <th>Ticket</th><th>Customer</th><th>Priority</th><th>SLA</th><th>Status</th><th>Updated</th>
+                {visibleColumns.includes('subject') && <th>Ticket</th>}
+                {visibleColumns.includes('customer') && <th>Customer</th>}
+                {visibleColumns.includes('priority') && <th>Priority</th>}
+                {visibleColumns.includes('sla') && <th>SLA</th>}
+                {visibleColumns.includes('status') && <th>Status</th>}
+                {visibleColumns.includes('updated') && <th>Updated</th>}
+                {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
+                  <th key={cf.id}>{cf.field_label}</th>
+                ))}
                 <th className={styles.actionsCol}></th>
               </tr>
             </thead>
@@ -472,21 +519,33 @@ export default function SupportTicketsPage() {
                       style={ticket.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)', cursor: 'pointer' } : { cursor:'pointer' }}
                       onContextMenu={(e) => handleContextMenu(e, ticket)}
                     >
-                      <td>
-                        <div style={{ fontWeight:600, color:'#0f172a', fontSize:'0.875rem' }}>{ticket.subject}</div>
-
-                      </td>
-                      <td style={{ fontSize:'0.85rem', color:'#334155', whiteSpace: 'nowrap' }}>{ticket.customer?.name || ticket.Customer?.name || 'Unknown'}</td>
-                      <td>
-                        <span style={{ background:`${pc.color}15`, color:pc.color, border: `1px solid ${pc.color}30`, padding:'0.15rem 0.6rem', borderRadius:99, fontSize:'0.62rem', fontWeight:700 }}>{pc.label}</span>
-                      </td>
-                      <td>{renderSlaBadge(ticket)}</td>
-                      <td>
-                        <span style={{ background:`${sc.color}15`, color:sc.color, border: `1px solid ${sc.color}30`, padding:'0.15rem 0.6rem', borderRadius:99, fontSize:'0.62rem', fontWeight:700 }}>{sc.label}</span>
-                      </td>
-                      <td style={{ fontSize:'0.75rem', color:'#94a3b8' }}>
-                        {new Date(ticket.updated_at || ticket.updatedAt || ticket.created_at || Date.now()).toLocaleDateString()}
-                      </td>
+                      {visibleColumns.includes('subject') && (
+                        <td>
+                          <div style={{ fontWeight:600, color:'#0f172a', fontSize:'0.875rem' }}>{ticket.subject}</div>
+                        </td>
+                      )}
+                      {visibleColumns.includes('customer') && (
+                        <td style={{ fontSize:'0.85rem', color:'#334155', whiteSpace: 'nowrap' }}>{ticket.customer?.name || ticket.Customer?.name || 'Unknown'}</td>
+                      )}
+                      {visibleColumns.includes('priority') && (
+                        <td>
+                          <span style={{ background:`${pc.color}15`, color:pc.color, border: `1px solid ${pc.color}30`, padding:'0.15rem 0.6rem', borderRadius:99, fontSize:'0.62rem', fontWeight:700 }}>{pc.label}</span>
+                        </td>
+                      )}
+                      {visibleColumns.includes('sla') && <td>{renderSlaBadge(ticket)}</td>}
+                      {visibleColumns.includes('status') && (
+                        <td>
+                          <span style={{ background:`${sc.color}15`, color:sc.color, border: `1px solid ${sc.color}30`, padding:'0.15rem 0.6rem', borderRadius:99, fontSize:'0.62rem', fontWeight:700 }}>{sc.label}</span>
+                        </td>
+                      )}
+                      {visibleColumns.includes('updated') && (
+                        <td style={{ fontSize:'0.75rem', color:'#94a3b8' }}>
+                          {new Date(ticket.updated_at || ticket.updatedAt || ticket.created_at || Date.now()).toLocaleDateString()}
+                        </td>
+                      )}
+                      {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
+                        <td key={cf.id} style={{ fontSize:'0.85rem' }}>{ticket.custom_fields?.[cf.field_name] || '-'}</td>
+                      ))}
                       <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                         <div className={styles.rowActions}>
                           <button 

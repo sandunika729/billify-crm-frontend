@@ -11,6 +11,8 @@ import SearchBar from '../../../components/ui/SearchBar';
 import ContextMenu from '../../../components/ui/ContextMenu';
 import Modal from '../../../components/modals/Modal';
 import CreateQuoteModal from './CreateQuoteModal';
+import ColumnManager from '../../../components/ui/ColumnManager';
+import customFieldService from '../../../services/customFieldService';
 import { alert, confirm } from '@/utils/alertService';
 
 const QUOTE_STATUSES = [
@@ -48,6 +50,15 @@ export default function QuotesPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
 
+  const [customFields, setCustomFields] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState(['quote_no', 'customer', 'amount', 'valid_until', 'status']);
+
+  const handleColumnToggle = (colId) => {
+    setVisibleColumns(prev => 
+      prev.includes(colId) ? prev.filter(id => id !== colId) : [...prev, colId]
+    );
+  };
+
   const handleContextMenu = (e, quote) => {
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY, record: quote });
@@ -68,6 +79,7 @@ export default function QuotesPage() {
 
   useEffect(() => {
     fetchQuotes();
+    fetchCustomFields();
     const params = window.location.search;
     if (params.includes('action=create') || params.includes('new=1')) {
       setIsCreateModalOpen(true);
@@ -86,6 +98,17 @@ export default function QuotesPage() {
       console.error('Failed to fetch quotes:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCustomFields = async () => {
+    try {
+      const res = await customFieldService.getFields('quote');
+      if (res.success) {
+        setCustomFields(res.data || []);
+      }
+    } catch (e) {
+      console.error('Failed to fetch custom fields for quotes:', e);
     }
   };
 
@@ -513,6 +536,18 @@ export default function QuotesPage() {
               <Flag size={12} strokeWidth={1.5} fill={showFlaggedOnly ? '#ef4444' : 'none'} color={showFlaggedOnly ? '#ef4444' : '#64748b'} /> Flagged
             </button>
           </div>
+          <ColumnManager 
+            columns={[
+              { id: 'quote_no', label: 'Quote No.', required: true },
+              { id: 'customer', label: 'Customer / Deal', required: false },
+              { id: 'amount', label: 'Amount (LKR)', required: false },
+              { id: 'valid_until', label: 'Valid Until', required: false },
+              { id: 'status', label: 'Status', required: false },
+              ...customFields.map(cf => ({ id: `cf_${cf.field_name}`, label: cf.field_label, required: false }))
+            ]}
+            visibleColumns={visibleColumns}
+            onColumnToggle={handleColumnToggle}
+          />
         </div>
       </div>
 
@@ -523,11 +558,14 @@ export default function QuotesPage() {
             <table className={styles.quotesTable}>
               <thead>
                 <tr>
-                  <th>Quote No.</th>
-                  <th>Customer / Deal</th>
-                  <th>Amount (LKR)</th>
-                  <th>Valid Until</th>
-                  <th>Status</th>
+                  {visibleColumns.includes('quote_no') && <th>Quote No.</th>}
+                  {visibleColumns.includes('customer') && <th>Customer / Deal</th>}
+                  {visibleColumns.includes('amount') && <th>Amount (LKR)</th>}
+                  {visibleColumns.includes('valid_until') && <th>Valid Until</th>}
+                  {visibleColumns.includes('status') && <th>Status</th>}
+                  {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
+                    <th key={cf.id}>{cf.field_label}</th>
+                  ))}
                   <th className={styles.actionsCol}></th>
                 </tr>
               </thead>
@@ -548,39 +586,61 @@ export default function QuotesPage() {
                         style={quote.flag_status === 'flagged' ? { backgroundColor: 'var(--color-bg-hover, #f1f5f9)', cursor: 'pointer' } : { cursor: 'pointer' }}
                         onContextMenu={(e) => handleContextMenu(e, quote)}
                       >
-                        <td>
-                          <div className={styles.viewToggleContainer}>
-                            <span className={styles.primaryTextLink} style={{ fontWeight: 600 }}>
-                              {quote.quote_no}
+                        {visibleColumns.includes('quote_no') && (
+                          <td>
+                            <div className={styles.viewToggleContainer}>
+                              <span className={styles.primaryTextLink} style={{ fontWeight: 600 }}>
+                                {quote.quote_no}
+                              </span>
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.includes('customer') && (
+                          <td>
+                            <div>
+                              <span className={styles.primaryTextLink} style={{ fontWeight: 600 }}>
+                                {quote.Customer?.name || quote.customer?.name || 'Unknown'}
+                              </span>
+                              {(quote.Deal || quote.deal) && (
+                                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                                  Deal: {quote.Deal?.title || quote.deal?.title}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.includes('amount') && (
+                          <td>
+                            <span className={styles.amountText} style={{ fontWeight: 600 }}>
+                              Rs. {Number(quote.total_lkr).toLocaleString()}
                             </span>
-                          </div>
-                        </td>
-                        <td>
-                          <div>
-                            <span className={styles.primaryTextLink} style={{ fontWeight: 600 }}>
-                              {quote.Customer?.name || quote.customer?.name || 'Unknown'}
-                            </span>
-                            {(quote.Deal || quote.deal) && (
-                              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
-                                Deal: {quote.Deal?.title || quote.deal?.title}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td>
-                          <div className={styles.amountText}>Rs. {Number(quote.total_lkr).toLocaleString()}</div>
-                        </td>
-                        <td>
-                          <div className={styles.dateCell}>
-                            <Calendar size={12} />
+                          </td>
+                        )}
+                        {visibleColumns.includes('valid_until') && (
+                          <td>
                             {quote.valid_until ? new Date(quote.valid_until).toLocaleDateString() : 'N/A'}
-                          </div>
-                        </td>
-                        <td>
-                          <Badge variant={quote.status}>
-                            {statusMeta.label}
-                          </Badge>
-                        </td>
+                          </td>
+                        )}
+                        {visibleColumns.includes('status') && (
+                          <td>
+                            <span style={{ 
+                              background: `${statusMeta.color}15`, 
+                              color: statusMeta.color, 
+                              border: `1px solid ${statusMeta.color}30`,
+                              padding: '0.2rem 0.6rem',
+                              borderRadius: 99,
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              textTransform: 'capitalize',
+                              display: 'inline-block'
+                            }}>
+                              {statusMeta.label}
+                            </span>
+                          </td>
+                        )}
+                        {customFields.filter(cf => visibleColumns.includes(`cf_${cf.field_name}`)).map(cf => (
+                          <td key={cf.id}>{quote.custom_fields?.[cf.field_name] || '-'}</td>
+                        ))}
                         <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                           <div className={styles.rowActions} style={{ gap: '8px' }}>
                             <button 
