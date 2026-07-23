@@ -17,6 +17,17 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const restoreSession = async () => {
+      const isSessionActive = document.cookie.split('; ').find(row => row.startsWith('is_session_active='));
+      if (!isSessionActive) {
+        try { await api.post('/auth/logout'); } catch (e) {}
+        setAccessToken(null);
+        setUser(null);
+        setActiveTenant(null);
+        setAvailableCompanies([]);
+        setLoading(false);
+        return;
+      }
+
       try {
         const refreshRes = await api.post('/auth/refresh');
         const { accessToken } = refreshRes.data.data;
@@ -58,6 +69,8 @@ export function AuthProvider({ children }) {
       setAccessToken(accessToken);
       setUser({ ...userData, tenant });
       setActiveTenant(tenant);
+      
+      document.cookie = "is_session_active=true; path=/";
 
       const companiesRes = await api.get('/auth/my-companies');
       setAvailableCompanies(companiesRes.data.data);
@@ -80,6 +93,8 @@ export function AuthProvider({ children }) {
       setAccessToken(accessToken);
       setUser({ ...userData, tenant });
       setActiveTenant(tenant);
+      
+      document.cookie = "is_session_active=true; path=/";
 
       const companiesRes = await api.get('/auth/my-companies');
       setAvailableCompanies(companiesRes.data.data);
@@ -122,6 +137,7 @@ export function AuthProvider({ children }) {
       setUser(null);
       setActiveTenant(null);
       setAvailableCompanies([]);
+      document.cookie = "is_session_active=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       router.push('/login');
     }
   };

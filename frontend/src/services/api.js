@@ -10,8 +10,6 @@ export const getAccessToken = () => _accessToken;
 const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
-  
-  
   withCredentials: true,
 });
 
@@ -48,7 +46,6 @@ api.interceptors.response.use(
     }
 
     if (_isRefreshing) {
-      
       return new Promise((resolve, reject) => {
         _failedQueue.push({ resolve, reject });
       })
@@ -63,7 +60,6 @@ api.interceptors.response.use(
     _isRefreshing = true;
 
     try {
-      
       const res = await axios.post(
         `${API_URL}/auth/refresh`,
         {},
@@ -78,6 +74,7 @@ api.interceptors.response.use(
       setAccessToken(null);
       processQueue(refreshError, null);
       if (typeof window !== 'undefined') {
+        document.cookie = "is_session_active=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         window.location.href = '/login';
       }
       return Promise.reject(refreshError);
