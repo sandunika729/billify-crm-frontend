@@ -661,7 +661,7 @@ export default function ReportsPage() {
         />
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', marginTop: '1.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', marginTop: '0.5rem' }}>
         {groupedReports.length === 0 ? (
           <div className={styles.emptyState}>
             No reports found matching your criteria.
@@ -672,7 +672,7 @@ export default function ReportsPage() {
               <h2 style={{ 
                 fontSize: '1.1rem', 
                 fontWeight: '700', 
-                color: 'var(--color-secondary, #8b9be2)', 
+                color: 'var(--color-text-primary, #0f172a)', 
                 marginBottom: '1rem', 
                 paddingBottom: '0.5rem', 
                 borderBottom: '2px solid #f1f5f9' 
@@ -688,8 +688,8 @@ export default function ReportsPage() {
                     onClick={() => setSelectedReport(report)}
                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', border: '1px solid var(--color-border)' }}
                   >
-                    <div style={{ padding: '0.5rem', background: '#e8f0fe', color: 'var(--color-primary)', borderRadius: '8px', marginRight: '1rem' }}>
-                      <report.icon size={20} />
+                    <div style={{ color: 'var(--color-primary, #3b82f6)', marginRight: '0.75rem', marginTop: '0.15rem' }}>
+                      <report.icon size={16} />
                     </div>
                     <div className={styles.reportInfo}>
                       <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.35rem' }}>{report.title}</h3>
