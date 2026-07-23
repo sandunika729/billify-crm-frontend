@@ -306,10 +306,7 @@ export default function DealsPage() {
     e.stopPropagation();
     try {
       const currentStatus = deal.flag_status || 'none';
-      let newStatus = 'none';
-      if (currentStatus === 'none') newStatus = 'flagged';
-      else if (currentStatus === 'flagged') newStatus = 'completed';
-      else newStatus = 'none';
+      const newStatus = currentStatus === 'flagged' ? 'none' : 'flagged';
 
       setDeals(prev => prev.map(d => d.id === deal.id ? { ...d, flag_status: newStatus } : d));
       await dealService.updateDeal(deal.id, { flag_status: newStatus });
@@ -832,14 +829,14 @@ export default function DealsPage() {
                             <td className={styles.actionsCol}>
                               <div className={styles.tableActions}>
                                 <button 
-                                  className={`${styles.actionBtn} ${deal.flag_status === 'flagged' ? styles.flagged : deal.flag_status === 'completed' ? styles.completed : ''}`}
+                                  className={`${styles.actionBtn} ${deal.flag_status === 'flagged' ? styles.flagged : ''}`}
                                   onClick={(e) => handleToggleFlag(e, deal)}
-                                  title={deal.flag_status === 'flagged' ? 'Mark Completed' : deal.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                                  title={deal.flag_status === 'flagged' ? 'Clear Flag' : 'Flag'}
                                 >
                                   <Flag 
                                     size={12} 
-                                    fill={deal.flag_status === 'flagged' ? '#ef4444' : deal.flag_status === 'completed' ? '#10b981' : 'none'} 
-                                    color={deal.flag_status === 'flagged' ? '#ef4444' : deal.flag_status === 'completed' ? '#10b981' : '#64748b'} 
+                                    fill={deal.flag_status === 'flagged' ? '#ef4444' : 'none'} 
+                                    color={deal.flag_status === 'flagged' ? '#ef4444' : '#64748b'} 
                                   />
                                 </button>
                                 <button className={styles.actionBtnPrimary} onClick={() => { setViewDeal(deal); setIsDetailModalOpen(true); }} title="View Details">
@@ -1282,7 +1279,7 @@ export default function DealsPage() {
           y={contextMenu.y}
           onClose={() => setContextMenu(null)}
           items={[
-            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
             { label: 'View Details', icon: Eye, onClick: () => { setViewDeal(contextMenu.record); setIsDetailModalOpen(true); } },
             ...(contextMenu.record.status !== 'won' && contextMenu.record.status !== 'lost' ? [
               { label: 'Create Quote', icon: FileText, onClick: () => handleCreateQuoteFromDeal(contextMenu.record) }

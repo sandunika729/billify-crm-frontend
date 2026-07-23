@@ -181,10 +181,7 @@ export default function LeadsPage() {
     e.stopPropagation();
     try {
       const currentStatus = lead.flag_status || 'none';
-      let newStatus = 'none';
-      if (currentStatus === 'none') newStatus = 'flagged';
-      else if (currentStatus === 'flagged') newStatus = 'completed';
-      else newStatus = 'none';
+      const newStatus = currentStatus === 'flagged' ? 'none' : 'flagged';
 
       setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, flag_status: newStatus } : l));
       await leadService.updateLead(lead.id, { flag_status: newStatus });
@@ -685,13 +682,13 @@ export default function LeadsPage() {
                         <div className={styles.tableActions}>
                           <button
                             className={styles.actionBtn}
-                            title={lead.flag_status === 'flagged' ? 'Mark Completed' : lead.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                            title={lead.flag_status === 'flagged' ? 'Clear Flag' : 'Flag'}
                             onClick={(e) => handleToggleFlag(e, lead)}
                           >
                             <Flag
                               size={12}
-                              fill={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : 'none'}
-                              color={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : '#64748b'}
+                              fill={lead.flag_status === 'flagged' ? '#ef4444' : 'none'}
+                              color={lead.flag_status === 'flagged' ? '#ef4444' : '#64748b'}
                             />
                           </button>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
@@ -843,14 +840,14 @@ export default function LeadsPage() {
                         <div className={styles.tableActions}>
                           <button
                             className={styles.actionBtn}
-                            title={lead.flag_status === 'flagged' ? 'Mark Completed' : lead.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                            title={lead.flag_status === 'flagged' ? 'Clear Flag' : 'Flag'}
                             onClick={(e) => handleToggleFlag(e, lead)}
                           >
                             <Flag
                               size={12}
                               strokeWidth={1.5}
-                              fill={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : 'none'}
-                              color={lead.flag_status === 'flagged' ? '#ef4444' : lead.flag_status === 'completed' ? '#10b981' : '#64748b'}
+                              fill={lead.flag_status === 'flagged' ? '#ef4444' : 'none'}
+                              color={lead.flag_status === 'flagged' ? '#ef4444' : '#64748b'}
                             />
                           </button>
                           <button className={styles.actionBtnPrimary} onClick={() => { setViewLead(lead); setIsDetailModalOpen(true); }} title="View Details">
@@ -921,11 +918,9 @@ export default function LeadsPage() {
                             <button 
                               onClick={(e) => handleToggleFlag(e, lead)} 
                               style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0' }}
-                              title={lead.flag_status === 'completed' ? 'Completed' : lead.flag_status === 'flagged' ? 'Flagged' : 'Mark for Follow-up'}
+                              title={lead.flag_status === 'flagged' ? 'Flagged' : 'Mark for Follow-up'}
                             >
-                              {(!lead.flag_status || lead.flag_status === 'none') && <Flag size={10} color="#cbd5e1" fill="none" />}
-                              {lead.flag_status === 'flagged' && <Flag size={10} color="#ef4444" fill="#ef4444" />}
-                              {lead.flag_status === 'completed' && <CheckCircle2 size={10} color="#10b981" />}
+                              <Flag size={10} color={lead.flag_status === 'flagged' ? '#ef4444' : '#cbd5e1'} fill={lead.flag_status === 'flagged' ? '#ef4444' : 'none'} />
                             </button>
                           </div>
                           <div className={styles.cardTime} style={{ fontSize: '0.65rem' }}>
@@ -1492,7 +1487,7 @@ export default function LeadsPage() {
           y={contextMenu.y}
           onClose={() => setContextMenu(null)}
           items={[
-            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
             { label: 'View Details', icon: Eye, onClick: () => { setViewLead(contextMenu.record); setIsDetailModalOpen(true); } },
             ...(activeTab === 'converted' ? [
               ...(contextMenu.record.deal_id ? [{ label: 'View Linked Deal', icon: ExternalLink, onClick: () => router.push(`/crm/deals`) }] : [])

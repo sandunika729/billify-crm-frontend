@@ -103,10 +103,7 @@ export default function QuotesPage() {
     e.stopPropagation();
     try {
       const currentStatus = quote.flag_status || 'none';
-      let newStatus = 'none';
-      if (currentStatus === 'none') newStatus = 'flagged';
-      else if (currentStatus === 'flagged') newStatus = 'completed';
-      else newStatus = 'none';
+      const newStatus = currentStatus === 'flagged' ? 'none' : 'flagged';
 
       setQuotes(prev => prev.map(q => q.id === quote.id ? { ...q, flag_status: newStatus } : q));
       await quoteService.updateQuote(quote.id, { flag_status: newStatus });
@@ -587,14 +584,14 @@ export default function QuotesPage() {
                         <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                           <div className={styles.rowActions} style={{ gap: '8px' }}>
                             <button 
-                              className={`${styles.actionBtn} ${quote.flag_status === 'flagged' ? styles.flagged : quote.flag_status === 'completed' ? styles.completed : ''}`}
+                              className={`${styles.actionBtn} ${quote.flag_status === 'flagged' ? styles.flagged : ''}`}
                               onClick={(e) => handleToggleFlag(e, quote)}
-                              title={quote.flag_status === 'flagged' ? 'Mark Completed' : quote.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                              title={quote.flag_status === 'flagged' ? 'Clear Flag' : 'Flag'}
                             >
                               <Flag 
                                 size={12} 
-                                fill={quote.flag_status === 'flagged' ? '#ef4444' : quote.flag_status === 'completed' ? '#10b981' : 'none'} 
-                                color={quote.flag_status === 'flagged' ? '#ef4444' : quote.flag_status === 'completed' ? '#10b981' : '#64748b'} 
+                                fill={quote.flag_status === 'flagged' ? '#ef4444' : 'none'} 
+                                color={quote.flag_status === 'flagged' ? '#ef4444' : '#64748b'} 
                               />
                             </button>
                             <button className={styles.actionBtn} title="Download PDF" onClick={() => handleDownloadPdf(quote)}>
@@ -862,7 +859,7 @@ export default function QuotesPage() {
           y={contextMenu.y}
           onClose={() => setContextMenu(null)}
           items={[
-            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
             { label: 'Download PDF', icon: Download, onClick: () => handleDownloadPdf(contextMenu.record) },
             { label: 'Clone Quote', icon: Copy, onClick: () => handleCloneQuote(contextMenu.record) },
             ...(!['accepted', 'rejected', 'converted', 'expired'].includes(contextMenu.record.status) ? [

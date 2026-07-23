@@ -185,10 +185,7 @@ export default function SupportTicketsPage() {
     e.stopPropagation();
     try {
       const currentStatus = ticket.flag_status || 'none';
-      let newStatus = 'none';
-      if (currentStatus === 'none') newStatus = 'flagged';
-      else if (currentStatus === 'flagged') newStatus = 'completed';
-      else newStatus = 'none';
+      const newStatus = currentStatus === 'flagged' ? 'none' : 'flagged';
 
       setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, flag_status: newStatus } : t));
       await ticketService.updateTicket(ticket.id, { flag_status: newStatus });
@@ -492,15 +489,15 @@ export default function SupportTicketsPage() {
                       </td>
                       <td className={styles.actionsCol} onClick={e => e.stopPropagation()}>
                         <div className={styles.rowActions}>
-                          <button
-                            className={styles.actionBtn}
-                            title={ticket.flag_status === 'flagged' ? 'Mark Completed' : ticket.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                          <button 
+                            className={`${styles.actionBtn} ${ticket.flag_status === 'flagged' ? styles.flagged : ''}`}
                             onClick={(e) => handleToggleFlag(e, ticket)}
+                            title={ticket.flag_status === 'flagged' ? 'Clear Flag' : 'Flag'}
                           >
-                            <Flag
-                              size={12}
-                              fill={ticket.flag_status === 'flagged' ? '#ef4444' : ticket.flag_status === 'completed' ? '#10b981' : 'none'}
-                              color={ticket.flag_status === 'flagged' ? '#ef4444' : ticket.flag_status === 'completed' ? '#10b981' : '#64748b'}
+                            <Flag 
+                              size={12} 
+                              fill={ticket.flag_status === 'flagged' ? '#ef4444' : 'none'} 
+                              color={ticket.flag_status === 'flagged' ? '#ef4444' : '#64748b'} 
                             />
                           </button>
                           <button className={styles.actionBtn} title="Open Thread" onClick={() => handleOpenDetail(ticket)}><MessageSquare size={12} color="#3b82f6" /></button>
@@ -557,7 +554,7 @@ export default function SupportTicketsPage() {
           y={contextMenu.y}
           onClose={() => setContextMenu(null)}
           items={[
-            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
             { label: 'Open Thread', icon: MessageSquare, onClick: () => handleOpenDetail(contextMenu.record) },
             { label: 'Edit Ticket', icon: Edit2, onClick: () => { setEditFormData({ id: contextMenu.record.id, subject: contextMenu.record.subject, customer_id: contextMenu.record.customer_id || '', priority: contextMenu.record.priority, status: contextMenu.record.status, source: contextMenu.record.source }); setIsEditModalOpen(true); } },
             { label: 'Delete', icon: Trash2, onClick: () => handleDeleteTicket(contextMenu.record.id), variant: 'danger' }

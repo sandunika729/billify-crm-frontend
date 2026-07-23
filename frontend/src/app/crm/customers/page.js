@@ -243,10 +243,7 @@ export default function CustomersPage() {
     e.stopPropagation();
     try {
       const currentStatus = customer.flag_status || 'none';
-      let newStatus = 'none';
-      if (currentStatus === 'none') newStatus = 'flagged';
-      else if (currentStatus === 'flagged') newStatus = 'completed';
-      else newStatus = 'none';
+      const newStatus = currentStatus === 'flagged' ? 'none' : 'flagged';
 
       setCustomers(prev => prev.map(c => c.id === customer.id ? { ...c, flag_status: newStatus } : c));
       await customerService.updateCustomer(customer.id, { flag_status: newStatus });
@@ -456,14 +453,14 @@ export default function CustomersPage() {
                     <td className={styles.actionsCol}>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         <button 
-                          className={`${styles.actionBtn} ${customer.flag_status === 'flagged' ? styles.flagged : customer.flag_status === 'completed' ? styles.completed : ''}`}
+                          className={`${styles.actionBtn} ${customer.flag_status === 'flagged' ? styles.flagged : ''}`}
                           onClick={(e) => handleToggleFlag(e, customer)}
-                          title={customer.flag_status === 'flagged' ? 'Mark Completed' : customer.flag_status === 'completed' ? 'Clear Flag' : 'Flag'}
+                          title={customer.flag_status === 'flagged' ? 'Clear Flag' : 'Flag'}
                         >
                           <Flag 
                             size={12} 
-                            fill={customer.flag_status === 'flagged' ? '#ef4444' : customer.flag_status === 'completed' ? '#10b981' : 'none'} 
-                            color={customer.flag_status === 'flagged' ? '#ef4444' : customer.flag_status === 'completed' ? '#10b981' : '#64748b'} 
+                            fill={customer.flag_status === 'flagged' ? '#ef4444' : 'none'} 
+                            color={customer.flag_status === 'flagged' ? '#ef4444' : '#64748b'} 
                           />
                         </button>
                         <Link href={`/crm/customers/${customer.id}`} className={styles.actionBtnPrimary} title="View Details">
@@ -638,7 +635,7 @@ export default function CustomersPage() {
           y={contextMenu.y}
           onClose={() => setContextMenu(null)}
           items={[
-            { label: contextMenu.record.flag_status === 'flagged' ? 'Mark Completed' : contextMenu.record.flag_status === 'completed' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
+            { label: contextMenu.record.flag_status === 'flagged' ? 'Clear Flag' : 'Flag', icon: Flag, onClick: (e) => handleToggleFlag(e, contextMenu.record) },
             { label: 'View Details', icon: Eye, onClick: () => window.location.href = `/crm/customers/${contextMenu.record.id}` },
             { label: 'Edit Customer', icon: Edit2, onClick: () => openEditCustomerModal(contextMenu.record) },
             { label: 'Delete', icon: Trash2, onClick: () => handleDeleteCustomer(contextMenu.record.id), variant: 'danger' }
