@@ -50,7 +50,6 @@ export default function ReportsPage() {
   const [dateFrom, setDateFrom] = useState(today);
   const [dateTo, setDateTo] = useState(today);
 
-  const [activeTab, setActiveTab] = useState('sales');
   const [selectedReport, setSelectedReport] = useState(null);
 
   const [librarySearchTerm, setLibrarySearchTerm] = useState('');
@@ -632,15 +631,11 @@ export default function ReportsPage() {
     );
   }
 
-  
-  const displayedReports = AVAILABLE_REPORTS.filter(r => {
-    const matchesCategory = r.category === activeTab;
-    const matchesSearch = r.title.toLowerCase().includes(librarySearchTerm.toLowerCase()) || 
-                          r.description.toLowerCase().includes(librarySearchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const allFilteredReports = AVAILABLE_REPORTS.filter(r => 
+    r.title.toLowerCase().includes(librarySearchTerm.toLowerCase()) || 
+    r.description.toLowerCase().includes(librarySearchTerm.toLowerCase())
+  );
 
-  
   return (
     <div className={styles.pageContainer}>
       <div className={styles.pageHeader}>
@@ -658,49 +653,43 @@ export default function ReportsPage() {
         />
       </div>
 
-      <div className={styles.rolesLayout}>
-        {}
-        <div className={styles.rolesPanel}>
-          <div className={styles.panelHeader}>
-            <h3>Categories</h3>
-          </div>
-          <div className={styles.rolesList}>
-            {REPORT_CATEGORIES.map(category => (
-              <button 
-                key={category.id}
-                className={`${styles.roleItem} ${activeTab === category.id ? styles.active : ''}`}
-                onClick={() => setActiveTab(category.id)}
-              >
-                <div className={styles.roleInfo}>
-                  <div className={styles.roleName}>{category.label}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+      <div className={styles.reportsLayout}>
+        {REPORT_CATEGORIES.map(category => {
+          const categoryReports = AVAILABLE_REPORTS.filter(r => {
+             const matchesCategory = r.category === category.id;
+             const matchesSearch = r.title.toLowerCase().includes(librarySearchTerm.toLowerCase()) || 
+                                   r.description.toLowerCase().includes(librarySearchTerm.toLowerCase());
+             return matchesCategory && matchesSearch;
+          });
 
-        {}
-        <div className={styles.reportsList}>
-          {displayedReports.map(report => (
-            <div
-              key={report.id}
-              className={styles.reportCard}
-              onClick={() => setSelectedReport(report)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className={styles.reportInfo}>
-                <h3>{report.title}</h3>
-                <p>{report.description}</p>
+          if (categoryReports.length === 0) return null;
+
+          return (
+            <div key={category.id} className={styles.reportCategorySection}>
+              <h2 className={styles.categorySubheading}>{category.label}</h2>
+              <div className={styles.reportsGrid}>
+                {categoryReports.map(report => (
+                  <div
+                    key={report.id}
+                    className={styles.reportCard}
+                    onClick={() => setSelectedReport(report)}
+                  >
+                    <div className={styles.reportInfo}>
+                      <h3>{report.title}</h3>
+                      <p>{report.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-          
-          {displayedReports.length === 0 && (
-            <div className={styles.emptyState}>
-              No reports found matching your criteria in this category.
-            </div>
-          )}
-        </div>
+          );
+        })}
+
+        {allFilteredReports.length === 0 && (
+          <div className={styles.emptyState}>
+            No reports found matching your criteria.
+          </div>
+        )}
       </div>
     </div>
   );
