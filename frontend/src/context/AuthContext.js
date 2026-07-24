@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api, { setAccessToken } from '../services/api';
 import { useRouter } from 'next/navigation';
@@ -17,7 +15,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const restoreSession = async () => {
-      const isSessionActive = document.cookie.split('; ').find(row => row.startsWith('is_session_active='));
+      const isSessionActive = sessionStorage.getItem('is_session_active');
       if (!isSessionActive) {
         try { await api.post('/auth/logout'); } catch (e) {}
         setAccessToken(null);
@@ -70,7 +68,7 @@ export function AuthProvider({ children }) {
       setUser({ ...userData, tenant });
       setActiveTenant(tenant);
       
-      document.cookie = "is_session_active=true; path=/";
+      sessionStorage.setItem('is_session_active', 'true');
 
       const companiesRes = await api.get('/auth/my-companies');
       setAvailableCompanies(companiesRes.data.data);
@@ -94,7 +92,7 @@ export function AuthProvider({ children }) {
       setUser({ ...userData, tenant });
       setActiveTenant(tenant);
       
-      document.cookie = "is_session_active=true; path=/";
+      sessionStorage.setItem('is_session_active', 'true');
 
       const companiesRes = await api.get('/auth/my-companies');
       setAvailableCompanies(companiesRes.data.data);
@@ -118,7 +116,6 @@ export function AuthProvider({ children }) {
       setUser({ ...userData, tenant });
       setActiveTenant(tenant);
       
-      
       window.location.href = '/crm/dashboard';
       return { success: true };
     } catch (error) {
@@ -137,7 +134,7 @@ export function AuthProvider({ children }) {
       setUser(null);
       setActiveTenant(null);
       setAvailableCompanies([]);
-      document.cookie = "is_session_active=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      sessionStorage.removeItem('is_session_active');
       router.push('/login');
     }
   };
