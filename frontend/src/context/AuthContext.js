@@ -17,11 +17,6 @@ export function AuthProvider({ children }) {
     const restoreSession = async () => {
       const isSessionActive = sessionStorage.getItem('is_session_active');
       if (!isSessionActive) {
-        try { await api.post('/auth/logout'); } catch (e) {}
-        setAccessToken(null);
-        setUser(null);
-        setActiveTenant(null);
-        setAvailableCompanies([]);
         setLoading(false);
         return;
       }

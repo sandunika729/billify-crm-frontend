@@ -35,16 +35,16 @@ import OverdueBell from '../../components/crm/OverdueBell';
 import NotificationBell from '../../components/crm/NotificationBell';
 
 export default function CrmLayout({ children }) {
-  const { user, logout, activeTenant, availableCompanies, switchCompany } = useAuth();
+  const { user, loading, logout, activeTenant, availableCompanies, switchCompany } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       router.push('/login');
     }
-  }, [user, router]);
+  }, [user, loading, router]);
 
   const navItems = [
     { label: 'Dashboard', path: '/crm/dashboard', icon: LayoutDashboard, permission: 'dashboard:view' },
