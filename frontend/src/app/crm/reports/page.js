@@ -633,7 +633,7 @@ export default function ReportsPage() {
   }
 
   
-  // No longer filtering by active tab. We just filter out categories that don't match the search.
+
   const groupedReports = REPORT_CATEGORIES.map(category => {
     const categoryReports = AVAILABLE_REPORTS.filter(r => r.category === category.id)
       .filter(r => 

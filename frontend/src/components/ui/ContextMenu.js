@@ -1,19 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './ContextMenu.module.css';
 
-/**
- * @param {Object} props
- * @param {number} props.x - X coordinate for the menu
- * @param {number} props.y - Y coordinate for the menu
- * @param {Function} props.onClose - Callback to close the menu
- * @param {Array} props.items - Array of objects { label, icon: Icon, onClick, variant, disabled }
- */
+
 export default function ContextMenu({ x, y, onClose, items }) {
   const menuRef = useRef(null);
   const [position, setPosition] = useState({ top: y, left: x });
 
   useEffect(() => {
-    // Adjust position if it goes off-screen
+
     if (menuRef.current) {
       const rect = menuRef.current.getBoundingClientRect();
       const windowWidth = window.innerWidth;

@@ -94,7 +94,7 @@ function buildSnippet(apiKey) {
 (function() {
   var API = '${apiKey ? API_BASE_CONST : '${API_BASE}' }';
   var KEY = '${apiKey}';
-  var TKEY = KEY; // used as x-tenant-id when the route is /public/support/*
+  var TKEY = KEY;
   var widget = document.getElementById('crm-support-widget');
   var currentSocket = null;
 
@@ -131,7 +131,7 @@ function buildSnippet(apiKey) {
     +   '<div id="crm-ticket-result" style="display:none;"></div>'
     + '</div>';
 
-  // Tab switching
+
   widget.querySelectorAll('.crm-tab-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       widget.querySelectorAll('.crm-tab-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -141,7 +141,7 @@ function buildSnippet(apiKey) {
     });
   });
 
-  // Submit ticket
+
   document.getElementById('crm-ticket-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     var btn = this.querySelector('button');
@@ -179,7 +179,7 @@ function buildSnippet(apiKey) {
     }
   });
 
-  // Check ticket button
+
   document.getElementById('crm-check-btn').addEventListener('click', function() {
     var tktNo = document.getElementById('crm-tkt-input').value.trim();
     if (tktNo) loadTicket(tktNo);
@@ -313,19 +313,19 @@ export default function SettingsPage() {
   const [profileError, setProfileError] = useState('');
   const logoInputRef = useRef(null);
 
-  // Widget key state
+
   const [keyCopied, setKeyCopied] = useState(false);
   const [snippetCopied, setSnippetCopied] = useState(false);
   const [regenLoading, setRegenLoading] = useState(false);
 
-  // Custom fields state
+
   const [cfTab, setCfTab] = useState('customer');
   const [cfFields, setCfFields] = useState([]);
   const [cfLoading, setCfLoading] = useState(false);
   const [isCfModalOpen, setIsCfModalOpen] = useState(false);
   const [cfForm, setCfForm] = useState({ field_name: '', field_label: '', field_type: 'text', options: '', is_required: false });
 
-  // Companies state
+
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [newCompanyName, setNewCompanyName] = useState('');
   const [companyCreating, setCompanyCreating] = useState(false);
@@ -353,7 +353,7 @@ export default function SettingsPage() {
         setIsCompanyModalOpen(false);
         setNewCompanyName('');
         await fetchAvailableCompanies();
-        // Automatically switch to the newly created company
+
         await switchCompany(res.data.data.id);
       }
     } catch (err) {

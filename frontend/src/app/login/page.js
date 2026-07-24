@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [touched, setTouched] = useState({ email: false, password: false });
   
-  // Multi-company selection state
+
   const [needsCompanySelection, setNeedsCompanySelection] = useState(false);
   const [availableCompanies, setAvailableCompanies] = useState([]);
   const [selectionToken, setSelectionToken] = useState(null);
@@ -55,7 +55,7 @@ export default function LoginPage() {
         setSelectionToken(result.selectionToken);
         setLoading(false);
       }
-      // If not requiring selection, AuthContext already handles redirect
+
     } else {
       setError(result.message || 'Invalid email or password.');
       setLoading(false);

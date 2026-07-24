@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './ColumnManager.module.css';
 
-// Custom column manager SVG icon
+
 const ColumnIcon = () => (
   <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="1" y="2" width="3.5" height="11" rx="1" stroke="currentColor" strokeWidth="1.3"/>
