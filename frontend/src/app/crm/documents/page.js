@@ -157,6 +157,11 @@ export default function DocumentsPage() {
 
   const handleViewDocument = async (id, mimeType) => {
     try {
+      const urlRes = await documentService.getDocumentUrl(id);
+      if (urlRes && urlRes.isUrl) {
+        window.open(urlRes.url, '_blank');
+        return;
+      }
       const response = await documentService.downloadDocument(id);
       const mime = mimeType || response.headers?.['content-type'] || 'application/octet-stream';
       const blob = new Blob([response.data], { type: mime });
@@ -171,6 +176,17 @@ export default function DocumentsPage() {
 
   const handleDownload = async (id, originalName) => {
     try {
+      const urlRes = await documentService.getDocumentUrl(id);
+      if (urlRes && urlRes.isUrl) {
+        const link = document.createElement('a');
+        link.href = urlRes.url;
+        link.download = urlRes.original_name || originalName || 'document';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
       const response = await documentService.downloadDocument(id);
       const blob = new Blob([response.data]);
       const contentDisposition = response.headers?.['content-disposition'];
