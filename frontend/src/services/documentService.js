@@ -40,16 +40,6 @@ const documentService = {
     return `${API_URL}/crm/documents/${id}/download`;
   },
 
-  getDocumentUrl: async (id) => {
-    try {
-      const response = await api.get(`/crm/documents/${id}/url`);
-      return response.data;
-    } catch (error) {
-      console.error('Error getting document URL:', error);
-      return null;
-    }
-  },
-
   downloadDocument: async (id) => {
     try {
       const urlResponse = await api.get(`/crm/documents/${id}/url`);
